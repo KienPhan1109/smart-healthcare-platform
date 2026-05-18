@@ -1,0 +1,15 @@
+# Smart Healthcare Platform - Spring Boot Application Properties Template
+# Copy this file to 'application.properties' and edit with your local database credentials.
+
+spring.application.name=Smart Healthcare Platform
+
+# Database Configuration (MySQL)
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.datasource.url=jdbc:mysql://localhost:3306/healthcare_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=YOUR_DATABASE_USERNAME
+spring.datasource.password=YOUR_DATABASE_PASSWORD
+
+# JPA & Hibernate Configurations
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.format_sql=true

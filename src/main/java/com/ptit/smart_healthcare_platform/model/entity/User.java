@@ -17,21 +17,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 50)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false)
+    // Mật khẩu được lưu dưới dạng BCrypt hash (CORE-01)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private com.ptit.smart_healthcare_platform.model.enums.UserStatus status = com.ptit.smart_healthcare_platform.model.enums.UserStatus.ACTIVE;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UserRole> userRoles = new HashSet<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Patient patient;
+    // LOẠI BỎ quan hệ 1-1 hai chiều ngược (mappedBy) với Patient và Doctor để:
+    // 1. Tối ưu hiệu năng, tránh truy vấn EAGER ngầm (N+1 query) khi tải danh sách User
+    // 2. Khắc phục triệt để cảnh báo OneToOne từ IDE
 }
