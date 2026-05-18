@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Table(name = "patients")
 @Getter
 @Setter
-public class Patient {
+public class Patient extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,18 +21,33 @@ public class Patient {
     private User user;
 
     @Column(nullable = false)
-    private String fullName;
-
-    @Column(nullable = false)
     private LocalDate dateOfBirth;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender = Gender.OTHER;
 
-    @Column(nullable = false, unique = true)
-    private String phoneNumber;
-
     @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
     private PatientProfile patientProfile;
-}
+
+    // Các phương thức ủy quyền (Delegate) sang đối tượng User để bảo toàn tính tương thích ngược
+    public String getFullName() {
+        return user != null ? user.getFullName() : null;
+    }
+
+    public void setFullName(String fullName) {
+        if (this.user != null) {
+            this.user.setFullName(fullName);
+        }
+    }
+
+    public String getPhoneNumber() {
+        return user != null ? user.getPhoneNumber() : null;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        if (this.user != null) {
+            this.user.setPhoneNumber(phoneNumber);
+        }
+    }
+}

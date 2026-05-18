@@ -4,6 +4,8 @@ import com.ptit.smart_healthcare_platform.model.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +17,9 @@ import java.time.LocalDateTime;
         })
 @Getter
 @Setter
-public class Appointment {
+@SQLDelete(sql = "UPDATE appointments SET is_deleted = true, deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("is_deleted = false")
+public class Appointment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,8 +34,8 @@ public class Appointment {
 
     // Người tạo lịch: Bệnh nhân tự đặt hoặc Điều phối viên đặt hộ
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    @JoinColumn(name = "created_by_user_id", nullable = false)
+    private User createdByUser;
 
     // Số thứ tự khám trong ngày (Điều phối viên quản lý)
     private Integer queueNumber;
@@ -52,10 +56,14 @@ public class Appointment {
     @Column(columnDefinition = "TEXT")
     private String cancelReason;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     // LOẠI BỎ quan hệ 1-1 hai chiều ngược (mappedBy) với MedicalRecord để:
     // 1. Tránh EAGER loading bệnh án khi truy xuất lịch khám của bệnh nhân
     // 2. Khắc phục cảnh báo OneToOne từ IDE
 }
+

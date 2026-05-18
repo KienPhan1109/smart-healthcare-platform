@@ -1,11 +1,11 @@
 package com.ptit.smart_healthcare_platform.model.dto.auth;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import com.ptit.smart_healthcare_platform.constant.ValidationConstants;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ public class RegisterRequestDto {
     private String username;
 
     @NotBlank(message = "Email không được để trống")
-    @Pattern(regexp = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "Email không đúng định dạng (VD: kien@gmail.com)")
+    @Pattern(regexp = ValidationConstants.EMAIL_REGEX, message = "Email không đúng định dạng (VD: kien@gmail.com)")
     @Size(max = 100, message = "Email không được vượt quá 100 ký tự")
     private String email;
 
@@ -30,6 +30,7 @@ public class RegisterRequestDto {
     private String fullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Pattern(regexp = "^(0[0-9]{9})$", message = "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số")
+    @Pattern(regexp = ValidationConstants.PHONE_REGEX, message = "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số")
     private String phoneNumber;
 }
+

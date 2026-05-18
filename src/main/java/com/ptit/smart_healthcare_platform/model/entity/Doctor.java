@@ -11,7 +11,7 @@ import java.util.List;
 @Table(name = "doctors")
 @Getter
 @Setter
-public class Doctor {
+public class Doctor extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,16 +24,9 @@ public class Doctor {
     @JoinColumn(name = "specialty_id", nullable = false)
     private Specialty specialty;
 
-    // Họ và tên bác sĩ hiển thị cho bệnh nhân
-    @Column(nullable = false, length = 100)
-    private String fullName;
-
     // Học hàm / Học vị chuyên môn hiển thị cho bệnh nhân đặt lịch (VD: PGS.TS, BS.CKII, ThS.BS)
     @Column(name = "academic_rank", length = 50)
     private String academicRank;
-
-    @Column(nullable = false, unique = true, length = 15)
-    private String phoneNumber;
 
     @Column(columnDefinition = "TEXT")
     private String biography;
@@ -50,4 +43,26 @@ public class Doctor {
 
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
     private List<MedicalRecord> medicalRecords = new ArrayList<>();
+
+    // Các phương thức ủy quyền (Delegate) sang đối tượng User để bảo toàn tính tương thích ngược
+    public String getFullName() {
+        return user != null ? user.getFullName() : null;
+    }
+
+    public void setFullName(String fullName) {
+        if (this.user != null) {
+            this.user.setFullName(fullName);
+        }
+    }
+
+    public String getPhoneNumber() {
+        return user != null ? user.getPhoneNumber() : null;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        if (this.user != null) {
+            this.user.setPhoneNumber(phoneNumber);
+        }
+    }
 }
+

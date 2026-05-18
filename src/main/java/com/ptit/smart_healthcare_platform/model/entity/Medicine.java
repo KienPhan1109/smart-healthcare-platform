@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Table(name = "medicines")
 @Getter
 @Setter
-public class Medicine {
+public class Medicine extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,3 +38,4 @@ public class Medicine {
     @Column(nullable = false, length = 20)
     private com.ptit.smart_healthcare_platform.model.enums.MedicineStatus status = com.ptit.smart_healthcare_platform.model.enums.MedicineStatus.SELLING;
 }
+

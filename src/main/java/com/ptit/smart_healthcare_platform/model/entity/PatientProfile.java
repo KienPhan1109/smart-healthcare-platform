@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Table(name = "patient_profiles")
 @Getter
 @Setter
-public class PatientProfile {
+public class PatientProfile extends BaseEntity {
     @Id
     private Long id;
 
@@ -47,4 +47,4 @@ public class PatientProfile {
     // Ngày hết hạn thẻ BHYT phục vụ việc tự động kiểm soát hiệu lực khi cấp phát
     @Column(name = "insurance_expiry_date")
     private java.time.LocalDate insuranceExpiryDate;
-}
+}
