@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+### Local Configuration overrides ###
+**/src/main/resources/application.properties
+**/src/main/resources/schema.sql
+**/src/main/resources/dbdiagram.txt
+reportBE.md
