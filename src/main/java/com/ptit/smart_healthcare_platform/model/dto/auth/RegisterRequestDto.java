@@ -33,4 +33,3 @@ public class RegisterRequestDto {
     @Pattern(regexp = ValidationConstants.PHONE_REGEX, message = "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số")
     private String phoneNumber;
 }
-

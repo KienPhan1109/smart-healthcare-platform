@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "patients")
 @Getter
 @Setter
-public class Patient extends BaseEntity {
+public class Patient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,6 +27,18 @@ public class Patient extends BaseEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Gender gender = Gender.OTHER;
+
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
     private PatientProfile patientProfile;
@@ -50,4 +63,4 @@ public class Patient extends BaseEntity {
             this.user.setPhoneNumber(phoneNumber);
         }
     }
-}
+}

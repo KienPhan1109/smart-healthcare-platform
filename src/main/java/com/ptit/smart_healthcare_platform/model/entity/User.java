@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +12,7 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @Setter
-public class User extends BaseEntity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,11 +37,18 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 20)
     private com.ptit.smart_healthcare_platform.model.enums.UserStatus status = com.ptit.smart_healthcare_platform.model.enums.UserStatus.ACTIVE;
 
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<UserRole> userRoles = new HashSet<>();
-
-    // LOẠI BỎ quan hệ 1-1 hai chiều ngược (mappedBy) với Patient và Doctor để:
-    // 1. Tối ưu hiệu năng, tránh truy vấn EAGER ngầm (N+1 query) khi tải danh sách User
-    // 2. Khắc phục triệt để cảnh báo OneToOne từ IDE
 }
-

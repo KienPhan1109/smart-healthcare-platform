@@ -4,8 +4,6 @@ import com.ptit.smart_healthcare_platform.model.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -17,9 +15,7 @@ import java.time.LocalDateTime;
         })
 @Getter
 @Setter
-@SQLDelete(sql = "UPDATE appointments SET is_deleted = true, deleted_at = NOW() WHERE id = ?")
-@SQLRestriction("is_deleted = false")
-public class Appointment extends BaseEntity {
+public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,8 +58,19 @@ public class Appointment extends BaseEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     // LOẠI BỎ quan hệ 1-1 hai chiều ngược (mappedBy) với MedicalRecord để:
     // 1. Tránh EAGER loading bệnh án khi truy xuất lịch khám của bệnh nhân
     // 2. Khắc phục cảnh báo OneToOne từ IDE
 }
-

@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "patient_profiles")
 @Getter
 @Setter
-public class PatientProfile extends BaseEntity {
+public class PatientProfile {
     @Id
     private Long id;
 
@@ -47,4 +48,16 @@ public class PatientProfile extends BaseEntity {
     // Ngày hết hạn thẻ BHYT phục vụ việc tự động kiểm soát hiệu lực khi cấp phát
     @Column(name = "insurance_expiry_date")
     private java.time.LocalDate insuranceExpiryDate;
-}
+
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+}

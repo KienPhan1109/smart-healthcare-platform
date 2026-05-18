@@ -8,36 +8,30 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "medicines")
+@Table(name = "lab_tests")
 @Getter
 @Setter
-public class Medicine {
+public class LabTest {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 200)
+    // Tên loại xét nghiệm (VD: Sinh thiết gan, Siêu âm ổ bụng)
+    @Column(nullable = false, unique = true, length = 150)
     private String name;
 
-    // Đơn vị tính (VD: Viên, Ống, Chai, Gói)
-    @Column(nullable = false, length = 50)
-    private String unit;
+    // Mô tả chi tiết mục đích xét nghiệm
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    // Đơn giá (VNĐ)
+    // Đơn giá xét nghiệm
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price = BigDecimal.ZERO;
 
-    // Số lượng tồn kho hiện tại - phục vụ CORE-08 (trừ lùi khi cấp phát)
-    @Column(nullable = false)
-    private Integer stockQuantity = 0;
-
-    // Hướng dẫn sử dụng mặc định
-    @Column(columnDefinition = "TEXT")
-    private String usageInstruction;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private com.ptit.smart_healthcare_platform.model.enums.MedicineStatus status = com.ptit.smart_healthcare_platform.model.enums.MedicineStatus.SELLING;
+    // Trạng thái khả dụng (có thể tạm ngừng cung cấp nếu hỏng máy)
+    @Column(name = "is_available", nullable = false)
+    private Boolean isAvailable = true;
 
     @Column(name = "created_by", length = 50)
     private String createdBy;
