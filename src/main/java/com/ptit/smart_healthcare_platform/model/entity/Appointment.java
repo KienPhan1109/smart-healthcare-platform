@@ -30,8 +30,8 @@ public class Appointment {
 
     // Người tạo lịch: Bệnh nhân tự đặt hoặc Điều phối viên đặt hộ
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false)
-    private User createdBy;
+    @JoinColumn(name = "created_by_user_id", nullable = false)
+    private User createdByUser;
 
     // Số thứ tự khám trong ngày (Điều phối viên quản lý)
     private Integer queueNumber;
@@ -52,8 +52,23 @@ public class Appointment {
     @Column(columnDefinition = "TEXT")
     private String cancelReason;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     // LOẠI BỎ quan hệ 1-1 hai chiều ngược (mappedBy) với MedicalRecord để:
     // 1. Tránh EAGER loading bệnh án khi truy xuất lịch khám của bệnh nhân

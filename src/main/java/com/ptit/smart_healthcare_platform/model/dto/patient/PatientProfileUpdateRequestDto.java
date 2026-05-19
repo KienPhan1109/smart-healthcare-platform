@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
+import com.ptit.smart_healthcare_platform.constant.ValidationConstants;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -26,7 +27,7 @@ public class PatientProfileUpdateRequestDto {
     private String gender;
 
     @NotBlank(message = "Số điện thoại không được để trống")
-    @Pattern(regexp = "^(0[0-9]{9})$", message = "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số")
+    @Pattern(regexp = ValidationConstants.PHONE_REGEX, message = "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số")
     private String phoneNumber;
 
     private String medicalHistory;
@@ -39,7 +40,7 @@ public class PatientProfileUpdateRequestDto {
     @Positive(message = "Cân nặng phải là số dương")
     private BigDecimal weight;
 
-    @Pattern(regexp = "^([A-Z]{2}[0-9]{13})$", message = "Mã số thẻ BHYT phải đúng định dạng Việt Nam (2 chữ cái in hoa đầu và 13 chữ số tiếp theo, VD: GD4797918800001)")
+    @Pattern(regexp = ValidationConstants.BHYT_REGEX, message = "Mã số thẻ BHYT phải đúng định dạng Việt Nam (2 chữ cái in hoa đầu và 13 chữ số tiếp theo, VD: GD4797918800001)")
     private String insuranceNumber;
 
     private LocalDate insuranceExpiryDate;

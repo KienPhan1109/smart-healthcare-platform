@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Benh nhan - Tong quan</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="welcome-section">
+            <h2 class="welcome-title">Xin chao, Benh nhan!</h2>
+            <p class="welcome-subtitle">Chao mung ban den voi he thong kham benh truc tuyen Smart Healthcare Platform.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Lich hen sap toi</div>
+                        </div>
+                        <div class="stat-card-icon primary">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Benh an</div>
+                        </div>
+                        <div class="stat-card-icon success">
+                            <i class="bi bi-file-earmark-medical"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Don thuoc</div>
+                        </div>
+                        <div class="stat-card-icon warning">
+                            <i class="bi bi-capsule"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

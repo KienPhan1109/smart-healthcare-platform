@@ -1,0 +1,526 @@
+/* ======================================================================
+   SMART HEALTHCARE PLATFORM - HOSPITAL DESIGN TOKEN SYSTEM
+   Bảng màu chuẩn y tế - Toàn bộ dự án BẮT BUỘC sử dụng biến CSS này
+   Nghiêm cấm viết cứng mã hex/rgb/rgba trực tiếp trong HTML/CSS con
+   ====================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* === Màu Chủ Đạo Y Tế === */
+    --hospital-primary: #1565C0;
+    --hospital-primary-dark: #0D47A1;
+    --hospital-primary-light: #42A5F5;
+    --hospital-primary-gradient: linear-gradient(135deg, #1565C0 0%, #42A5F5 100%);
+
+    /* === Màu Trắng & Nền === */
+    --hospital-white: #FFFFFF;
+    --hospital-bg-light: #F4F7FC;
+    --hospital-bg-card: #FFFFFF;
+    --hospital-bg-sidebar: #0D47A1;
+
+    /* === Màu Chữ === */
+    --hospital-text-primary: #1A2332;
+    --hospital-text-secondary: #5A6B7F;
+    --hospital-text-muted: #8E99A8;
+    --hospital-text-white: #FFFFFF;
+
+    /* === Màu Trạng Thái === */
+    --hospital-success: #2E7D32;
+    --hospital-success-light: #E8F5E9;
+    --hospital-warning: #F57F17;
+    --hospital-warning-light: #FFF8E1;
+    --hospital-danger: #C62828;
+    --hospital-danger-light: #FFEBEE;
+    --hospital-info: #0288D1;
+    --hospital-info-light: #E1F5FE;
+
+    /* === Kích thước & Bo góc === */
+    --hospital-radius-sm: 6px;
+    --hospital-radius-md: 10px;
+    --hospital-radius-lg: 16px;
+    --hospital-radius-full: 50%;
+    --hospital-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --hospital-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --hospital-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+
+    /* === Sidebar === */
+    --sidebar-width: 260px;
+    --sidebar-collapsed-width: 70px;
+
+    /* === Transitions === */
+    --hospital-transition: all 0.25s ease;
+}
+
+/* === RESET & BASE === */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--hospital-bg-light);
+    color: var(--hospital-text-primary);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: var(--hospital-primary);
+    transition: var(--hospital-transition);
+}
+
+a:hover {
+    color: var(--hospital-primary-dark);
+}
+
+/* === LAYOUT WRAPPER === */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.app-main {
+    flex: 1;
+    margin-left: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    transition: var(--hospital-transition);
+}
+
+.app-content {
+    flex: 1;
+    padding: 24px;
+}
+
+/* === SIDEBAR === */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-width);
+    height: 100vh;
+    background: var(--hospital-bg-sidebar);
+    color: var(--hospital-text-white);
+    z-index: 1000;
+    transition: var(--hospital-transition);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.sidebar-brand {
+    padding: 20px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-brand-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--hospital-primary-light);
+    border-radius: var(--hospital-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar-brand-text {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 12px 0;
+    flex: 1;
+}
+
+.sidebar-nav-item {
+    margin: 2px 10px;
+}
+
+.sidebar-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    color: rgba(255, 255, 255, 0.7);
+    border-radius: var(--hospital-radius-sm);
+    transition: var(--hospital-transition);
+    font-size: 13.5px;
+    font-weight: 500;
+}
+
+.sidebar-nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--hospital-text-white);
+}
+
+.sidebar-nav-link.active {
+    background: var(--hospital-primary-light);
+    color: var(--hospital-text-white);
+    font-weight: 600;
+}
+
+.sidebar-nav-icon {
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.sidebar-section-title {
+    padding: 16px 24px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.sidebar-footer {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--hospital-radius-full);
+    background: var(--hospital-primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.sidebar-user-info {
+    flex: 1;
+    overflow: hidden;
+}
+
+.sidebar-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* === HEADER === */
+.app-header {
+    background: var(--hospital-white);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--hospital-shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--hospital-text-primary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-logout {
+    padding: 7px 16px;
+    background: transparent;
+    color: var(--hospital-danger);
+    border: 1px solid var(--hospital-danger);
+    border-radius: var(--hospital-radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--hospital-transition);
+}
+
+.btn-logout:hover {
+    background: var(--hospital-danger);
+    color: var(--hospital-text-white);
+}
+
+/* === FOOTER === */
+.app-footer {
+    background: var(--hospital-white);
+    padding: 14px 24px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--hospital-text-muted);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* === CARD COMPONENTS === */
+.stat-card {
+    background: var(--hospital-bg-card);
+    border-radius: var(--hospital-radius-md);
+    padding: 20px;
+    box-shadow: var(--hospital-shadow-sm);
+    transition: var(--hospital-transition);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.stat-card:hover {
+    box-shadow: var(--hospital-shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.stat-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--hospital-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.stat-card-icon.primary {
+    background: var(--hospital-info-light);
+    color: var(--hospital-primary);
+}
+
+.stat-card-icon.success {
+    background: var(--hospital-success-light);
+    color: var(--hospital-success);
+}
+
+.stat-card-icon.warning {
+    background: var(--hospital-warning-light);
+    color: var(--hospital-warning);
+}
+
+.stat-card-icon.danger {
+    background: var(--hospital-danger-light);
+    color: var(--hospital-danger);
+}
+
+.stat-card-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--hospital-text-primary);
+}
+
+.stat-card-label {
+    font-size: 13px;
+    color: var(--hospital-text-secondary);
+    margin-top: 2px;
+}
+
+/* === AUTH PAGES === */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--hospital-primary-gradient);
+    padding: 20px;
+}
+
+.auth-card {
+    background: var(--hospital-white);
+    border-radius: var(--hospital-radius-lg);
+    box-shadow: var(--hospital-shadow-lg);
+    width: 100%;
+    max-width: 440px;
+    padding: 40px;
+}
+
+.auth-brand {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-brand-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--hospital-primary-gradient);
+    border-radius: var(--hospital-radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--hospital-text-white);
+    margin-bottom: 12px;
+}
+
+.auth-brand-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--hospital-text-primary);
+}
+
+.auth-brand-subtitle {
+    font-size: 13px;
+    color: var(--hospital-text-secondary);
+    margin-top: 4px;
+}
+
+/* === FORM CONTROLS === */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--hospital-text-primary);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    border-radius: var(--hospital-radius-sm);
+    transition: var(--hospital-transition);
+    background: var(--hospital-white);
+    color: var(--hospital-text-primary);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--hospital-primary);
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.12);
+}
+
+.form-control.is-invalid {
+    border-color: var(--hospital-danger);
+}
+
+.invalid-feedback {
+    font-size: 12px;
+    color: var(--hospital-danger);
+    margin-top: 4px;
+}
+
+.btn-primary-hospital {
+    width: 100%;
+    padding: 11px 20px;
+    background: var(--hospital-primary);
+    color: var(--hospital-text-white);
+    border: none;
+    border-radius: var(--hospital-radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: var(--hospital-transition);
+}
+
+.btn-primary-hospital:hover {
+    background: var(--hospital-primary-dark);
+    box-shadow: var(--hospital-shadow-md);
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--hospital-text-secondary);
+}
+
+.auth-links a {
+    font-weight: 600;
+}
+
+/* === ALERT === */
+.alert-hospital {
+    padding: 12px 16px;
+    border-radius: var(--hospital-radius-sm);
+    font-size: 13px;
+    margin-bottom: 18px;
+    font-weight: 500;
+}
+
+.alert-hospital.success {
+    background: var(--hospital-success-light);
+    color: var(--hospital-success);
+    border: 1px solid var(--hospital-success);
+}
+
+.alert-hospital.danger {
+    background: var(--hospital-danger-light);
+    color: var(--hospital-danger);
+    border: 1px solid var(--hospital-danger);
+}
+
+/* === WELCOME SECTION (Dashboard) === */
+.welcome-section {
+    background: var(--hospital-primary-gradient);
+    border-radius: var(--hospital-radius-lg);
+    padding: 28px 32px;
+    color: var(--hospital-text-white);
+    margin-bottom: 24px;
+}
+
+.welcome-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.welcome-subtitle {
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .app-main {
+        margin-left: 0;
+    }
+
+    .app-content {
+        padding: 16px;
+    }
+}

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <nav th:fragment="sidebar" class="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon">
+                <i class="bi bi-hospital"></i>
+            </div>
+            <span class="sidebar-brand-text">SHP Medical</span>
+        </div>
+
+        <!-- Navigation -->
+        <ul class="sidebar-nav">
+            <!-- PATIENT Menu -->
+            <li sec:authorize="hasAuthority('ROLE_PATIENT')">
+                <div class="sidebar-section-title">Benh nhan</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PATIENT')">
+                <a th:href="@{/patient/dashboard}" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Tong quan
+                </a>
+            </li>
+
+            <!-- DOCTOR Menu -->
+            <li sec:authorize="hasAuthority('ROLE_DOCTOR')">
+                <div class="sidebar-section-title">Bac si</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_DOCTOR')">
+                <a th:href="@{/doctor/dashboard}" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Tong quan
+                </a>
+            </li>
+
+            <!-- COORDINATOR Menu -->
+            <li sec:authorize="hasAuthority('ROLE_COORDINATOR')">
+                <div class="sidebar-section-title">Dieu phoi</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_COORDINATOR')">
+                <a th:href="@{/coordinator/dashboard}" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Tong quan
+                </a>
+            </li>
+
+            <!-- PHARMACIST Menu -->
+            <li sec:authorize="hasAuthority('ROLE_PHARMACIST')">
+                <div class="sidebar-section-title">Duoc si</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PHARMACIST')">
+                <a th:href="@{/pharmacist/dashboard}" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Tong quan
+                </a>
+            </li>
+
+            <!-- CASHIER Menu -->
+            <li sec:authorize="hasAuthority('ROLE_CASHIER')">
+                <div class="sidebar-section-title">Thu ngan</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_CASHIER')">
+                <a th:href="@{/cashier/dashboard}" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Tong quan
+                </a>
+            </li>
+
+            <!-- ADMIN Menu -->
+            <li sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <div class="sidebar-section-title">Quan tri</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/admin/dashboard}" class="sidebar-nav-link active">
+                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
+                    Tong quan
+                </a>
+            </li>
+        </ul>
+
+        <!-- User Footer -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-user-avatar" sec:authentication="name">
+                    U
+                </div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name" sec:authentication="name">Username</div>
+                    <div class="sidebar-user-role">
+                        <span sec:authorize="hasAuthority('ROLE_PATIENT')">Benh nhan</span>
+                        <span sec:authorize="hasAuthority('ROLE_DOCTOR')">Bac si</span>
+                        <span sec:authorize="hasAuthority('ROLE_COORDINATOR')">Dieu phoi vien</span>
+                        <span sec:authorize="hasAuthority('ROLE_PHARMACIST')">Duoc si</span>
+                        <span sec:authorize="hasAuthority('ROLE_CASHIER')">Thu ngan</span>
+                        <span sec:authorize="hasAuthority('ROLE_ADMIN')">Quan tri vien</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+</body>
+</html>

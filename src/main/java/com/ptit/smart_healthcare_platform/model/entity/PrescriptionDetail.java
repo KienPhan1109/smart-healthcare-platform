@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "prescription_details")
 @Getter
@@ -37,4 +39,24 @@ public class PrescriptionDetail {
     // Hướng dẫn đặc biệt cho loại thuốc này
     @Column(columnDefinition = "TEXT")
     private String note;
+
+    // Snapshot giá thuốc tại thời điểm kê đơn (đảm bảo tính chính xác lịch sử hóa đơn)
+    @Column(name = "price_at_prescription", nullable = false, precision = 12, scale = 2)
+    private java.math.BigDecimal priceAtPrescription;
+
+    // Snapshot đơn vị tính thuốc tại thời điểm kê đơn
+    @Column(name = "unit_at_prescription", nullable = false, length = 50)
+    private String unitAtPrescription;
+
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_by", length = 50)
+    private String updatedBy;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }
