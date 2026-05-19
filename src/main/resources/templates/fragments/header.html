@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+    <header th:fragment="header" class="app-header">
+        <div>
+            <h1 class="header-title" th:text="${pageTitle != null ? pageTitle : 'Tong quan'}">Tong quan</h1>
+        </div>
+        <div class="header-actions">
+            <span style="font-size: 13px; color: var(--hospital-text-secondary);" sec:authentication="name">username</span>
+            <form th:action="@{/logout}" method="post" style="margin: 0;">
+                <button type="submit" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i> Dang xuat
+                </button>
+            </form>
+        </div>
+    </header>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Smart Healthcare</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-brand">
+                <div class="auth-brand-icon"><i class="bi bi-person-plus"></i></div>
+                <h1 class="auth-brand-title">Tạo tài khoản mới</h1>
+                <p class="auth-brand-subtitle">Đăng ký để sử dụng dịch vụ khám bệnh trực tuyến</p>
+            </div>
+
+            <!-- Thanh tiến trình -->
+            <div class="steps-indicator">
+                <div class="step-dot" th:classappend="${step == 1 ? 'active' : (step > 1 ? 'done' : '')}" id="dot1"></div>
+                <div class="step-dot" th:classappend="${step == 2 ? 'active' : (step > 2 ? 'done' : '')}" id="dot2"></div>
+                <div class="step-dot" th:classappend="${step == 3 ? 'active' : ''}" id="dot3"></div>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert-hospital danger" id="serverError">
+                <i class="bi bi-exclamation-triangle"></i> <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- ============ BƯỚC 1: NHẬP SỐ ĐIỆN THOẠI ============ -->
+            <div class="step-section" th:classappend="${step == 1 ? 'active' : ''}" th:if="${step == 1}">
+                <form th:action="@{/register/step1}" th:object="${step1Dto}" method="post" novalidate>
+                    <div class="form-group">
+                        <label for="regPhone">Số điện thoại</label>
+                        <input type="text" class="form-control" id="regPhone" th:field="*{phoneNumber}" 
+                               th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid-hospital'" 
+                               placeholder="Ví dụ: 0912345678" maxlength="10" autofocus>
+                        <div class="error-message show" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                    </div>
+                    <div class="terms-row">
+                        <input type="checkbox" id="agreeTerms" th:field="*{agreeTerms}" th:classappend="${#fields.hasErrors('agreeTerms')} ? 'is-invalid-hospital'">
+                        <span>Bằng việc đăng ký, tôi đã đọc và đồng ý với các <a href="#" style="font-weight:600;">điều khoản sử dụng</a>.</span>
+                    </div>
+                    <div class="error-message show" th:if="${#fields.hasErrors('agreeTerms')}" th:errors="*{agreeTerms}" style="margin-bottom:15px; margin-top:-10px;"></div>
+                    
+                    <button type="submit" class="btn-primary-hospital">
+                        Tiếp tục <i class="bi bi-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============ BƯỚC 2: NHẬP OTP ============ -->
+            <div class="step-section" th:classappend="${step == 2 ? 'active' : ''}" th:if="${step == 2}">
+                <form th:action="@{/register/step2}" method="post" novalidate>
+                    <div style="text-align:center; margin-bottom:16px;">
+                        <div style="font-size:13px; color:var(--hospital-text-secondary);">Mã OTP đã được gửi tới số điện thoại của bạn</div>
+                    </div>
+                    <div class="otp-display">Mã OTP của bạn: <strong th:text="${regOtpCode}">------</strong></div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="otpInput" id="regOtpInput" 
+                               th:classappend="${otpError != null} ? 'is-invalid-hospital'"
+                               placeholder="Nhập 6 số OTP" maxlength="6" style="text-align:center; font-size:20px; letter-spacing:6px;">
+                        <div class="error-message show" th:if="${otpError != null}" th:text="${otpError}"></div>
+                    </div>
+                    <button type="submit" class="btn-primary-hospital">
+                        Xác nhận OTP <i class="bi bi-shield-check"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- ============ BƯỚC 3: NHẬP THÔNG TIN CÁ NHÂN ============ -->
+            <div class="step-section" th:classappend="${step == 3 ? 'active' : ''}" th:if="${step == 3}">
+                <form th:action="@{/auth/register}" th:object="${registerRequest}" method="post" id="registerForm" novalidate>
+                    <input type="hidden" th:field="*{phoneNumber}">
+                    <div class="form-group">
+                        <label for="regFullName">Họ và Tên</label>
+                        <input type="text" class="form-control" id="regFullName" th:field="*{fullName}" 
+                               th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid-hospital'" 
+                               placeholder="Ví dụ: Nguyễn Văn A">
+                        <div class="error-message show" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword">Mật khẩu</label>
+                        <input type="password" class="form-control" id="regPassword" th:field="*{password}" th:value="*{password}"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid-hospital'" 
+                               placeholder="Tối thiểu 6 ký tự">
+                        <div class="error-message show" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="regConfirmPassword">Xác nhận mật khẩu</label>
+                        <input type="password" class="form-control" id="regConfirmPassword" th:field="*{confirmPassword}" th:value="*{confirmPassword}"
+                               th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid-hospital'" 
+                               placeholder="Nhập lại mật khẩu">
+                        <div class="error-message show" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                    </div>
+                    <button type="submit" class="btn-primary-hospital" id="btnRegister">
+                        <i class="bi bi-check-circle"></i> Hoàn tất đăng ký
+                    </button>
+                </form>
+            </div>
+
+            <div class="auth-links">
+                Đã có tài khoản? <a th:href="@{/login}">Đăng nhập ngay</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

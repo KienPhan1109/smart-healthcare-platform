@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Bac si - Tong quan</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="welcome-section">
+            <h2 class="welcome-title">Phong kham cua ban</h2>
+            <p class="welcome-subtitle">Quan ly hang doi benh nhan, kham benh va ke don thuoc dien tu.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Cho kham hom nay</div>
+                        </div>
+                        <div class="stat-card-icon primary">
+                            <i class="bi bi-people"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Cho tai kham</div>
+                        </div>
+                        <div class="stat-card-icon warning">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Da kham</div>
+                        </div>
+                        <div class="stat-card-icon success">
+                            <i class="bi bi-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Don thuoc da ke</div>
+                        </div>
+                        <div class="stat-card-icon danger">
+                            <i class="bi bi-capsule"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

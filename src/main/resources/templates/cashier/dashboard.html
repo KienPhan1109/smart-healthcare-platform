@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Thu ngan - Tong quan</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="welcome-section">
+            <h2 class="welcome-title">Quay Thu ngan</h2>
+            <p class="welcome-subtitle">Thu phi kham, phi xet nghiem va tien thuoc. Ap dung bao hiem BHYT tu dong.</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Cho thanh toan</div>
+                        </div>
+                        <div class="stat-card-icon warning">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">Da thu hom nay</div>
+                        </div>
+                        <div class="stat-card-icon success">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0 VND</div>
+                            <div class="stat-card-label">Doanh thu hom nay</div>
+                        </div>
+                        <div class="stat-card-icon primary">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-value">0</div>
+                            <div class="stat-card-label">BHYT da ap dung</div>
+                        </div>
+                        <div class="stat-card-icon danger">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
