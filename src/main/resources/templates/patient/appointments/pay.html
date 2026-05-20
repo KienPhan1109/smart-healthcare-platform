@@ -10,7 +10,7 @@
         <link rel="stylesheet" th:href="@{/css/patient.css}">
         
         <!-- Meta refresh: Server-side fallback for no-JS countdown -->
-        <th:block th:if="${!isExpired && payment.status.name() == 'PENDING'}">
+        <th:block th:if="${!isExpired and payment.status.name() == 'PENDING'}">
             <meta http-equiv="refresh" content="10">
         </th:block>
 
@@ -30,7 +30,7 @@
                     </div>
 
                     <!-- Active Payment State -->
-                    <div th:if="${!isExpired && payment.status.name() == 'PENDING'}" class="patient-card">
+                    <div th:if="${!isExpired and payment.status.name() == 'PENDING'}" class="patient-card">
                         <div class="patient-card-header d-flex justify-content-center" style="background: linear-gradient(135deg, #ffc107, #ff9800); color: #333;">
                             <i class="bi bi-lock me-2"></i> Hệ Thống Đang Giữ Chỗ
                         </div>

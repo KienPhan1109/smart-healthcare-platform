@@ -1,142 +1,137 @@
-/* patient.css - Premium Aesthetics for Patient Module */
+/* =========================================================================
+   PATIENT MODULE - PREMIUM AESTHETICS
+   Sử dụng biến --hospital-* từ index.css (Design System thống nhất)
+   ========================================================================= */
 
-:root {
-    --primary-blue: #0066cc;
-    --primary-blue-dark: #004d99;
-    --primary-gradient: linear-gradient(135deg, #0066cc, #00ccff);
-    --secondary-blue: #e6f2ff;
-    --danger: #dc3545;
-    --danger-dark: #c82333;
-    --success: #28a745;
-    --warning: #ffc107;
-    --text-main: #333333;
-    --text-muted: #6c757d;
-    --bg-light: #f8f9fa;
-    --white: #ffffff;
-    --border-color: #dee2e6;
-    --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
-    --hover-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.2);
-}
-
-/* Glassmorphism Cards */
+/* === Glassmorphism Cards === */
 .patient-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--hospital-radius-lg);
+    box-shadow: var(--hospital-shadow-sm);
+    transition: var(--hospital-transition);
     overflow: hidden;
     margin-bottom: 24px;
 }
 
 .patient-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--hover-shadow);
+    box-shadow: var(--hospital-shadow-md);
+    transform: translateY(-3px);
 }
 
 .patient-card-header {
-    background: var(--primary-gradient);
-    color: var(--white);
-    padding: 16px 24px;
+    background: var(--hospital-primary-gradient);
+    color: var(--hospital-text-white);
+    padding: 18px 24px;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
-.patient-card-body {
-    padding: 24px;
+.patient-card-header-danger {
+    background: var(--hospital-danger-gradient) !important;
+    color: var(--hospital-text-white) !important;
 }
 
-/* Premium Buttons */
+.patient-card-body {
+    padding: 28px;
+}
+
+/* === Premium Buttons === */
 .btn-premium {
-    background: var(--primary-gradient);
+    background: var(--hospital-primary-gradient);
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0, 102, 204, 0.2);
+    border-radius: var(--hospital-radius-sm);
+    padding: 10px 22px;
+    font-weight: 600;
+    transition: var(--hospital-transition);
+    box-shadow: 0 3px 10px rgba(21, 101, 192, 0.2);
     text-decoration: none;
     display: inline-block;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .btn-premium:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 102, 204, 0.3);
+    box-shadow: 0 5px 15px rgba(21, 101, 192, 0.3);
     color: white;
 }
 
 .btn-premium-outline {
     background: transparent;
-    color: var(--primary-blue);
-    border: 2px solid var(--primary-blue);
-    border-radius: 8px;
-    padding: 8px 18px;
-    font-weight: 500;
-    transition: all 0.3s ease;
+    color: var(--hospital-primary);
+    border: 1.5px solid var(--hospital-primary);
+    border-radius: var(--hospital-radius-sm);
+    padding: 9px 20px;
+    font-weight: 600;
+    transition: var(--hospital-transition);
     text-decoration: none;
     display: inline-block;
     cursor: pointer;
+    font-size: 14px;
 }
 
 .btn-premium-outline:hover {
-    background: var(--primary-blue);
+    background: var(--hospital-primary);
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 102, 204, 0.2);
+    box-shadow: 0 3px 10px rgba(21, 101, 192, 0.2);
 }
 
 .btn-danger-premium {
-    background: linear-gradient(135deg, #dc3545, #ff6b6b);
+    background: var(--hospital-danger-gradient);
     color: white;
     border: none;
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+    border-radius: var(--hospital-radius-sm);
+    padding: 10px 22px;
+    font-weight: 600;
+    transition: var(--hospital-transition);
+    box-shadow: 0 3px 10px rgba(198, 40, 40, 0.2);
     cursor: pointer;
+    font-size: 14px;
 }
 
 .btn-danger-premium:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 5px 15px rgba(198, 40, 40, 0.3);
 }
 
-/* Form Styling */
+/* === Form Styling === */
 .premium-form-group {
     margin-bottom: 20px;
 }
 
 .premium-label {
     display: block;
-    font-weight: 500;
-    color: var(--text-main);
+    font-weight: 600;
+    color: var(--hospital-text-primary);
     margin-bottom: 8px;
+    font-size: 14px;
 }
 
 .premium-input, .premium-select, .premium-textarea {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    background-color: var(--white);
+    padding: 11px 16px;
+    border: 1.5px solid var(--hospital-border);
+    border-radius: var(--hospital-radius-sm);
+    font-size: 14px;
+    transition: var(--hospital-transition);
+    background-color: var(--hospital-white);
+    font-family: 'Inter', sans-serif;
+    color: var(--hospital-text-primary);
 }
 
 .premium-input:focus, .premium-select:focus, .premium-textarea:focus {
     outline: none;
-    border-color: var(--primary-blue);
-    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+    border-color: var(--hospital-primary);
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+    background-color: var(--hospital-white);
 }
 
 .premium-textarea {
@@ -144,12 +139,13 @@
     min-height: 100px;
 }
 
-/* Table Styling */
+/* === Table Styling === */
 .premium-table-container {
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
+    background: var(--hospital-white);
+    border-radius: var(--hospital-radius-lg);
+    box-shadow: var(--hospital-shadow-sm);
     overflow: hidden;
+    border: 1px solid var(--hospital-border-light);
 }
 
 .premium-table {
@@ -158,73 +154,94 @@
 }
 
 .premium-table th {
-    background-color: var(--bg-light);
-    color: var(--text-muted);
+    background-color: var(--hospital-bg-light);
+    color: var(--hospital-text-muted);
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     letter-spacing: 0.5px;
-    padding: 16px;
+    padding: 14px 18px;
     text-align: left;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--hospital-border);
 }
 
 .premium-table td {
-    padding: 16px;
-    border-bottom: 1px solid var(--border-color);
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--hospital-border-light);
     vertical-align: middle;
-    color: var(--text-main);
+    color: var(--hospital-text-primary);
+    font-size: 13.5px;
 }
 
 .premium-table tbody tr {
-    transition: background-color 0.2s ease;
+    transition: var(--hospital-transition);
 }
 
 .premium-table tbody tr:hover {
-    background-color: var(--secondary-blue);
+    background-color: rgba(21, 101, 192, 0.03);
 }
 
-/* Status Badges */
+.premium-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* === Status Badges === */
 .status-badge {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: var(--hospital-radius-xl);
+    font-size: 0.8rem;
     font-weight: 600;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 
-.status-pending { background-color: #fff3cd; color: #856404; }
-.status-paid { background-color: #d4edda; color: #155724; }
-.status-cancelled { background-color: #f8d7da; color: #721c24; }
-.status-active { background-color: #cce5ff; color: #004085; }
-.status-completed { background-color: #d1ecf1; color: #0c5460; }
-.status-expired { background-color: #e2e3e5; color: #383d41; }
-.status-waiting-payment { background-color: #fff3cd; color: #856404; }
-.status-waiting-approval { background-color: #cff4fc; color: #055160; }
+.status-pending { background: #FFF8E1; color: #F57F17; border: 1px solid rgba(245, 127, 23, 0.15); }
+.status-paid { background: #E8F5E9; color: #2E7D32; border: 1px solid rgba(46, 125, 50, 0.15); }
+.status-cancelled { background: #FFEBEE; color: #C62828; border: 1px solid rgba(198, 40, 40, 0.15); }
+.status-active { background: #E1F5FE; color: #0288D1; border: 1px solid rgba(2, 136, 209, 0.15); }
+.status-completed { background: #E8F5E9; color: #1B5E20; border: 1px solid rgba(27, 94, 32, 0.15); }
+.status-expired { background: #ECEFF1; color: #546E7A; border: 1px solid rgba(84, 110, 122, 0.15); }
+.status-waiting-payment { background: #FFF8E1; color: #F57F17; border: 1px solid rgba(245, 127, 23, 0.15); }
+.status-waiting-approval { background: #E1F5FE; color: #0288D1; border: 1px solid rgba(2, 136, 209, 0.15); }
 
-/* Countdown & Progress Bar for Payment */
+/* === Countdown & Progress Bar for Payment === */
 .countdown-container {
     text-align: center;
-    padding: 30px;
-    background: linear-gradient(135deg, #1a2a6c, #11998e, #38ef7d);
-    border-radius: 16px;
+    padding: 32px;
+    background: var(--hospital-primary-gradient);
+    border-radius: var(--hospital-radius-lg);
     color: white;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    margin-bottom: 28px;
+    box-shadow: 0 8px 24px rgba(21, 101, 192, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.countdown-container::before {
+    content: '';
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    top: -40px;
+    right: -40px;
 }
 
 .countdown-timer {
     font-size: 3rem;
-    font-weight: 700;
+    font-weight: 800;
     margin: 10px 0;
-    font-family: monospace;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-family: 'Inter', monospace;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    letter-spacing: 2px;
 }
 
 .progress {
-    height: 10px;
+    height: 8px;
     background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
+    border-radius: 4px;
     overflow: hidden;
     margin-top: 20px;
 }
@@ -232,33 +249,35 @@
 .progress-bar-animated {
     height: 100%;
     background-color: #ffffff;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
     transition: width 1s linear;
+    border-radius: 4px;
 }
 
-/* Doctor Selection Card */
+/* === Doctor Selection Card === */
 .doctor-select-card {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 16px;
+    border: 1.5px solid var(--hospital-border);
+    border-radius: var(--hospital-radius-md);
+    padding: 18px;
     margin-bottom: 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--white);
+    transition: var(--hospital-transition);
+    background: var(--hospital-white);
     display: flex;
     align-items: center;
     gap: 16px;
 }
 
 .doctor-select-card:hover {
-    border-color: var(--primary-blue);
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.1);
+    border-color: var(--hospital-primary);
+    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.1);
+    transform: translateY(-2px);
 }
 
 .doctor-select-card input[type="radio"] {
     transform: scale(1.5);
     margin-right: 10px;
-    accent-color: var(--primary-blue);
+    accent-color: var(--hospital-primary);
 }
 
 .doctor-info {
@@ -266,64 +285,64 @@
 }
 
 .doctor-name {
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--text-main);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--hospital-text-primary);
     margin-bottom: 4px;
 }
 
 .doctor-fee {
     font-weight: 700;
-    color: var(--primary-blue);
-    font-size: 1.2rem;
+    color: var(--hospital-primary);
+    font-size: 1.15rem;
 }
 
-/* Payment Methods */
+/* === Payment Methods === */
 .payment-methods {
     display: flex;
     gap: 20px;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 28px;
 }
 
 .btn-vnpay {
     background: linear-gradient(135deg, #005A9C, #0072C6);
     color: white;
-    padding: 15px 30px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    padding: 14px 28px;
+    border-radius: var(--hospital-radius-md);
+    font-size: 1rem;
+    font-weight: 700;
     border: none;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0, 90, 156, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 90, 156, 0.25);
+    transition: var(--hospital-transition);
 }
 
 .btn-vnpay:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0, 90, 156, 0.4);
+    box-shadow: 0 6px 18px rgba(0, 90, 156, 0.35);
 }
 
 .btn-momo {
     background: linear-gradient(135deg, #A50064, #D82D8B);
     color: white;
-    padding: 15px 30px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: bold;
+    padding: 14px 28px;
+    border-radius: var(--hospital-radius-md);
+    font-size: 1rem;
+    font-weight: 700;
     border: none;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(165, 0, 100, 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(165, 0, 100, 0.25);
+    transition: var(--hospital-transition);
 }
 
 .btn-momo:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(165, 0, 100, 0.4);
+    box-shadow: 0 6px 18px rgba(165, 0, 100, 0.35);
 }
 
 .error-feedback {
-    color: var(--danger);
+    color: var(--hospital-danger);
     font-size: 0.85rem;
     margin-top: 5px;
     font-weight: 500;
@@ -331,39 +350,40 @@
 
 .alert-message {
     padding: 16px 20px;
-    border-radius: 8px;
+    border-radius: var(--hospital-radius-sm);
     margin-bottom: 24px;
     font-weight: 500;
+    animation: fadeIn 0.3s ease;
 }
 
 .alert-success {
-    background-color: #d4edda;
-    color: #155724;
-    border-left: 5px solid #28a745;
+    background-color: var(--hospital-success-light);
+    color: var(--hospital-success);
+    border-left: 4px solid var(--hospital-success);
 }
 
 .alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
-    border-left: 5px solid #dc3545;
+    background-color: var(--hospital-danger-light);
+    color: var(--hospital-danger);
+    border-left: 4px solid var(--hospital-danger);
 }
 
-/* ========== Booking Step Indicator ========== */
+/* === Booking Step Indicator === */
 .booking-step-indicator {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0;
-    padding: 20px 0;
+    padding: 24px 0;
 }
 
 .booking-step-indicator .step {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     opacity: 0.4;
-    transition: all 0.3s ease;
+    transition: var(--hospital-transition);
 }
 
 .booking-step-indicator .step.active {
@@ -371,56 +391,56 @@
 }
 
 .booking-step-indicator .step-number {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    background: var(--border-color);
-    color: var(--text-muted);
+    background: var(--hospital-border);
+    color: var(--hospital-text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 0.95rem;
-    transition: all 0.3s ease;
+    transition: var(--hospital-transition);
 }
 
 .booking-step-indicator .step.active .step-number {
-    background: var(--primary-gradient);
+    background: var(--hospital-primary-gradient);
     color: white;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
 }
 
 .booking-step-indicator .step-label {
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--text-muted);
+    color: var(--hospital-text-muted);
     white-space: nowrap;
 }
 
 .booking-step-indicator .step.active .step-label {
-    color: var(--primary-blue);
+    color: var(--hospital-primary);
     font-weight: 600;
 }
 
 .booking-step-indicator .step-line {
     width: 60px;
     height: 3px;
-    background: var(--border-color);
+    background: var(--hospital-border);
     margin: 0 8px;
-    margin-bottom: 22px;
+    margin-bottom: 24px;
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: var(--hospital-transition);
 }
 
 .booking-step-indicator .step-line.active {
-    background: var(--primary-gradient);
+    background: var(--hospital-primary-gradient);
 }
 
-/* ========== Doctor Summary Card ========== */
+/* === Doctor Summary Card === */
 .doctor-summary-card {
-    background: linear-gradient(135deg, #e6f2ff, #f0f7ff);
-    border: 1px solid rgba(0, 102, 204, 0.15);
-    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(21, 101, 192, 0.06), rgba(66, 165, 245, 0.06));
+    border: 1px solid rgba(21, 101, 192, 0.12);
+    border-radius: var(--hospital-radius-md);
     padding: 20px 24px;
 }
 
@@ -428,16 +448,17 @@
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: var(--primary-gradient);
+    background: var(--hospital-primary-gradient);
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
     flex-shrink: 0;
+    box-shadow: 0 3px 10px rgba(21, 101, 192, 0.25);
 }
 
-/* ========== Date Selector Grid ========== */
+/* === Date Selector Grid === */
 .date-selector-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -445,21 +466,21 @@
 }
 
 .date-select-card {
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border: 1.5px solid var(--hospital-border);
+    border-radius: var(--hospital-radius-md);
     padding: 14px 12px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--white);
+    transition: var(--hospital-transition);
+    background: var(--hospital-white);
     font-size: 0.88rem;
     font-weight: 500;
-    color: var(--text-main);
+    color: var(--hospital-text-primary);
 }
 
 .date-select-card:hover {
-    border-color: var(--primary-blue);
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.12);
+    border-color: var(--hospital-primary);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1);
     transform: translateY(-2px);
 }
 
@@ -468,25 +489,25 @@
 }
 
 .date-select-card:has(input:checked) {
-    border-color: var(--primary-blue);
-    background: linear-gradient(135deg, #e6f2ff, #cce5ff);
-    color: var(--primary-blue-dark);
+    border-color: var(--hospital-primary);
+    background: linear-gradient(135deg, rgba(21, 101, 192, 0.06), rgba(66, 165, 245, 0.1));
+    color: var(--hospital-primary-dark);
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.15);
 }
 
-/* ========== Session Label ========== */
+/* === Session Label === */
 .session-label {
-    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    border-radius: 8px;
+    background: linear-gradient(135deg, var(--hospital-bg-light), #E8EDF4);
+    border-radius: var(--hospital-radius-sm);
     padding: 10px 16px;
     font-weight: 600;
-    color: var(--text-main);
+    color: var(--hospital-text-primary);
     margin-bottom: 12px;
     font-size: 0.95rem;
 }
 
-/* ========== Time Slot Grid ========== */
+/* === Time Slot Grid === */
 .time-slot-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -494,13 +515,13 @@
 }
 
 .time-slot-card {
-    border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border: 1.5px solid var(--hospital-border);
+    border-radius: var(--hospital-radius-md);
     padding: 16px 12px;
     text-align: center;
     cursor: pointer;
-    transition: all 0.3s ease;
-    background: var(--white);
+    transition: var(--hospital-transition);
+    background: var(--hospital-white);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -508,8 +529,8 @@
 }
 
 .time-slot-card:hover:not(.disabled) {
-    border-color: var(--primary-blue);
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.12);
+    border-color: var(--hospital-primary);
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1);
     transform: translateY(-2px);
 }
 
@@ -518,38 +539,38 @@
 }
 
 .time-slot-card:has(input:checked) {
-    border-color: var(--primary-blue);
-    background: linear-gradient(135deg, #e6f2ff, #cce5ff);
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+    border-color: var(--hospital-primary);
+    background: linear-gradient(135deg, rgba(21, 101, 192, 0.06), rgba(66, 165, 245, 0.1));
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.15);
 }
 
 .time-slot-card:has(input:checked) .slot-time {
-    color: var(--primary-blue-dark);
+    color: var(--hospital-primary-dark);
 }
 
 .time-slot-card:has(input:checked) .slot-status-free {
-    background: var(--primary-blue);
+    background: var(--hospital-primary);
     color: white;
 }
 
 .time-slot-card.disabled {
-    opacity: 0.45;
+    opacity: 0.4;
     cursor: not-allowed;
-    background: #f8f9fa;
+    background: var(--hospital-bg-light);
     text-decoration: line-through;
 }
 
 .slot-time {
     font-weight: 700;
     font-size: 1rem;
-    color: var(--text-main);
+    color: var(--hospital-text-primary);
 }
 
 .slot-status-free {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--success);
-    background: #d4edda;
+    color: var(--hospital-success);
+    background: var(--hospital-success-light);
     padding: 2px 10px;
     border-radius: 12px;
 }
@@ -557,13 +578,13 @@
 .slot-status-booked {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--danger);
-    background: #f8d7da;
+    color: var(--hospital-danger);
+    background: var(--hospital-danger-light);
     padding: 2px 10px;
     border-radius: 12px;
 }
 
-/* ========== Responsive ========== */
+/* === Responsive === */
 @media (max-width: 768px) {
     .time-slot-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -579,9 +600,16 @@
     }
 }
 
-/* ========== Danger Card Header for Cancel/Delete ========== */
-.patient-card-header-danger {
-    background: linear-gradient(135deg, #dc3545, #ff6b6b) !important;
-    color: var(--white) !important;
+/* === Utility Classes to Replace Inline Styles === */
+.btn-action-sm {
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
 }
-
+.btn-action-xs {
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 700;
+}

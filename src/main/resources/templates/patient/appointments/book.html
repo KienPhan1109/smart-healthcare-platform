@@ -43,7 +43,7 @@
                             <!-- ==================== BƯỚC 1: CHỌN CHUYÊN KHOA ==================== -->
                             <form th:action="@{/patient/appointments/book}" method="get" id="specialtyForm" class="mb-4 pb-4 border-bottom">
                                 <div class="premium-form-group">
-                                    <label class="premium-label fw-bold" style="color: var(--primary-blue)">1. Chọn Chuyên Khoa</label>
+                                    <label class="premium-label fw-bold text-primary">1. Chọn Chuyên Khoa</label>
                                     <select class="premium-select" name="specialtyId" onchange="document.getElementById('specialtyForm').submit()">
                                         <option value="">-- Vui lòng chọn chuyên khoa --</option>
                                         <option th:each="spec : ${specialties}" 
@@ -56,7 +56,7 @@
 
                             <!-- ==================== BƯỚC 2: CHỌN BÁC SĨ ==================== -->
                             <div th:if="${selectedSpecialtyId != null}" class="mb-4 pb-4 border-bottom">
-                                <h5 class="fw-bold mb-3 mt-2" style="color: var(--primary-blue)">2. Chọn Bác Sĩ</h5>
+                                <h5 class="fw-bold mb-3 mt-2 text-primary">2. Chọn Bác Sĩ</h5>
                                 <div th:if="${#lists.isEmpty(doctors)}" class="text-muted fst-italic mb-4">
                                     Hiện tại không có bác sĩ nào đang hoạt động trong chuyên khoa này.
                                 </div>
@@ -99,7 +99,7 @@
                                     </div>
                                 </div>
 
-                                <h5 class="fw-bold mb-3" style="color: var(--primary-blue)">3. Chọn Ngày Khám</h5>
+                                <h5 class="fw-bold mb-3 text-primary">3. Chọn Ngày Khám</h5>
                                 <form th:action="@{/patient/appointments/book}" method="get" id="dateForm">
                                     <input type="hidden" name="specialtyId" th:value="${selectedSpecialtyId}">
                                     <input type="hidden" name="doctorId" th:value="${selectedDoctorId}">
@@ -118,7 +118,7 @@
 
                             <!-- ==================== BƯỚC 4: CHỌN SLOT GIỜ & XÁC NHẬN ==================== -->
                             <div th:if="${selectedDate != null}">
-                                <h5 class="fw-bold mb-3" style="color: var(--primary-blue)">
+                                <h5 class="fw-bold mb-3 text-primary">
                                     4. Chọn Khung Giờ Khám — 
                                     <span class="text-muted fw-normal" th:text="${selectedDateDisplay}">20/05/2026 (Thứ Tư)</span>
                                 </h5>

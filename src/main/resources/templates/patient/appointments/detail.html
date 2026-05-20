@@ -14,18 +14,18 @@
         <link rel="stylesheet" th:href="@{/css/patient.css}">
         <div class="container-fluid py-4">
             
-            <!-- Trường hợp 1: Có bệnh án (Hiển thị 2 cột song song rất đẹp) -->
-            <div th:if="${medicalRecord != null}" class="row g-4">
-                <!-- Cột trái: Thông tin lịch hẹn -->
-                <div class="col-lg-6">
-                    <div class="patient-card h-100">
+            <!-- Trường hợp 1: Có bệnh án (Xếp dọc theo yêu cầu) -->
+            <div th:if="${medicalRecord != null}" class="row justify-content-center">
+                <div class="col-md-10 col-lg-8">
+                    <!-- Thông tin lịch hẹn -->
+                    <div class="patient-card mb-4">
                         <div class="patient-card-header d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-file-earmark-medical me-2"></i> Chi Tiết Lịch Hẹn</span>
                             
                             <!-- Trạng thái -->
                             <span th:if="${appointment.isExpired()}" class="status-badge status-expired">Đã hết hạn</span>
-                            <span th:if="${appointment.status.name() == 'CANCELLED' && !appointment.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
-                            <th:block th:if="${appointment.status.name() != 'CANCELLED' && !appointment.isExpired()}">
+                            <span th:if="${appointment.status.name() == 'CANCELLED' and !appointment.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
+                            <th:block th:if="${appointment.status.name() != 'CANCELLED' and !appointment.isExpired()}">
                                 <span th:if="${appointment.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán</span>
                                 <span th:if="${appointment.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
                                 <span th:if="${appointment.status.name() == 'EXAMINING'}" class="badge bg-info px-3 py-2 rounded-pill fs-6">Đang khám bệnh</span>
@@ -35,7 +35,7 @@
                         </div>
                         <div class="patient-card-body p-4">
                             <!-- Hiển thị lý do hủy -->
-                            <div th:if="${appointment.status.name() == 'CANCELLED' && appointment.cancelReason != null}" class="alert-message alert-danger mb-4">
+                            <div th:if="${appointment.status.name() == 'CANCELLED' and appointment.cancelReason != null}" class="alert-message alert-danger mb-4">
                                 <strong>Lý do hủy:</strong> <span th:text="${appointment.cancelReason}"></span>
                             </div>
 
@@ -68,11 +68,11 @@
                             <div class="row mb-3">
                                 <div class="col-sm-5 text-muted fw-semibold">Trạng thái thanh toán:</div>
                                 <div class="col-sm-7">
-                                    <th:block th:if="${appointment.isExpired() || (appointment.status.name() == 'CANCELLED' && !appointment.isExamFeePaid())}">
+                                    <th:block th:if="${appointment.isExpired() || (appointment.status.name() == 'CANCELLED' and !appointment.isExamFeePaid())}">
                                         <span class="text-danger fw-bold">Chưa thanh toán</span>
                                     </th:block>
                                     
-                                    <th:block th:if="${appointment.status.name() == 'PENDING' && !appointment.isExpired() && !appointment.isExamFeePaid()}">
+                                    <th:block th:if="${appointment.status.name() == 'PENDING' and !appointment.isExpired() and !appointment.isExamFeePaid()}">
                                         <span class="text-warning fw-bold">Chưa thanh toán phí khám</span>
                                     </th:block>
 
@@ -94,8 +94,7 @@
                                     <!-- Nút Hủy Lịch -->
                                     <div th:if="${appointment.isCancelable()}">
                                         <a th:href="@{/patient/appointments/cancel/{id}(id=${appointment.id})}" 
-                                           class="btn btn-outline-danger fw-bold" 
-                                           style="border-radius: 20px; padding: 8px 20px;">
+                                           class="btn btn-outline-danger fw-bold btn-action-sm">
                                             <i class="bi bi-x-circle me-1"></i> Hủy Lịch
                                         </a>
                                     </div>
@@ -105,7 +104,7 @@
                                         <i class="bi bi-arrow-left me-1"></i> Trở về
                                     </a>
                                     
-                                    <th:block th:if="${appointment.status.name() == 'PENDING' && !appointment.isExpired()}">
+                                    <th:block th:if="${appointment.status.name() == 'PENDING' and !appointment.isExpired()}">
                                         <a th:href="@{/patient/appointments/pay/{id}(id=${appointment.id})}" class="btn-premium">
                                             <i class="bi bi-credit-card me-1"></i> Thanh Toán Phí Khám
                                         </a>
@@ -113,7 +112,7 @@
 
                                     <!-- Nút thanh toán tiền thuốc -->
                                     <th:block th:if="${appointment.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}">
-                                        <a th:href="@{/patient/appointments/pay-drug/{id}(id=${appointment.id})}" class="btn btn-danger fw-bold" style="border-radius: 20px; padding: 10px 20px;">
+                                        <a th:href="@{/patient/appointments/pay-drug/{id}(id=${appointment.id})}" class="btn btn-danger fw-bold btn-action">
                                             <i class="bi bi-cart-check me-1"></i> Thanh Toán Đơn Thuốc
                                         </a>
                                     </th:block>
@@ -121,11 +120,9 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Cột phải: Kết quả khám bệnh án & đơn thuốc -->
-                <div class="col-lg-6">
-                    <div class="patient-card h-100">
+                    <!-- Kết quả khám bệnh án & đơn thuốc -->
+                    <div class="patient-card">
                         <div class="patient-card-header bg-success text-white">
                             <span><i class="bi bi-journal-medical me-2"></i> Kết Quả Bệnh Án & Đơn Thuốc</span>
                         </div>
@@ -145,18 +142,18 @@
                             <!-- Lời dặn bác sĩ -->
                             <div class="row mb-4">
                                 <div class="col-sm-4 text-muted fw-semibold">Lời dặn của bác sĩ:</div>
-                                <div class="col-sm-8 text-primary font-monospace" th:text="${medicalRecord.notes != null && !medicalRecord.notes.blank ? medicalRecord.notes : 'Không có ghi chú thêm.'}"></div>
+                                <div class="col-sm-8 text-primary font-monospace" th:text="${medicalRecord.notes != null and !medicalRecord.notes.blank ? medicalRecord.notes : 'Không có ghi chú thêm.'}"></div>
                             </div>
 
                             <!-- Chi tiết đơn thuốc -->
                             <div class="border-top pt-4">
                                 <h6 class="fw-bold mb-3 text-danger"><i class="bi bi-capsule me-1"></i> Chi Tiết Đơn Thuốc:</h6>
                                 
-                                <div th:if="${medicalRecord.prescription == null || medicalRecord.prescription.prescriptionDetails.isEmpty()}" class="alert alert-light border text-muted">
+                                <div th:if="${medicalRecord.prescription == null or medicalRecord.prescription.prescriptionDetails.isEmpty()}" class="alert alert-light border text-muted">
                                     Không có thuốc được kê trong cuộc hẹn này.
                                 </div>
 
-                                <th:block th:if="${medicalRecord.prescription != null && !medicalRecord.prescription.prescriptionDetails.isEmpty()}">
+                                <th:block th:if="${medicalRecord.prescription != null and !medicalRecord.prescription.prescriptionDetails.isEmpty()}">
                                     <div class="table-responsive mb-3">
                                         <table class="table table-sm table-bordered bg-white align-middle">
                                             <thead class="table-light text-center">
@@ -205,11 +202,11 @@
                                     <div class="row align-items-center">
                                         <div class="col-sm-4 text-muted fw-semibold">Thanh toán đơn thuốc:</div>
                                         <div class="col-sm-8">
-                                            <span th:if="${drugPayment != null && drugPayment.status.name() == 'PAID'}" class="text-success fw-bold">
+                                            <span th:if="${drugPayment != null and drugPayment.status.name() == 'PAID'}" class="text-success fw-bold">
                                                 <i class="bi bi-patch-check-fill me-1"></i> Đã thanh toán đơn thuốc
                                                 <span class="text-muted small d-block font-monospace" th:text="'(' + ${drugPayment.paymentMethod} + ' - ' + ${drugPayment.transactionId} + ')'"></span>
                                             </span>
-                                            <span th:if="${drugPayment != null && drugPayment.status.name() == 'PENDING'}" class="text-danger fw-bold">
+                                            <span th:if="${drugPayment != null and drugPayment.status.name() == 'PENDING'}" class="text-danger fw-bold">
                                                 <i class="bi bi-exclamation-triangle-fill me-1"></i> Chưa thanh toán
                                             </span>
                                         </div>
@@ -223,15 +220,15 @@
 
             <!-- Trường hợp 2: Chưa có bệnh án (Hiển thị 1 cột được căn giữa như trước) -->
             <div th:if="${medicalRecord == null}" class="row justify-content-center">
-                <div class="col-md-8 col-lg-7">
+                <div class="col-md-10 col-lg-8">
                     <div class="patient-card">
                         <div class="patient-card-header d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-file-earmark-medical me-2"></i> Chi Tiết Lịch Hẹn</span>
                             
                             <!-- Trạng thái -->
                             <span th:if="${appointment.isExpired()}" class="status-badge status-expired">Đã hết hạn</span>
-                            <span th:if="${appointment.status.name() == 'CANCELLED' && !appointment.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
-                            <th:block th:if="${appointment.status.name() != 'CANCELLED' && !appointment.isExpired()}">
+                            <span th:if="${appointment.status.name() == 'CANCELLED' and !appointment.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
+                            <th:block th:if="${appointment.status.name() != 'CANCELLED' and !appointment.isExpired()}">
                                 <span th:if="${appointment.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán</span>
                                 <span th:if="${appointment.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
                                 <span th:if="${appointment.status.name() == 'EXAMINING'}" class="badge bg-info px-3 py-2 rounded-pill fs-6">Đang khám bệnh</span>
@@ -240,7 +237,7 @@
                         
                         <div class="patient-card-body p-4">
                             <!-- Hiển thị lý do hủy -->
-                            <div th:if="${appointment.status.name() == 'CANCELLED' && appointment.cancelReason != null}" class="alert-message alert-danger mb-4">
+                            <div th:if="${appointment.status.name() == 'CANCELLED' and appointment.cancelReason != null}" class="alert-message alert-danger mb-4">
                                 <strong>Lý do hủy:</strong> <span th:text="${appointment.cancelReason}"></span>
                             </div>
  
@@ -273,11 +270,11 @@
                             <div class="row mb-3">
                                 <div class="col-sm-5 text-muted fw-semibold">Trạng thái thanh toán:</div>
                                 <div class="col-sm-7">
-                                    <th:block th:if="${appointment.isExpired() || (appointment.status.name() == 'CANCELLED' && !appointment.isExamFeePaid())}">
+                                    <th:block th:if="${appointment.isExpired() || (appointment.status.name() == 'CANCELLED' and !appointment.isExamFeePaid())}">
                                         <span class="text-danger fw-bold">Chưa thanh toán</span>
                                     </th:block>
                                     
-                                    <th:block th:if="${appointment.status.name() == 'PENDING' && !appointment.isExpired() && !appointment.isExamFeePaid()}">
+                                    <th:block th:if="${appointment.status.name() == 'PENDING' and !appointment.isExpired() and !appointment.isExamFeePaid()}">
                                         <span class="text-warning fw-bold">Chưa thanh toán phí khám</span>
                                     </th:block>
  
@@ -299,8 +296,7 @@
                                     <!-- Nút Hủy Lịch -->
                                     <div th:if="${appointment.isCancelable()}">
                                         <a th:href="@{/patient/appointments/cancel/{id}(id=${appointment.id})}" 
-                                           class="btn btn-outline-danger fw-bold" 
-                                           style="border-radius: 20px; padding: 8px 20px;">
+                                           class="btn btn-outline-danger fw-bold btn-action-sm">
                                             <i class="bi bi-x-circle me-1"></i> Hủy Lịch
                                         </a>
                                     </div>
@@ -310,7 +306,7 @@
                                         <i class="bi bi-arrow-left me-1"></i> Trở về
                                     </a>
                                     
-                                    <th:block th:if="${appointment.status.name() == 'PENDING' && !appointment.isExpired()}">
+                                    <th:block th:if="${appointment.status.name() == 'PENDING' and !appointment.isExpired()}">
                                         <a th:href="@{/patient/appointments/pay/{id}(id=${appointment.id})}" class="btn-premium">
                                             <i class="bi bi-credit-card me-1"></i> Thanh Toán Phí Khám
                                         </a>

@@ -69,7 +69,7 @@ public class Appointment {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "appointment", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "appointment", fetch = FetchType.EAGER)
     private java.util.List<Payment> payments = new java.util.ArrayList<>();
 
     public boolean isExamFeePaid() {

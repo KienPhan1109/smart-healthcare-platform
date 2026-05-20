@@ -6,8 +6,9 @@
     <title>Tổng quan - Bác sĩ</title>
 </head>
 <body>
-    <div layout:fragment="content" class="doctor-dashboard">
+    <div layout:fragment="content">
         <link rel="stylesheet" th:href="@{/css/doctor.css}">
+        <div class="doctor-dashboard">
 
         <div class="doctor-stats">
             <div class="stat-card">
@@ -68,7 +69,7 @@
                                 <!-- Nút Khám (hiện khi đang chờ hoặc đang khám) -->
                                 <a th:if="${appt.status.name() == 'CONFIRMED' || appt.status.name() == 'EXAMINING'}"
                                    th:href="@{/doctor/appointments/{id}/examine(id=${appt.id})}" 
-                                   class="btn btn-sm btn-success fw-bold" style="border-radius: 20px; padding: 6px 16px;">
+                                   class="btn btn-sm btn-success fw-bold btn-action-sm">
                                     <i class="bi bi-stethoscope me-1"></i> Khám bệnh
                                 </a>
                             </td>
@@ -81,6 +82,7 @@
                     </tbody>
                 </table>
             </div>
+        </div>
         </div>
     </div>
 </body>

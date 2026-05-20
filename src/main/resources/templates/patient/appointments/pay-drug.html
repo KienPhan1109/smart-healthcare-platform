@@ -53,7 +53,7 @@
                                     <div class="col-sm-9" th:text="${medicalRecord.notes}">Uống nhiều nước</div>
                                 </div>
 
-                                <div th:if="${medicalRecord.prescription != null && !medicalRecord.prescription.prescriptionDetails.isEmpty()}">
+                                <div th:if="${medicalRecord.prescription != null and !medicalRecord.prescription.prescriptionDetails.isEmpty()}">
                                     <h6 class="fw-bold mt-4 mb-3 text-danger">
                                         <i class="bi bi-capsule-pill me-2"></i> Danh Sách Thuốc Kê Đơn
                                     </h6>

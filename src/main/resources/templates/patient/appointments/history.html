@@ -14,7 +14,7 @@
             <div th:if="${errorMessage}" class="alert-message alert-danger" th:text="${errorMessage}"></div>
 
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold" style="color: var(--primary-blue-dark)"><i class="bi bi-clock-history me-2"></i>Lịch Sử Khám Bệnh</h2>
+                <h2 class="fw-bold text-primary"><i class="bi bi-clock-history me-2"></i>Lịch Sử Khám Bệnh</h2>
                 <a th:href="@{/patient/appointments/book}" class="btn-premium">
                     <i class="bi bi-calendar-plus me-2"></i> Đặt Lịch Mới
                 </a>
@@ -26,7 +26,7 @@
                 </div>
                 
                 <!-- BỘ TAB LỌC -->
-                <div class="px-4 pt-3 pb-0 border-bottom">
+                <div class="px-4 pt-3 pb-3 border-bottom">
                     <ul class="nav nav-pills custom-tabs">
                         <li class="nav-item">
                             <a class="nav-link" th:classappend="${currentStatus == 'ALL'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='ALL')}">Tất cả</a>
@@ -77,10 +77,10 @@
                                      <span th:if="${appt.isExpired()}" class="status-badge status-expired">Hết hạn</span>
 
                                      <!-- Đã hủy (không phải hết hạn) -->
-                                     <span th:if="${appt.status.name() == 'CANCELLED' && !appt.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
+                                     <span th:if="${appt.status.name() == 'CANCELLED' and !appt.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
 
                                      <!-- Trạng thái khác -->
-                                     <th:block th:if="${appt.status.name() != 'CANCELLED' && !appt.isExpired()}">
+                                     <th:block th:if="${appt.status.name() != 'CANCELLED' and !appt.isExpired()}">
                                           <span th:if="${appt.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán phí khám</span>
                                           <span th:if="${appt.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
                                           <span th:if="${appt.status.name() == 'EXAMINING'}" class="badge bg-info px-2 py-1 rounded-pill">Đang khám bệnh</span>
@@ -89,18 +89,18 @@
                                       </th:block>
                                   </td>
                                   <td>
-                                      <th:block th:if="${appt.isExpired() || (appt.status.name() == 'CANCELLED' && !appt.isExamFeePaid())}">
+                                      <th:block th:if="${appt.isExpired() || (appt.status.name() == 'CANCELLED' and !appt.isExamFeePaid())}">
                                           <span class="status-badge status-expired">Đã đóng</span>
                                       </th:block>
                                       
                                       <!-- Phí khám -->
-                                      <th:block th:if="${appt.status.name() == 'PENDING' && !appt.isExpired()}">
-                                          <a th:href="@{/patient/appointments/pay/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-primary fw-bold" style="border-radius: 20px; padding: 4px 12px;" onclick="event.stopPropagation();"><i class="bi bi-credit-card me-1"></i> Trả phí khám</a>
+                                      <th:block th:if="${appt.status.name() == 'PENDING' and !appt.isExpired()}">
+                                          <a th:href="@{/patient/appointments/pay/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-primary btn-action-xs" onclick="event.stopPropagation();"><i class="bi bi-credit-card me-1"></i> Trả phí khám</a>
                                       </th:block>
  
                                       <!-- Tiền thuốc -->
                                       <th:block th:if="${appt.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}">
-                                          <a th:href="@{/patient/appointments/pay-drug/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-danger fw-bold" style="border-radius: 20px; padding: 4px 12px;" onclick="event.stopPropagation();"><i class="bi bi-cart-check me-1"></i> Mua đơn thuốc</a>
+                                          <a th:href="@{/patient/appointments/pay-drug/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-danger btn-action-xs" onclick="event.stopPropagation();"><i class="bi bi-cart-check me-1"></i> Mua đơn thuốc</a>
                                       </th:block>
  
                                       <!-- Đã thanh toán xong mọi thứ (hoặc không có tiền thuốc) -->
@@ -115,8 +115,7 @@
                                      <!-- Nút Hủy Lịch -->
                                      <div th:if="${appt.isCancelable()}">
                                          <a th:href="@{/patient/appointments/cancel/{id}(id=${appt.id})}" 
-                                            class="btn btn-sm btn-outline-danger fw-bold" 
-                                            style="border-radius: 20px; padding: 4px 12px;"
+                                            class="btn btn-sm btn-outline-danger btn-action-xs" 
                                             onclick="event.stopPropagation();">
                                              <i class="bi bi-x-circle me-1"></i> Hủy Lịch
                                          </a>

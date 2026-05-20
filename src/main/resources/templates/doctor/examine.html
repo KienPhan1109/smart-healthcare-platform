@@ -6,8 +6,9 @@
     <title>Khám bệnh & Kê đơn</title>
 </head>
 <body>
-    <div layout:fragment="content" class="exam-container">
+    <div layout:fragment="content">
         <link rel="stylesheet" th:href="@{/css/doctor.css}">
+        <div class="exam-container">
 
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Khám bệnh & Kê đơn</h2>
@@ -230,6 +231,7 @@
                 });
             });
         </script>
+        </div>
     </div>
 </body>
 </html>

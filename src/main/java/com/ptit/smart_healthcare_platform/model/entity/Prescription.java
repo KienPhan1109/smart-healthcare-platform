@@ -53,13 +53,7 @@ public class Prescription {
     @Column(nullable = false, updatable = false)
     private LocalDateTime issuedDate = LocalDateTime.now();
 
-    // CORE-08: Dược sĩ xác nhận cấp phát thuốc
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dispensed_by")
-    private User dispensedBy;
 
-    // Thời điểm dược sĩ xác nhận cấp phát thành công
-    private LocalDateTime dispensedAt;
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;

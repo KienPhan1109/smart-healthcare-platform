@@ -1,5 +1,6 @@
 /* ==========================================
    CSS CHO CÁC MÀN HÌNH AUTHENTICATION (AUTH.CSS)
+   Sử dụng biến --hospital-* từ index.css
    ========================================== */
 
 /* Trạng thái các bước (Steps) */
@@ -8,6 +9,7 @@
 }
 .step-section.active {
     display: block;
+    animation: fadeInUp 0.3s ease;
 }
 
 /* Thanh chỉ báo tiến trình đăng ký (Steps Indicator) */
@@ -20,11 +22,12 @@
     width: 100%;
     height: 4px;
     border-radius: 4px;
-    background: rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    background: rgba(0, 0, 0, 0.08);
+    transition: var(--hospital-transition);
 }
 .step-dot.active {
     background: var(--hospital-primary);
+    box-shadow: 0 0 8px rgba(21, 101, 192, 0.3);
 }
 .step-dot.done {
     background: var(--hospital-success);
@@ -42,22 +45,24 @@
 .terms-row input[type="checkbox"] {
     margin-top: 3px;
     flex-shrink: 0;
+    accent-color: var(--hospital-primary);
 }
 
 /* Hộp hiển thị mã OTP giả lập */
 .otp-display {
     background: var(--hospital-info-light);
-    border: 1px dashed var(--hospital-primary);
+    border: 1.5px dashed var(--hospital-primary);
     border-radius: var(--hospital-radius-sm);
-    padding: 10px 16px;
+    padding: 12px 16px;
     text-align: center;
     margin-bottom: 16px;
     font-size: 13px;
     color: var(--hospital-primary);
 }
 .otp-display strong {
-    font-size: 22px;
-    letter-spacing: 6px;
+    font-size: 24px;
+    letter-spacing: 8px;
+    font-weight: 800;
 }
 
 /* Nút liên kết quên mật khẩu & Hàng lưu đăng nhập */
@@ -65,9 +70,11 @@
     cursor: pointer;
     color: var(--hospital-primary);
     font-weight: 600;
+    transition: var(--hospital-transition);
 }
 .forgot-link:hover {
     text-decoration: underline;
+    color: var(--hospital-primary-dark);
 }
 .remember-row {
     display: flex;
@@ -84,6 +91,7 @@
 }
 .remember-row input[type="checkbox"] {
     margin-right: 6px;
+    accent-color: var(--hospital-primary);
 }
 
 /* Modal Quên mật khẩu */
@@ -92,31 +100,45 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
     z-index: 9999;
     align-items: center;
     justify-content: center;
 }
 .modal-overlay.show {
     display: flex;
+    animation: fadeIn 0.2s ease;
 }
 .modal-box {
     background: var(--hospital-white);
-    border-radius: var(--hospital-radius-lg);
-    padding: 32px;
+    border-radius: var(--hospital-radius-xl);
+    padding: 36px;
     width: 100%;
     max-width: 420px;
     box-shadow: var(--hospital-shadow-lg);
     position: relative;
+    animation: fadeInUp 0.3s ease;
 }
 .modal-close {
     position: absolute;
-    top: 12px;
-    right: 16px;
+    top: 14px;
+    right: 18px;
     background: none;
     border: none;
     font-size: 22px;
     cursor: pointer;
     color: var(--hospital-text-muted);
+    transition: var(--hospital-transition);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--hospital-radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-close:hover {
+    background: var(--hospital-bg-light);
+    color: var(--hospital-text-primary);
 }
 .modal-title {
     font-size: 18px;
@@ -143,7 +165,7 @@
     padding: 11px 20px;
     background: transparent;
     color: var(--hospital-text-secondary);
-    border: 1.5px solid rgba(0, 0, 0, 0.12);
+    border: 1.5px solid var(--hospital-border);
     border-radius: var(--hospital-radius-sm);
     font-size: 14px;
     font-weight: 500;
@@ -155,6 +177,7 @@
 .skip-btn:hover {
     border-color: var(--hospital-primary);
     color: var(--hospital-primary);
+    background: rgba(21, 101, 192, 0.03);
 }
 .form-row {
     display: flex;
@@ -176,11 +199,11 @@
 }
 .error-message.show {
     display: flex;
+    animation: fadeIn 0.2s ease;
 }
 
 /* Border đỏ cho input bị lỗi */
 .is-invalid-hospital {
     border-color: var(--hospital-danger) !important;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15) !important;
+    box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.1) !important;
 }
-
