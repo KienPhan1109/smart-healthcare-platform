@@ -15,12 +15,12 @@
         <ul class="sidebar-nav">
             <!-- PATIENT Menu -->
             <li sec:authorize="hasAuthority('ROLE_PATIENT')">
-                <div class="sidebar-section-title">Benh nhan</div>
+                <div class="sidebar-section-title">Bệnh nhân</div>
             </li>
             <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PATIENT')">
-                <a th:href="@{/patient/dashboard}" class="sidebar-nav-link active">
+                <a th:href="@{/patient/dashboard}" class="sidebar-nav-link">
                     <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
-                    Tong quan
+                    Tổng quan
                 </a>
             </li>
             <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PATIENT')">
@@ -44,56 +44,25 @@
 
             <!-- DOCTOR Menu -->
             <li sec:authorize="hasAuthority('ROLE_DOCTOR')">
-                <div class="sidebar-section-title">Bac si</div>
+                <div class="sidebar-section-title">Bác sĩ</div>
             </li>
             <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_DOCTOR')">
-                <a th:href="@{/doctor/dashboard}" class="sidebar-nav-link active">
+                <a th:href="@{/doctor/dashboard}" class="sidebar-nav-link">
                     <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
-                    Tong quan
+                    Tổng quan
                 </a>
             </li>
 
-            <!-- COORDINATOR Menu -->
-            <li sec:authorize="hasAuthority('ROLE_COORDINATOR')">
-                <div class="sidebar-section-title">Dieu phoi</div>
-            </li>
-            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_COORDINATOR')">
-                <a th:href="@{/coordinator/dashboard}" class="sidebar-nav-link active">
-                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
-                    Tong quan
-                </a>
-            </li>
 
-            <!-- PHARMACIST Menu -->
-            <li sec:authorize="hasAuthority('ROLE_PHARMACIST')">
-                <div class="sidebar-section-title">Duoc si</div>
-            </li>
-            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PHARMACIST')">
-                <a th:href="@{/pharmacist/dashboard}" class="sidebar-nav-link active">
-                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
-                    Tong quan
-                </a>
-            </li>
-
-            <!-- CASHIER Menu -->
-            <li sec:authorize="hasAuthority('ROLE_CASHIER')">
-                <div class="sidebar-section-title">Thu ngan</div>
-            </li>
-            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_CASHIER')">
-                <a th:href="@{/cashier/dashboard}" class="sidebar-nav-link active">
-                    <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
-                    Tong quan
-                </a>
-            </li>
 
             <!-- ADMIN Menu -->
             <li sec:authorize="hasAuthority('ROLE_ADMIN')">
-                <div class="sidebar-section-title">Quan tri</div>
+                <div class="sidebar-section-title">Quản trị</div>
             </li>
             <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
-                <a th:href="@{/admin/dashboard}" class="sidebar-nav-link active">
+                <a th:href="@{/admin/dashboard}" class="sidebar-nav-link">
                     <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
-                    Tong quan
+                    Tổng quan
                 </a>
             </li>
         </ul>
@@ -101,25 +70,68 @@
         <!-- User Footer -->
         <div class="sidebar-footer">
             <div class="sidebar-user">
-                <div class="sidebar-user-avatar" sec:authentication="name">
+                <div class="sidebar-user-avatar" id="sidebarAvatar">
                     U
                 </div>
                 <div class="sidebar-user-info">
-                    <div class="sidebar-user-name" sec:authentication="name">Username</div>
+                    <div class="sidebar-user-name" id="sidebarUserName" sec:authentication="name">Username</div>
                     <div class="sidebar-user-role">
-                        <span sec:authorize="hasAuthority('ROLE_PATIENT')">Benh nhan</span>
-                        <span sec:authorize="hasAuthority('ROLE_DOCTOR')">Bac si</span>
-                        <span sec:authorize="hasAuthority('ROLE_COORDINATOR')">Dieu phoi vien</span>
-                        <span sec:authorize="hasAuthority('ROLE_PHARMACIST')">Duoc si</span>
-                        <span sec:authorize="hasAuthority('ROLE_CASHIER')">Thu ngan</span>
-                        <span sec:authorize="hasAuthority('ROLE_ADMIN')">Quan tri vien</span>
+                        <span sec:authorize="hasAuthority('ROLE_PATIENT')">Bệnh nhân</span>
+                        <span sec:authorize="hasAuthority('ROLE_DOCTOR')">Bác sĩ</span>
+                        <span sec:authorize="hasAuthority('ROLE_ADMIN')">Quản trị viên</span>
                     </div>
                 </div>
-                <a th:href="@{/profile}" class="ms-auto text-white-50 fs-5" title="Chỉnh sửa thông tin">
-                    <i class="bi bi-person-gear"></i>
-                </a>
+                <!-- Đăng xuất được chuyển xuống dưới cùng của Sidebar -->
+                <form th:action="@{/logout}" method="post" style="margin: 0; margin-left: auto;">
+                    <button type="submit" class="btn-logout-sidebar" title="Đăng xuất">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
+                </form>
             </div>
         </div>
+
+        <!-- JS: Active Link & Avatar Initial (Đưa VÀO TRONG nav th:fragment để tránh bị Thymeleaf strip) -->
+        <script th:inline="none">
+            document.addEventListener('DOMContentLoaded', function () {
+                // === 1. Tự động highlight sidebar link đang active ===
+                var currentPath = window.location.pathname;
+                var links = document.querySelectorAll('.sidebar-nav-link');
+                var bestMatch = null;
+                var bestLen = 0;
+
+                links.forEach(function (link) {
+                    var href = link.getAttribute('href');
+                    if (href && (currentPath === href || currentPath.startsWith(href + '/')) && href.length > bestLen) {
+                        bestMatch = link;
+                        bestLen = href.length;
+                    }
+                });
+
+                if (bestMatch) {
+                    bestMatch.classList.add('active');
+                }
+
+                // === 2. Gán ký tự đầu tên vào avatar ===
+                var nameEl = document.getElementById('sidebarUserName');
+                var avatarEl = document.getElementById('sidebarAvatar');
+                if (nameEl && avatarEl) {
+                    var name = nameEl.textContent.trim();
+                    if (name.length > 0) {
+                        avatarEl.textContent = name.charAt(0).toUpperCase();
+                    }
+                }
+
+                // === 3. Gán avatar cho header (nếu có) ===
+                var headerAvatarEl = document.getElementById('headerAvatar');
+                var headerNameEl = document.getElementById('headerUserName');
+                if (headerAvatarEl && headerNameEl) {
+                    var hName = headerNameEl.textContent.trim();
+                    if (hName.length > 0) {
+                        headerAvatarEl.textContent = hName.charAt(0).toUpperCase();
+                    }
+                }
+            });
+        </script>
     </nav>
 </body>
 </html>

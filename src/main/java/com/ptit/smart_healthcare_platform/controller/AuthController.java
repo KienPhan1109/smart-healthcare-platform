@@ -1,5 +1,15 @@
 package com.ptit.smart_healthcare_platform.controller;
 
+import com.ptit.smart_healthcare_platform.config.CustomSuccessHandler;
+import com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto;
+import com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordResetDto;
+import com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordStep1Dto;
+import com.ptit.smart_healthcare_platform.model.dto.auth.LoginRequestDto;
+import com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto;
+import com.ptit.smart_healthcare_platform.model.entity.PatientProfile;
+import com.ptit.smart_healthcare_platform.model.enums.BloodType;
+import com.ptit.smart_healthcare_platform.repository.PatientProfileRepository;
+
 import com.ptit.smart_healthcare_platform.model.dto.auth.RegisterRequestDto;
 import com.ptit.smart_healthcare_platform.model.entity.Patient;
 import com.ptit.smart_healthcare_platform.model.entity.User;
@@ -32,18 +42,18 @@ public class AuthController {
     private final PatientRepository patientRepository;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final org.springframework.security.authentication.AuthenticationManager authenticationManager;
-    private final com.ptit.smart_healthcare_platform.config.CustomSuccessHandler successHandler;
+    private final CustomSuccessHandler successHandler;
     private final jakarta.validation.Validator validator;
-    private final com.ptit.smart_healthcare_platform.repository.PatientProfileRepository patientProfileRepository;
+    private final PatientProfileRepository patientProfileRepository;
 
     public AuthController(AuthService authService,
                           UserRepository userRepository,
                           PatientRepository patientRepository,
                           org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
                           org.springframework.security.authentication.AuthenticationManager authenticationManager,
-                          com.ptit.smart_healthcare_platform.config.CustomSuccessHandler successHandler,
+                          CustomSuccessHandler successHandler,
                           jakarta.validation.Validator validator,
-                          com.ptit.smart_healthcare_platform.repository.PatientProfileRepository patientProfileRepository) {
+                          PatientProfileRepository patientProfileRepository) {
         this.authService = authService;
         this.userRepository = userRepository;
         this.patientRepository = patientRepository;
@@ -62,10 +72,7 @@ public class AuthController {
                 String role = authority.getAuthority();
                 switch (role) {
                     case "ROLE_ADMIN": return "redirect:/admin/dashboard";
-                    case "ROLE_COORDINATOR": return "redirect:/coordinator/dashboard";
                     case "ROLE_DOCTOR": return "redirect:/doctor/dashboard";
-                    case "ROLE_PHARMACIST": return "redirect:/pharmacist/dashboard";
-                    case "ROLE_CASHIER": return "redirect:/cashier/dashboard";
                     case "ROLE_PATIENT": return "redirect:/patient/dashboard";
                 }
             }
@@ -75,12 +82,12 @@ public class AuthController {
 
     @GetMapping("/login")
     public String loginPage(Model model) {
-        model.addAttribute("loginRequest", new com.ptit.smart_healthcare_platform.model.dto.auth.LoginRequestDto());
+        model.addAttribute("loginRequest", new LoginRequestDto());
         return "auth/login";
     }
 
     @PostMapping("/login")
-    public String processLogin(@Valid @ModelAttribute("loginRequest") com.ptit.smart_healthcare_platform.model.dto.auth.LoginRequestDto dto,
+    public String processLogin(@Valid @ModelAttribute("loginRequest") LoginRequestDto dto,
                                BindingResult bindingResult,
                                jakarta.servlet.http.HttpServletRequest request,
                                jakarta.servlet.http.HttpServletResponse response,
@@ -121,13 +128,13 @@ public class AuthController {
         session.removeAttribute("reg_otp_verified");
 
         model.addAttribute("step", 1);
-        model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto());
+        model.addAttribute("step1Dto", new RegisterStep1Dto());
         model.addAttribute("registerRequest", new RegisterRequestDto()); // Luon cung cap de tranh loi Thymeleaf
         return "auth/register";
     }
 
     @PostMapping("/register/step1")
-    public String registerStep1(@Valid @ModelAttribute("step1Dto") com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto dto,
+    public String registerStep1(@Valid @ModelAttribute("step1Dto") RegisterStep1Dto dto,
                                 BindingResult bindingResult,
                                 Model model,
                                 HttpSession session) {
@@ -162,7 +169,7 @@ public class AuthController {
                                 Model model,
                                 HttpSession session) {
         // Luon cung cap registerRequest va step1Dto de tranh loi Thymeleaf
-        model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto());
+        model.addAttribute("step1Dto", new RegisterStep1Dto());
         model.addAttribute("registerRequest", new RegisterRequestDto());
 
         String sessionPhone = (String) session.getAttribute("reg_phone");
@@ -224,7 +231,7 @@ public class AuthController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("step", 3);
-            model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto());
+            model.addAttribute("step1Dto", new RegisterStep1Dto());
             return "auth/register";
         }
 
@@ -240,7 +247,7 @@ public class AuthController {
         } catch (
                 IllegalArgumentException e) {
             model.addAttribute("step", 3);
-            model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto());
+            model.addAttribute("step1Dto", new RegisterStep1Dto());
             model.addAttribute("errorMessage", e.getMessage());
             return "auth/register";
         }
@@ -262,7 +269,7 @@ public class AuthController {
         }
 
         if (!model.containsAttribute("updateRequest")) {
-            com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto updateRequest = new com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto();
+            FirstLoginUpdateRequestDto updateRequest = new FirstLoginUpdateRequestDto();
             userOpt.ifPresent(u -> updateRequest.setFullName(u.getFullName()));
             model.addAttribute("updateRequest", updateRequest);
         }
@@ -272,7 +279,7 @@ public class AuthController {
     // Xu ly cap nhat thong tin hoac bo qua
     @PostMapping("/auth/first-login-update")
     public String processFirstLoginUpdate(Authentication authentication,
-                                          @ModelAttribute("updateRequest") com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto dto,
+                                          @ModelAttribute("updateRequest") FirstLoginUpdateRequestDto dto,
                                           BindingResult bindingResult,
                                           @RequestParam(required = false) String action,
                                           RedirectAttributes redirectAttributes,
@@ -292,8 +299,8 @@ public class AuthController {
         }
 
         // Run validation manually
-        java.util.Set<jakarta.validation.ConstraintViolation<com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto>> violations = validator.validate(dto);
-        for (jakarta.validation.ConstraintViolation<com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto> violation : violations) {
+        java.util.Set<jakarta.validation.ConstraintViolation<FirstLoginUpdateRequestDto>> violations = validator.validate(dto);
+        for (jakarta.validation.ConstraintViolation<FirstLoginUpdateRequestDto> violation : violations) {
             String propertyPath = violation.getPropertyPath().toString();
             String message = violation.getMessage();
             bindingResult.rejectValue(propertyPath, "invalid", message);
@@ -315,7 +322,7 @@ public class AuthController {
         // Validate BHYT uniqueness
         String insuranceNumber = dto.getInsuranceNumber();
         if (insuranceNumber != null && !insuranceNumber.isBlank()) {
-            Optional<com.ptit.smart_healthcare_platform.model.entity.PatientProfile> existingOpt = 
+            Optional<PatientProfile> existingOpt = 
                 patientProfileRepository.findByInsuranceNumber(insuranceNumber);
             if (existingOpt.isPresent() && !existingOpt.get().getId().equals(user.getId())) {
                 bindingResult.rejectValue("insuranceNumber", "duplicate", "Số thẻ BHYT đã được sử dụng trong hệ thống");
@@ -345,7 +352,7 @@ public class AuthController {
         userRepository.save(user);
 
         // Cap nhat ho so benh nhan mac danh (SELF)
-        Optional<Patient> selfPatientOpt = patientRepository.findByUserIdAndRelation(user.getId(), PatientRelation.SELF);
+        Optional<Patient> selfPatientOpt = patientRepository.findByUserIdAndRelationAndIsDeletedFalse(user.getId(), PatientRelation.SELF);
         if (selfPatientOpt.isPresent()) {
             Patient self = selfPatientOpt.get();
             self.setFullName(dto.getFullName());
@@ -360,15 +367,15 @@ public class AuthController {
             }
 
             // Cap nhat PatientProfile (BHYT va cac gia tri default neu chua co)
-            com.ptit.smart_healthcare_platform.model.entity.PatientProfile profile = self.getPatientProfile();
+            PatientProfile profile = self.getPatientProfile();
             if (profile == null) {
-                profile = new com.ptit.smart_healthcare_platform.model.entity.PatientProfile();
+                profile = new PatientProfile();
                 profile.setPatient(self);
                 profile.setCreatedBy(phoneNumber);
                 profile.setCreatedAt(LocalDateTime.now());
                 profile.setHeight(java.math.BigDecimal.ZERO);
                 profile.setWeight(java.math.BigDecimal.ZERO);
-                profile.setBloodType(com.ptit.smart_healthcare_platform.model.enums.BloodType.UNKNOWN);
+                profile.setBloodType(BloodType.UNKNOWN);
                 self.setPatientProfile(profile);
             } else {
                 profile.setUpdatedBy(phoneNumber);
@@ -393,18 +400,18 @@ public class AuthController {
         session.removeAttribute("forgot_otp_verified");
 
         model.addAttribute("step", 1);
-        model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordStep1Dto());
-        model.addAttribute("resetDto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordResetDto()); // Tranh loi Thymeleaf
+        model.addAttribute("step1Dto", new ForgotPasswordStep1Dto());
+        model.addAttribute("resetDto", new ForgotPasswordResetDto()); // Tranh loi Thymeleaf
         return "auth/forgot-password";
     }
 
     @PostMapping("/forgot-password/step1")
-    public String forgotStep1(@Valid @ModelAttribute("step1Dto") com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordStep1Dto dto,
+    public String forgotStep1(@Valid @ModelAttribute("step1Dto") ForgotPasswordStep1Dto dto,
                               BindingResult bindingResult,
                               Model model,
                               HttpSession session) {
         // Tranh loi Thymeleaf
-        model.addAttribute("resetDto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordResetDto());
+        model.addAttribute("resetDto", new ForgotPasswordResetDto());
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("step", 1);
@@ -434,8 +441,8 @@ public class AuthController {
                               Model model,
                               HttpSession session) {
         // Tranh loi Thymeleaf
-        model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordStep1Dto());
-        model.addAttribute("resetDto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordResetDto());
+        model.addAttribute("step1Dto", new ForgotPasswordStep1Dto());
+        model.addAttribute("resetDto", new ForgotPasswordResetDto());
 
         String sessionPhone = (String) session.getAttribute("forgot_phone");
         String sessionOtp = (String) session.getAttribute("forgot_otp");
@@ -468,17 +475,17 @@ public class AuthController {
         session.setAttribute("forgot_otp_verified", true);
 
         model.addAttribute("step", 3);
-        model.addAttribute("resetDto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordResetDto());
+        model.addAttribute("resetDto", new ForgotPasswordResetDto());
         return "auth/forgot-password";
     }
 
     @PostMapping("/forgot-password/step3")
-    public String forgotStep3(@Valid @ModelAttribute("resetDto") com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordResetDto dto,
+    public String forgotStep3(@Valid @ModelAttribute("resetDto") ForgotPasswordResetDto dto,
                               BindingResult bindingResult,
                               Model model,
                               HttpSession session) {
         // Tranh loi Thymeleaf
-        model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.ForgotPasswordStep1Dto());
+        model.addAttribute("step1Dto", new ForgotPasswordStep1Dto());
 
         String sessionPhone = (String) session.getAttribute("forgot_phone");
         Boolean otpVerified = (Boolean) session.getAttribute("forgot_otp_verified");

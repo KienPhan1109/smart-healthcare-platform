@@ -21,9 +21,31 @@
             </div>
 
             <div class="patient-card">
-                <div class="patient-card-header">
-                    Danh Sách Cuộc Hẹn Y Tế
+                <div class="patient-card-header d-flex justify-content-between align-items-center">
+                    <span>Danh Sách Cuộc Hẹn Y Tế</span>
                 </div>
+                
+                <!-- BỘ TAB LỌC -->
+                <div class="px-4 pt-3 pb-0 border-bottom">
+                    <ul class="nav nav-pills custom-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${currentStatus == 'ALL'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='ALL')}">Tất cả</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${currentStatus == 'UPCOMING'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='UPCOMING')}">Sắp tới</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${currentStatus == 'UNPAID'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='UNPAID')}">Chờ thanh toán</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${currentStatus == 'COMPLETED'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='COMPLETED')}">Hoàn thành</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" th:classappend="${currentStatus == 'CANCELLED'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='CANCELLED')}">Đã hủy</a>
+                        </li>
+                    </ul>
+                </div>
+
                 <div class="patient-card-body p-0">
                     <div class="premium-table-container">
                         <table class="premium-table">
@@ -39,57 +61,74 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr th:each="appt : ${appointments}">
-                                <td class="fw-bold text-primary" th:text="${#temporals.format(appt.appointmentTime, 'HH:mm - dd/MM/yyyy')}">14:00 - 25/12</td>
-                                <td>
-                                    <div class="fw-bold" th:text="${appt.patient.fullName}">Nguyễn Văn A</div>
-                                    <div class="small text-muted" th:text="${appt.patient.relation.name() == 'SELF' ? 'Bản thân' : 'Người thân'}">Bản thân</div>
-                                </td>
-                                <td>
-                                    <div class="fw-bold" th:text="${appt.doctor.academicRank != null ? appt.doctor.academicRank + ' ' + appt.doctor.user.fullName : 'BS. ' + appt.doctor.user.fullName}">BS. Trần B</div>
-                                </td>
-                                <td th:text="${appt.doctor.specialty.name}">Khoa Nội</td>
-                                <td>
-                                    <span class="status-badge" 
-                                          th:classappend="${appt.status.name() == 'PENDING' ? 'status-pending' : 
-                                                           (appt.status.name() == 'COMPLETED' ? 'status-completed' : 
-                                                           (appt.status.name() == 'CANCELLED' ? 'status-cancelled' : 'status-active'))}"
-                                          th:text="${appt.status.name() == 'PENDING' ? 'Chờ duyệt' : 
-                                                  (appt.status.name() == 'WAITING_FOR_LAB' ? 'Chờ xét nghiệm' : 
-                                                  (appt.status.name() == 'LAB_COMPLETED' ? 'Có KQ XN' : 
-                                                  (appt.status.name() == 'READY_FOR_REEXAM' ? 'Chờ tái khám' : 
-                                                  (appt.status.name() == 'COMPLETED' ? 'Hoàn thành' : 'Đã hủy'))))}">
-                                    </span>
-                                </td>
-                                <td>
-                                    <th:block th:if="${appt.status.name() == 'PENDING'}">
-                                        <a th:href="@{/patient/appointments/pay/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-primary">Kiểm tra</a>
-                                    </th:block>
-                                    <th:block th:if="${appt.status.name() != 'PENDING' && appt.status.name() != 'CANCELLED'}">
-                                        <span class="status-badge status-paid"><i class="bi bi-check-circle"></i> Đã đóng phí</span>
-                                    </th:block>
-                                    <th:block th:if="${appt.status.name() == 'CANCELLED'}">
-                                        <span class="status-badge status-cancelled">Đã hủy</span>
-                                    </th:block>
-                                </td>
-                                <td>
-                                    <div th:if="${appt.status.name() == 'PENDING' || appt.status.name() == 'WAITING_FOR_LAB'}">
-                                        <form th:action="@{/patient/appointments/cancel/{id}(id=${appt.id})}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch khám này?');">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Hủy Lịch</button>
-                                        </form>
-                                    </div>
-                                    <div th:if="${appt.status.name() == 'CANCELLED' && appt.cancelReason != null}" class="small text-danger" th:text="${appt.cancelReason}">
-                                        Lý do hủy
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr th:if="${#lists.isEmpty(appointments)}">
-                                <td colspan="7" class="text-center py-5 text-muted">
-                                    <i class="bi bi-calendar-x fs-2 mb-3"></i><br>
-                                    Bạn chưa có lịch hẹn khám nào.<br>
-                                    <a th:href="@{/patient/appointments/book}" class="btn-premium mt-3">Đặt Lịch Ngay</a>
-                                </td>
-                            </tr>
+                             <tr th:each="appt : ${appointments}" class="appointment-row" style="cursor: pointer;" th:onclick="'window.location.href=\'' + @{/patient/appointments/detail/{id}(id=${appt.id})} + '\''">
+                                 <td class="fw-bold text-primary" th:text="${#temporals.format(appt.appointmentTime, 'HH:mm - dd/MM/yyyy')}">14:00 - 25/12</td>
+                                 <td>
+                                     <div class="fw-bold" th:text="${appt.patient.fullName}">Nguyễn Văn A</div>
+                                     <div class="small text-muted" th:text="${appt.patient.relation.name() == 'SELF' ? 'Bản thân' : 'Người thân'}">Bản thân</div>
+                                 </td>
+                                 <td>
+                                     <div class="fw-bold" th:text="${appt.doctor.academicRank != null ? appt.doctor.academicRank + ' ' + appt.doctor.user.fullName : 'BS. ' + appt.doctor.user.fullName}">BS. Trần B</div>
+                                     <div class="small text-muted" th:text="'SĐT: ' + ${appt.doctor.user.phoneNumber}">SĐT</div>
+                                 </td>
+                                 <td th:text="${appt.doctor.specialty.name}">Khoa Nội</td>
+                                 <td>
+                                     <!-- Hết hạn -->
+                                     <span th:if="${appt.isExpired()}" class="status-badge status-expired">Hết hạn</span>
+
+                                     <!-- Đã hủy (không phải hết hạn) -->
+                                     <span th:if="${appt.status.name() == 'CANCELLED' && !appt.isExpired()}" class="status-badge status-cancelled">Đã hủy</span>
+
+                                     <!-- Trạng thái khác -->
+                                     <th:block th:if="${appt.status.name() != 'CANCELLED' && !appt.isExpired()}">
+                                          <span th:if="${appt.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán phí khám</span>
+                                          <span th:if="${appt.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
+                                          <span th:if="${appt.status.name() == 'EXAMINING'}" class="badge bg-info px-2 py-1 rounded-pill">Đang khám bệnh</span>
+                                          <span th:if="${appt.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}" class="badge bg-warning text-dark px-2 py-1 rounded-pill">Chờ thanh toán đơn thuốc</span>
+                                          <span th:if="${appt.status.name() == 'COMPLETED'}" class="status-badge status-completed">Thành công</span>
+                                      </th:block>
+                                  </td>
+                                  <td>
+                                      <th:block th:if="${appt.isExpired() || (appt.status.name() == 'CANCELLED' && !appt.isExamFeePaid())}">
+                                          <span class="status-badge status-expired">Đã đóng</span>
+                                      </th:block>
+                                      
+                                      <!-- Phí khám -->
+                                      <th:block th:if="${appt.status.name() == 'PENDING' && !appt.isExpired()}">
+                                          <a th:href="@{/patient/appointments/pay/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-primary fw-bold" style="border-radius: 20px; padding: 4px 12px;" onclick="event.stopPropagation();"><i class="bi bi-credit-card me-1"></i> Trả phí khám</a>
+                                      </th:block>
+ 
+                                      <!-- Tiền thuốc -->
+                                      <th:block th:if="${appt.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}">
+                                          <a th:href="@{/patient/appointments/pay-drug/{id}(id=${appt.id})}" class="btn btn-sm btn-outline-danger fw-bold" style="border-radius: 20px; padding: 4px 12px;" onclick="event.stopPropagation();"><i class="bi bi-cart-check me-1"></i> Mua đơn thuốc</a>
+                                      </th:block>
+ 
+                                      <!-- Đã thanh toán xong mọi thứ (hoặc không có tiền thuốc) -->
+                                      <th:block th:if="${appt.status.name() == 'CONFIRMED' || appt.status.name() == 'EXAMINING'}">
+                                          <span class="status-badge status-paid"><i class="bi bi-check-circle me-1"></i> Đã trả phí khám</span>
+                                      </th:block>
+                                      <th:block th:if="${appt.status.name() == 'COMPLETED'}">
+                                          <span class="status-badge status-paid"><i class="bi bi-check-circle me-1"></i> Hoàn tất thanh toán</span>
+                                      </th:block>
+                                 </td>
+                                 <td>
+                                     <!-- Nút Hủy Lịch -->
+                                     <div th:if="${appt.isCancelable()}">
+                                         <a th:href="@{/patient/appointments/cancel/{id}(id=${appt.id})}" 
+                                            class="btn btn-sm btn-outline-danger fw-bold" 
+                                            style="border-radius: 20px; padding: 4px 12px;"
+                                            onclick="event.stopPropagation();">
+                                             <i class="bi bi-x-circle me-1"></i> Hủy Lịch
+                                         </a>
+                                 </td>
+                             </tr>
+                             <tr th:if="${#lists.isEmpty(appointments)}">
+                                 <td colspan="7" class="text-center py-5 text-muted">
+                                     <i class="bi bi-calendar-x fs-2 mb-3"></i><br>
+                                     Bạn chưa có lịch hẹn khám nào.<br>
+                                     <a th:href="@{/patient/appointments/book}" class="btn-premium mt-3">Đặt Lịch Ngay</a>
+                                 </td>
+                             </tr>
                             </tbody>
                         </table>
                     </div>

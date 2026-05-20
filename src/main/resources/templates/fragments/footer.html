@@ -2,7 +2,20 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <body>
     <footer th:fragment="footer" class="app-footer">
-        &copy; 2026 Smart Healthcare Platform - PTIT. All rights reserved.
+        <div class="footer-container">
+            <div class="footer-left">
+                <span class="footer-copyright">&copy; 2026 <strong>Smart Healthcare Platform</strong></span>
+                <span class="footer-divider-dot">•</span>
+                <span class="footer-subtext">Hệ thống Quản lý Y tế Số Toàn diện - PTIT</span>
+            </div>
+            <div class="footer-right">
+                <a href="#" class="footer-link"><i class="bi bi-book-half me-1"></i> Hướng dẫn</a>
+                <span class="footer-divider-dot">•</span>
+                <a href="#" class="footer-link"><i class="bi bi-shield-lock-fill me-1"></i> Điều khoản</a>
+                <span class="footer-divider-dot">•</span>
+                <a href="tel:19001234" class="footer-link-highlight"><i class="bi bi-telephone-fill me-1"></i> Hỗ trợ: 1900 1234</a>
+            </div>
+        </div>
     </footer>
 </body>
 </html>

@@ -61,5 +61,53 @@ public class PaymentSimulationService {
         payment.setUpdatedBy(actor);
         payment.setUpdatedAt(LocalDateTime.now());
         paymentRepository.save(payment);
+
+        // Update appointment status to CONFIRMED
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+        appointment.setUpdatedBy(actor);
+        appointment.setUpdatedAt(LocalDateTime.now());
+        appointmentRepository.save(appointment);
+    }
+
+    @Transactional(readOnly = true)
+    public Payment getDrugFeePayment(Long appointmentId, Long userId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lịch hẹn"));
+
+        if (!appointment.getPatient().getUser().getId().equals(userId)) {
+            throw new SecurityException("Bạn không có quyền xem thông tin thanh toán này");
+        }
+
+        return paymentRepository.findByAppointmentIdAndTypeAndIsDeletedFalse(appointmentId, PaymentType.PHARMACY_FEE)
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy hóa đơn tiền thuốc"));
+    }
+
+    @Transactional
+    public void processSimulatedDrugPayment(Long appointmentId, String method, Long userId, String actor) {
+        Payment payment = getDrugFeePayment(appointmentId, userId);
+        Appointment appointment = payment.getAppointment();
+
+        if (payment.getStatus() == PaymentStatus.PAID) {
+            throw new IllegalStateException("Hóa đơn thuốc này đã được thanh toán");
+        }
+
+        if (appointment.getStatus() != AppointmentStatus.WAITING_FOR_DRUG_PAYMENT) {
+            throw new IllegalStateException("Trạng thái lịch hẹn không hợp lệ để thanh toán thuốc");
+        }
+
+        // Update payment
+        payment.setStatus(PaymentStatus.PAID);
+        payment.setPaidAt(LocalDateTime.now());
+        payment.setPaymentMethod(method);
+        payment.setTransactionId("DRUG-" + UUID.randomUUID().toString());
+        payment.setUpdatedBy(actor);
+        payment.setUpdatedAt(LocalDateTime.now());
+        paymentRepository.save(payment);
+
+        // Update appointment status to COMPLETED
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        appointment.setUpdatedBy(actor);
+        appointment.setUpdatedAt(LocalDateTime.now());
+        appointmentRepository.save(appointment);
     }
 }

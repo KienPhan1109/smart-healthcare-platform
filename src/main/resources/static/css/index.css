@@ -232,10 +232,28 @@ a:hover {
     color: rgba(255, 255, 255, 0.5);
 }
 
+.sidebar-footer-gear {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 18px;
+    margin-left: auto;
+    transition: var(--hospital-transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--hospital-radius-full);
+}
+
+.sidebar-footer-gear:hover {
+    color: var(--hospital-text-white);
+    background: rgba(255, 255, 255, 0.12);
+}
+
 /* === HEADER === */
 .app-header {
     background: var(--hospital-white);
-    padding: 12px 24px;
+    padding: 16px 28px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -246,43 +264,175 @@ a:hover {
     z-index: 100;
 }
 
-.header-title {
+.header-greeting {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-greeting-title {
     font-size: 18px;
     font-weight: 700;
     color: var(--hospital-text-primary);
+    line-height: 1.3;
+}
+
+.header-greeting-subtitle {
+    font-size: 12.5px;
+    color: var(--hospital-text-muted);
+    margin-top: 2px;
 }
 
 .header-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
 }
 
-.btn-logout {
-    padding: 7px 16px;
+.header-user-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-user-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--hospital-radius-full);
+    background: var(--hospital-primary-gradient);
+    color: var(--hospital-text-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+}
+
+.header-user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-user-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--hospital-text-primary);
+    line-height: 1.3;
+}
+
+.header-user-role {
+    font-size: 11.5px;
+    color: var(--hospital-text-muted);
+}
+
+.header-divider {
+    width: 1px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.btn-header-profile {
+    padding: 8px 18px;
     background: transparent;
-    color: var(--hospital-danger);
-    border: 1px solid var(--hospital-danger);
+    color: var(--hospital-primary);
+    border: 1.5px solid var(--hospital-primary);
     border-radius: var(--hospital-radius-sm);
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     transition: var(--hospital-transition);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
 }
 
-.btn-logout:hover {
-    background: var(--hospital-danger);
+.btn-header-profile:hover {
+    background: var(--hospital-primary);
     color: var(--hospital-text-white);
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.25);
+}
+
+.btn-logout-sidebar {
+    background: rgba(220, 53, 69, 0.12);
+    color: #ff6b6b;
+    border: none;
+    border-radius: var(--hospital-radius-full);
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--hospital-transition);
+    font-size: 16px;
+}
+
+.btn-logout-sidebar:hover {
+    background: #dc3545;
+    color: var(--hospital-text-white);
+    box-shadow: 0 0 10px rgba(220, 53, 69, 0.45);
 }
 
 /* === FOOTER === */
 .app-footer {
     background: var(--hospital-white);
-    padding: 14px 24px;
-    text-align: center;
-    font-size: 12px;
-    color: var(--hospital-text-muted);
+    padding: 16px 28px;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
+    font-size: 13px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.footer-left {
+    color: var(--hospital-text-secondary);
+}
+
+.footer-copyright {
+    color: var(--hospital-text-primary);
+}
+
+.footer-divider-dot {
+    margin: 0 8px;
+    color: var(--hospital-text-muted);
+}
+
+.footer-subtext {
+    font-size: 12.5px;
+    color: var(--hospital-text-muted);
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.footer-link {
+    color: var(--hospital-text-secondary);
+    transition: var(--hospital-transition);
+    font-weight: 500;
+}
+
+.footer-link:hover {
+    color: var(--hospital-primary);
+}
+
+.footer-link-highlight {
+    color: var(--hospital-primary);
+    font-weight: 600;
+    transition: var(--hospital-transition);
+}
+
+.footer-link-highlight:hover {
+    color: var(--hospital-primary-dark);
 }
 
 /* === CARD COMPONENTS === */

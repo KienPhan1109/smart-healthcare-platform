@@ -55,10 +55,6 @@ public class Payment {
     @Column(name = "paid_at")
     private LocalDateTime paidAt;
 
-    // Thu ngân xác nhận thu tiền (nếu là tiền mặt)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cashier_id")
-    private User cashier;
 
     // Xóa mềm hóa đơn (trong trường hợp hủy sai lệch)
     @Column(name = "is_deleted", nullable = false)

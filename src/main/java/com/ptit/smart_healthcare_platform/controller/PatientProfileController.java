@@ -7,6 +7,7 @@ import com.ptit.smart_healthcare_platform.model.entity.PatientProfile;
 import com.ptit.smart_healthcare_platform.model.entity.User;
 import com.ptit.smart_healthcare_platform.repository.PatientProfileRepository;
 import com.ptit.smart_healthcare_platform.repository.UserRepository;
+import com.ptit.smart_healthcare_platform.repository.AppointmentRepository;
 import com.ptit.smart_healthcare_platform.service.PatientProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class PatientProfileController {
     private final PatientProfileService patientProfileService;
     private final PatientProfileRepository patientProfileRepository;
     private final UserRepository userRepository;
+    private final AppointmentRepository appointmentRepository;
 
     private User getLoggedInUser(Authentication authentication) {
         String phoneNumber = authentication.getName();
@@ -60,9 +62,29 @@ public class PatientProfileController {
             redirectAttributes.addFlashAttribute("successMessage", "Thêm hồ sơ thành công!");
             return "redirect:/patient/profiles";
         } catch (Exception e) {
-            bindingResult.reject("globalError", e.getMessage());
+            bindingResult.reject("globalError", getFriendlyErrorMessage(e));
             return "patient/profiles/create";
         }
+    }
+
+    private String getFriendlyErrorMessage(Exception e) {
+        String msg = e.getMessage();
+        if (msg == null) {
+            return "Đã xảy ra lỗi không xác định.";
+        }
+        
+        // Phát hiện lỗi trùng lặp ràng buộc duy nhất (Unique Constraint) trong DB
+        if (msg.contains("Duplicate entry") || msg.contains("ConstraintViolationException") || msg.contains("constraint")) {
+            if (msg.contains("insurance_number") || msg.contains("UKok149i4y18ly3sy0jydbiliq4")) {
+                return "Số thẻ Bảo hiểm y tế (BHYT) đã được sử dụng cho một hồ sơ khác trong hệ thống.";
+            }
+            if (msg.contains("identity_card")) {
+                return "Số CCCD/CMND đã được đăng ký cho một hồ sơ khác trong hệ thống.";
+            }
+            return "Dữ liệu nhập bị trùng lặp với một hồ sơ khác đã tồn tại trong hệ thống.";
+        }
+        
+        return msg;
     }
 
     @GetMapping("/edit/{id}")
@@ -120,8 +142,30 @@ public class PatientProfileController {
                 Patient patient = patientProfileService.getProfileByIdAndUser(id, user.getId());
                 model.addAttribute("patient", patient);
             } catch (Exception ignored) {}
-            bindingResult.reject("globalError", e.getMessage());
+            bindingResult.reject("globalError", getFriendlyErrorMessage(e));
             return "patient/profiles/edit";
+        }
+    }
+
+    @GetMapping("/delete/{id}")
+    public String showDeletePage(@PathVariable Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
+        try {
+            User user = getLoggedInUser(authentication);
+            Patient patient = patientProfileService.getProfileByIdAndUser(id, user.getId());
+            
+            model.addAttribute("patient", patient);
+            
+            // Check for errors to display them gracefully
+            if (patient.getRelation() == com.ptit.smart_healthcare_platform.model.enums.PatientRelation.SELF) {
+                model.addAttribute("deleteError", "Không được phép xóa hồ sơ của bản thân (Tài khoản chính).");
+            } else if (appointmentRepository.existsByPatientIdAndIsDeletedFalse(id)) {
+                model.addAttribute("deleteError", "Không thể xóa hồ sơ bệnh nhân này vì đã có lịch hẹn khám trên hệ thống.");
+            }
+            
+            return "patient/profiles/delete";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/patient/profiles";
         }
     }
 

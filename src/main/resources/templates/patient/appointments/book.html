@@ -8,9 +8,7 @@
 <body>
     <div layout:fragment="content">
         <link rel="stylesheet" th:href="@{/css/patient.css}">
-        <div class="container py-4">
-            <div class="row justify-content-center">
-                <div class="col-md-10">
+        <div class="container-fluid py-4">
                     <div class="patient-card">
                         <div class="patient-card-header">
                             <i class="bi bi-calendar-plus me-2"></i> Đặt Lịch Khám Trực Tuyến
@@ -19,7 +17,30 @@
                             
                             <div th:if="${errorMessage}" class="alert-message alert-danger mb-4" th:text="${errorMessage}"></div>
 
-                            <!-- Form chọn chuyên khoa -->
+                            <!-- ==================== THANH TIẾN TRÌNH ==================== -->
+                            <div class="booking-step-indicator mb-4">
+                                <div class="step active">
+                                    <span class="step-number">1</span>
+                                    <span class="step-label">Chuyên khoa</span>
+                                </div>
+                                <div class="step-line" th:classappend="${selectedSpecialtyId != null ? 'active' : ''}"></div>
+                                <div class="step" th:classappend="${selectedSpecialtyId != null ? 'active' : ''}">
+                                    <span class="step-number">2</span>
+                                    <span class="step-label">Bác sĩ</span>
+                                </div>
+                                <div class="step-line" th:classappend="${selectedDoctorId != null ? 'active' : ''}"></div>
+                                <div class="step" th:classappend="${selectedDoctorId != null ? 'active' : ''}">
+                                    <span class="step-number">3</span>
+                                    <span class="step-label">Ngày khám</span>
+                                </div>
+                                <div class="step-line" th:classappend="${selectedDate != null ? 'active' : ''}"></div>
+                                <div class="step" th:classappend="${selectedDate != null ? 'active' : ''}">
+                                    <span class="step-number">4</span>
+                                    <span class="step-label">Giờ khám</span>
+                                </div>
+                            </div>
+
+                            <!-- ==================== BƯỚC 1: CHỌN CHUYÊN KHOA ==================== -->
                             <form th:action="@{/patient/appointments/book}" method="get" id="specialtyForm" class="mb-4 pb-4 border-bottom">
                                 <div class="premium-form-group">
                                     <label class="premium-label fw-bold" style="color: var(--primary-blue)">1. Chọn Chuyên Khoa</label>
@@ -33,66 +54,160 @@
                                 </div>
                             </form>
 
-                            <!-- Form đặt lịch chính -->
-                            <form th:if="${selectedSpecialtyId != null}" th:action="@{/patient/appointments/book(specialtyId=${selectedSpecialtyId})}" th:object="${dto}" method="post">
-                                
+                            <!-- ==================== BƯỚC 2: CHỌN BÁC SĨ ==================== -->
+                            <div th:if="${selectedSpecialtyId != null}" class="mb-4 pb-4 border-bottom">
                                 <h5 class="fw-bold mb-3 mt-2" style="color: var(--primary-blue)">2. Chọn Bác Sĩ</h5>
                                 <div th:if="${#lists.isEmpty(doctors)}" class="text-muted fst-italic mb-4">
                                     Hiện tại không có bác sĩ nào đang hoạt động trong chuyên khoa này.
                                 </div>
                                 
-                                <div class="row mb-4">
-                                    <div class="col-md-6" th:each="doc : ${doctors}">
-                                        <label class="doctor-select-card w-100">
-                                            <input type="radio" th:field="*{doctorId}" th:value="${doc.id}">
-                                            <div class="doctor-info">
-                                                <div class="doctor-name" th:text="${doc.academicRank != null ? doc.academicRank + ' ' + doc.user.fullName : 'BS. ' + doc.user.fullName}">BS. Nguyễn Văn A</div>
-                                                <div class="text-muted small mb-1" th:text="${doc.experienceYears + ' năm kinh nghiệm'}">5 năm kinh nghiệm</div>
-                                                <div class="doctor-fee" th:text="${#numbers.formatDecimal(doc.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">150,000 VNĐ</div>
+                                <form th:action="@{/patient/appointments/book}" method="get" id="doctorForm">
+                                    <input type="hidden" name="specialtyId" th:value="${selectedSpecialtyId}">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6" th:each="doc : ${doctors}">
+                                            <label class="doctor-select-card w-100">
+                                                <input type="radio" name="doctorId" th:value="${doc.id}" 
+                                                       th:checked="${doc.id == selectedDoctorId}"
+                                                       onchange="document.getElementById('doctorForm').submit()">
+                                                <div class="doctor-info">
+                                                    <div class="doctor-name" th:text="${doc.academicRank != null ? doc.academicRank + ' ' + doc.user.fullName : 'BS. ' + doc.user.fullName}">BS. Nguyễn Văn A</div>
+                                                    <div class="text-muted small mb-1">
+                                                        <i class="bi bi-telephone-fill me-1"></i> Số điện thoại: <strong th:text="${doc.user.phoneNumber}"></strong>
+                                                    </div>
+                                                    <div class="text-muted small mb-1" th:text="${doc.experienceYears + ' năm kinh nghiệm'}">5 năm kinh nghiệm</div>
+                                                    <div class="doctor-fee" th:text="${#numbers.formatDecimal(doc.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">150,000 VNĐ</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- ==================== BƯỚC 3: CHỌN NGÀY KHÁM ==================== -->
+                            <div th:if="${selectedDoctor != null}" class="mb-4 pb-4 border-bottom">
+                                <!-- Card tóm tắt bác sĩ -->
+                                <div class="doctor-summary-card mb-4">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="doctor-avatar">
+                                            <i class="bi bi-person-badge"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-5" th:text="${selectedDoctor.academicRank != null ? selectedDoctor.academicRank + ' ' + selectedDoctor.user.fullName : 'BS. ' + selectedDoctor.user.fullName}">BS. Nguyễn Văn A</div>
+                                            <div class="text-muted" th:text="${selectedDoctor.specialty.name}">Khoa Nội</div>
+                                            <div class="text-primary fw-bold" th:text="'Phí khám: ' + ${#numbers.formatDecimal(selectedDoctor.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">Phí khám: 200,000 VNĐ</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <h5 class="fw-bold mb-3" style="color: var(--primary-blue)">3. Chọn Ngày Khám</h5>
+                                <form th:action="@{/patient/appointments/book}" method="get" id="dateForm">
+                                    <input type="hidden" name="specialtyId" th:value="${selectedSpecialtyId}">
+                                    <input type="hidden" name="doctorId" th:value="${selectedDoctorId}">
+                                    <div class="date-selector-grid">
+                                        <th:block th:each="dateEntry : ${availableDates}">
+                                            <label class="date-select-card">
+                                                <input type="radio" name="date" th:value="${dateEntry[0]}" 
+                                                       th:checked="${dateEntry[0] == selectedDate}"
+                                                       onchange="document.getElementById('dateForm').submit()">
+                                                <span class="date-display" th:text="${dateEntry[1]}">20/05/2026 (Thứ Tư)</span>
+                                            </label>
+                                        </th:block>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- ==================== BƯỚC 4: CHỌN SLOT GIỜ & XÁC NHẬN ==================== -->
+                            <div th:if="${selectedDate != null}">
+                                <h5 class="fw-bold mb-3" style="color: var(--primary-blue)">
+                                    4. Chọn Khung Giờ Khám — 
+                                    <span class="text-muted fw-normal" th:text="${selectedDateDisplay}">20/05/2026 (Thứ Tư)</span>
+                                </h5>
+
+                                <div th:if="${#lists.isEmpty(availableSlots)}" class="text-center py-5 text-muted">
+                                    <i class="bi bi-calendar-x fs-1 mb-3 d-block"></i>
+                                    Bác sĩ đã kín lịch trong ngày này. Vui lòng chọn ngày khác.
+                                </div>
+
+                                <form th:if="${!#lists.isEmpty(availableSlots)}" 
+                                      th:action="@{/patient/appointments/book(specialtyId=${selectedSpecialtyId})}" 
+                                      th:object="${dto}" method="post">
+                                    
+                                    <!-- Hidden fields giữ trạng thái -->
+                                    <input type="hidden" th:field="*{doctorId}">
+                                    <input type="hidden" th:field="*{appointmentDate}">
+
+                                    <!-- === Ca sáng === -->
+                                    <div class="session-label">
+                                        <i class="bi bi-sunrise me-2"></i> Ca Sáng (08:00 - 11:30)
+                                    </div>
+                                    <div class="time-slot-grid mb-4">
+                                        <th:block th:each="slot : ${allSlots}">
+                                            <th:block th:if="${slot.morning}">
+                                                <label class="time-slot-card" 
+                                                       th:classappend="${#lists.contains(availableSlots, slot) ? '' : 'disabled'}">
+                                                    <input type="radio" th:field="*{timeSlot}" th:value="${slot.name()}"
+                                                           th:disabled="${!#lists.contains(availableSlots, slot)}">
+                                                    <span class="slot-time" th:text="${slot.displayName}">08:00 - 08:30</span>
+                                                    <span th:if="${!#lists.contains(availableSlots, slot)}" class="slot-status-booked">Đã đặt</span>
+                                                    <span th:if="${#lists.contains(availableSlots, slot)}" class="slot-status-free">Còn trống</span>
+                                                </label>
+                                            </th:block>
+                                        </th:block>
+                                    </div>
+
+                                    <!-- === Ca chiều === -->
+                                    <div class="session-label">
+                                        <i class="bi bi-sunset me-2"></i> Ca Chiều (13:30 - 16:30)
+                                    </div>
+                                    <div class="time-slot-grid mb-4">
+                                        <th:block th:each="slot : ${allSlots}">
+                                            <th:block th:if="${!slot.morning}">
+                                                <label class="time-slot-card"
+                                                       th:classappend="${#lists.contains(availableSlots, slot) ? '' : 'disabled'}">
+                                                    <input type="radio" th:field="*{timeSlot}" th:value="${slot.name()}"
+                                                           th:disabled="${!#lists.contains(availableSlots, slot)}">
+                                                    <span class="slot-time" th:text="${slot.displayName}">13:30 - 14:00</span>
+                                                    <span th:if="${!#lists.contains(availableSlots, slot)}" class="slot-status-booked">Đã đặt</span>
+                                                    <span th:if="${#lists.contains(availableSlots, slot)}" class="slot-status-free">Còn trống</span>
+                                                </label>
+                                            </th:block>
+                                        </th:block>
+                                    </div>
+
+                                    <!-- === Chọn hồ sơ & Triệu chứng === -->
+                                    <div class="row mt-4">
+                                        <div class="col-md-6">
+                                            <div class="premium-form-group">
+                                                <label class="premium-label">Chọn hồ sơ khám bệnh *</label>
+                                                <select class="premium-select" th:field="*{patientId}">
+                                                    <option value="">-- Chọn bệnh nhân --</option>
+                                                    <option th:each="prof : ${profiles}" 
+                                                            th:value="${prof.id}" 
+                                                            th:disabled="${prof.fullName == null or prof.fullName.blank or prof.dateOfBirth == null or prof.gender == null}"
+                                                            th:text="${prof.fullName + ' (' + (prof.relation == null ? 'Chưa rõ' : (prof.relation.name() == 'SELF' ? 'Bản thân' : (prof.relation.name() == 'CHILD' ? 'Con cái' : (prof.relation.name() == 'PARENT' ? 'Cha mẹ' : (prof.relation.name() == 'SPOUSE' ? 'Vợ chồng' : 'Khác'))))) + ')' + (prof.fullName == null or prof.fullName.blank or prof.dateOfBirth == null or prof.gender == null ? ' - Chưa hợp lệ' : '')}">
+                                                    </option>
+                                                </select>
+                                                <div class="error-feedback" th:if="${#fields.hasErrors('patientId')}" th:errors="*{patientId}">Lỗi chọn hồ sơ</div>
                                             </div>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <h5 class="fw-bold mb-3 mt-4" style="color: var(--primary-blue)">3. Chi Tiết Lịch Hẹn</h5>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="premium-form-group">
-                                            <label class="premium-label">Chọn hồ sơ khám bệnh *</label>
-                                            <select class="premium-select" th:field="*{patientId}">
-                                                <option value="">-- Chọn bệnh nhân --</option>
-                                                <option th:each="prof : ${profiles}" 
-                                                        th:value="${prof.id}" 
-                                                        th:disabled="${prof.fullName == null or prof.fullName.blank or prof.dateOfBirth == null or prof.gender == null}"
-                                                        th:text="${prof.fullName + ' (' + (prof.relation == null ? 'Chưa rõ' : (prof.relation.name() == 'SELF' ? 'Bản thân' : (prof.relation.name() == 'CHILD' ? 'Con cái' : (prof.relation.name() == 'PARENT' ? 'Cha mẹ' : (prof.relation.name() == 'SPOUSE' ? 'Vợ chồng' : 'Khác'))))) + ')' + (prof.fullName == null or prof.fullName.blank or prof.dateOfBirth == null or prof.gender == null ? ' - Chưa hợp lệ (Thiếu Họ tên/Ngày sinh/Giới tính)' : '')}">
-                                                </option>
-                                            </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="premium-form-group">
-                                            <label class="premium-label">Thời gian dự kiến *</label>
-                                            <input type="datetime-local" class="premium-input" th:field="*{appointmentTime}">
-                                        </div>
+
+                                    <div class="premium-form-group mt-3">
+                                        <label class="premium-label">Mô tả triệu chứng / Lý do khám *</label>
+                                        <textarea class="premium-textarea" th:field="*{symptoms}" placeholder="Mô tả chi tiết các triệu chứng bạn đang gặp phải..."></textarea>
+                                        <div class="error-feedback" th:if="${#fields.hasErrors('symptoms')}" th:errors="*{symptoms}">Lỗi triệu chứng</div>
                                     </div>
-                                </div>
 
-                                <div class="premium-form-group">
-                                    <label class="premium-label">Mô tả triệu chứng / Lý do khám *</label>
-                                    <textarea class="premium-textarea" th:field="*{symptoms}" placeholder="Mô tả chi tiết các triệu chứng bạn đang gặp phải..."></textarea>
-                                </div>
+                                    <div class="d-flex justify-content-end mt-4">
+                                        <button type="submit" class="btn-premium px-5 py-2">
+                                            Tiến hành đặt lịch <i class="bi bi-arrow-right ms-2"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
 
-                                <div class="d-flex justify-content-end mt-4">
-                                    <button type="submit" class="btn-premium px-5 py-2">
-                                        Tiến hành đặt lịch <i class="bi bi-arrow-right ms-2"></i>
-                                    </button>
-                                </div>
-                            </form>
-                            
                         </div>
                     </div>
-                </div>
-            </div>
         </div>
     </div>
 </body>

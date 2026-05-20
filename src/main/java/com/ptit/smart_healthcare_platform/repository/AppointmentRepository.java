@@ -13,9 +13,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     
     List<Appointment> findAllByPatientUserIdAndIsDeletedFalseOrderByAppointmentTimeDesc(Long userId);
     
+    List<Appointment> findAllByPatientUserIdOrderByAppointmentTimeDesc(Long userId);
+    
     boolean existsByDoctorIdAndAppointmentTimeAndIsDeletedFalse(Long doctorId, LocalDateTime appointmentTime);
     
     List<Appointment> findAllByStatusAndCreatedAtBeforeAndIsDeletedFalse(AppointmentStatus status, LocalDateTime timeLimit);
     
     boolean existsByPatientIdAndIsDeletedFalse(Long patientId);
+
+    // Lấy tất cả lịch hẹn chưa hủy của bác sĩ trong một ngày cụ thể
+    List<Appointment> findAllByDoctorIdAndAppointmentTimeBetweenAndIsDeletedFalse(
+            Long doctorId, LocalDateTime startOfDay, LocalDateTime endOfDay);
+
+    List<Appointment> findAllByDoctorIdAndIsDeletedFalseOrderByAppointmentTimeAsc(Long doctorId);
 }

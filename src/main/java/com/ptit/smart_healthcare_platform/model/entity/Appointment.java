@@ -1,5 +1,8 @@
 package com.ptit.smart_healthcare_platform.model.entity;
 
+import com.ptit.smart_healthcare_platform.model.enums.PaymentStatus;
+import com.ptit.smart_healthcare_platform.model.enums.PaymentType;
+
 import com.ptit.smart_healthcare_platform.model.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,11 +11,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "appointments",
-        uniqueConstraints = {
-                // CORE-05: Chống xung đột - cùng 1 bác sĩ không bị đặt trùng khung giờ
-                @UniqueConstraint(columnNames = {"doctor_id", "appointment_time", "is_deleted"})
-        })
+@Table(name = "appointments")
 @Getter
 @Setter
 public class Appointment {
@@ -69,6 +68,33 @@ public class Appointment {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "appointment", fetch = FetchType.LAZY)
+    private java.util.List<Payment> payments = new java.util.ArrayList<>();
+
+    public boolean isExamFeePaid() {
+        if (payments == null) return false;
+        return payments.stream()
+                .filter(p -> !Boolean.TRUE.equals(p.getIsDeleted()) && p.getType() == PaymentType.EXAM_FEE)
+                .anyMatch(p -> p.getStatus() == PaymentStatus.PAID);
+    }
+
+    public boolean isExpired() {
+        if (status == AppointmentStatus.CANCELLED) {
+            return cancelReason != null && cancelReason.contains("Quá thời gian 3 phút");
+        }
+        if (status == AppointmentStatus.PENDING) {
+            return !isExamFeePaid() && java.time.LocalDateTime.now().isAfter(createdAt.plusMinutes(3));
+        }
+        return false;
+    }
+
+    public boolean isCancelable() {
+        if (status == AppointmentStatus.PENDING) {
+            return !isExpired();
+        }
+        return status == AppointmentStatus.CONFIRMED;
+    }
 
     // LOẠI BỎ quan hệ 1-1 hai chiều ngược (mappedBy) với MedicalRecord để:
     // 1. Tránh EAGER loading bệnh án khi truy xuất lịch khám của bệnh nhân

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Thanh Toán Đơn Thuốc</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
+        
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    
+                    <div th:if="${errorMessage}" class="alert-message alert-danger" th:text="${errorMessage}"></div>
+
+                    <div class="patient-card">
+                        <div class="patient-card-header bg-danger text-white">
+                            <i class="bi bi-cart-check me-2"></i> Thanh Toán Hóa Đơn Thuốc
+                        </div>
+                        <div class="patient-card-body p-4">
+                            <div class="alert alert-info border-0 shadow-sm mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-info-circle-fill fs-4 me-3 text-info"></i>
+                                    <div>
+                                        <strong>Mã lịch hẹn:</strong> #<span th:text="${appointment.id}"></span><br>
+                                        Vui lòng hoàn tất thanh toán đơn thuốc để hoàn thành quy trình khám chữa bệnh.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-sm-5 fw-semibold text-muted">Bệnh nhân:</div>
+                                <div class="col-sm-7 fw-bold" th:text="${appointment.patient.fullName}">Nguyễn Văn A</div>
+                            </div>
+                            <div class="row mb-4">
+                                <div class="col-sm-5 fw-semibold text-muted">Bác sĩ kê đơn:</div>
+                                <div class="col-sm-7 fw-bold" th:text="${appointment.doctor.user.fullName}">BS. Trần B</div>
+                            </div>
+
+                            <!-- Chi tiết Chẩn đoán và Đơn thuốc -->
+                            <div th:if="${medicalRecord != null}" class="border rounded p-3 mb-4 bg-light">
+                                <h6 class="fw-bold mb-3 text-primary border-bottom pb-2">
+                                    <i class="bi bi-file-earmark-medical me-2"></i> Chi Tiết Bệnh Án
+                                </h6>
+                                <div class="row mb-2">
+                                    <div class="col-sm-3 fw-semibold text-muted">Chẩn đoán:</div>
+                                    <div class="col-sm-9" th:text="${medicalRecord.diagnosis}">Đau đầu</div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-sm-3 fw-semibold text-muted">Lời dặn:</div>
+                                    <div class="col-sm-9" th:text="${medicalRecord.notes}">Uống nhiều nước</div>
+                                </div>
+
+                                <div th:if="${medicalRecord.prescription != null && !medicalRecord.prescription.prescriptionDetails.isEmpty()}">
+                                    <h6 class="fw-bold mt-4 mb-3 text-danger">
+                                        <i class="bi bi-capsule-pill me-2"></i> Danh Sách Thuốc Kê Đơn
+                                    </h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered bg-white">
+                                            <thead class="table-light text-center">
+                                                <tr>
+                                                    <th>STT</th>
+                                                    <th>Tên thuốc</th>
+                                                    <th>ĐVT</th>
+                                                    <th>Số lượng</th>
+                                                    <th>Đơn giá</th>
+                                                    <th>Thành tiền</th>
+                                                    <th>Cách dùng</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr th:each="detail, iterStat : ${medicalRecord.prescription.prescriptionDetails}">
+                                                    <td class="text-center" th:text="${iterStat.count}">1</td>
+                                                    <td th:text="${detail.medicine.name}">Paracetamol</td>
+                                                    <td class="text-center" th:text="${detail.unitAtPrescription}">Viên</td>
+                                                    <td class="text-center" th:text="${detail.quantity}">10</td>
+                                                    <td class="text-end" th:text="${#numbers.formatDecimal(detail.priceAtPrescription, 0, 'COMMA', 0, 'POINT')}">5,000</td>
+                                                    <td class="text-end fw-semibold" th:text="${#numbers.formatDecimal(detail.priceAtPrescription * detail.quantity, 0, 'COMMA', 0, 'POINT')}">50,000</td>
+                                                    <td th:text="${detail.frequency}">Sáng 1 chiều 1</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-sm-5 fw-semibold text-muted fs-5 mt-2">Tổng tiền thuốc cần thanh toán:</div>
+                                <div class="col-sm-7 fw-bold fs-3 text-danger">
+                                    <span th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')}"></span> VNĐ
+                                </div>
+                            </div>
+
+                            <div class="payment-methods mt-4 border-top pt-4">
+                                <h5 class="mb-3 fw-bold">Chọn phương thức thanh toán:</h5>
+                                <form th:action="@{/patient/appointments/pay-drug/{id}/simulate(id=${appointment.id})}" method="post">
+                                    <div class="row g-3">
+                                        <!-- Momo -->
+                                        <div class="col-md-6">
+                                            <div class="payment-method-card h-100 p-3 border rounded">
+                                                <input class="form-check-input me-2" type="radio" name="method" id="momo" value="MOMO" required>
+                                                <label class="form-check-label stretched-link fw-bold" for="momo">
+                                                    <i class="bi bi-wallet-fill text-danger me-2"></i> Ví MoMo
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <!-- VNPay -->
+                                        <div class="col-md-6">
+                                            <div class="payment-method-card h-100 p-3 border rounded">
+                                                <input class="form-check-input me-2" type="radio" name="method" id="vnpay" value="VNPAY">
+                                                <label class="form-check-label stretched-link fw-bold" for="vnpay">
+                                                    <i class="bi bi-credit-card-2-front-fill text-primary me-2"></i> VNPay
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <!-- ATM -->
+                                        <div class="col-md-6">
+                                            <div class="payment-method-card h-100 p-3 border rounded">
+                                                <input class="form-check-input me-2" type="radio" name="method" id="atm" value="ATM">
+                                                <label class="form-check-label stretched-link fw-bold" for="atm">
+                                                    <i class="bi bi-bank2 text-success me-2"></i> Thẻ ATM Nội địa
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <!-- Tiền mặt -->
+                                        <div class="col-md-6">
+                                            <div class="payment-method-card h-100 p-3 border rounded">
+                                                <input class="form-check-input me-2" type="radio" name="method" id="cash" value="CASH">
+                                                <label class="form-check-label stretched-link fw-bold" for="cash">
+                                                    <i class="bi bi-cash-stack text-success me-2"></i> Thanh toán tại quầy thuốc
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-between mt-4 border-top pt-4">
+                                        <a th:href="@{/patient/appointments/detail/{id}(id=${appointment.id})}" class="btn-premium-outline">
+                                            <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                        </a>
+                                        <button type="submit" class="btn-premium btn-danger border-0">
+                                            Xác Nhận Thanh Toán <i class="bi bi-check2-circle ms-1"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .payment-method-card {
+                transition: all 0.2s ease-in-out;
+                background-color: #f8f9fa;
+                cursor: pointer;
+                position: relative;
+            }
+            .payment-method-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+                border-color: var(--primary-blue-light) !important;
+                background-color: #f0f7ff;
+            }
+            .payment-method-card input[type="radio"]:checked ~ label {
+                color: var(--primary-blue-dark);
+            }
+            .payment-method-card:has(input[type="radio"]:checked) {
+                border-color: var(--primary-blue-dark) !important;
+                background-color: #e0f2fe;
+                box-shadow: 0 0 0 1px var(--primary-blue-dark);
+            }
+        </style>
+    </div>
+</body>
+</html>

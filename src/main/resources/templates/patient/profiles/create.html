@@ -22,6 +22,9 @@
                             </div>
 
                             <form th:action="@{/patient/profiles/create}" th:object="${dto}" method="post">
+                                <div th:if="${#fields.hasErrors('global')}" class="alert-message alert-danger mb-4">
+                                    <span th:errors="*{global}">Lỗi hệ thống</span>
+                                </div>
                                 <h5 class="fw-bold mb-3" style="color: var(--primary-blue)">1. Thông tin cơ bản</h5>
                                 <div class="premium-form-group">
                                     <label class="premium-label">Họ và tên *</label>

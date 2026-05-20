@@ -3,20 +3,58 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
     <header th:fragment="header" class="app-header">
-        <div>
-            <h1 class="header-title" th:text="${pageTitle != null ? pageTitle : 'Tong quan'}">Tong quan</h1>
+        <!-- Phần trái: Lời chào -->
+        <div class="header-greeting">
+            <div class="header-greeting-title" id="headerGreeting">Xin chào</div>
+            <div class="header-greeting-subtitle" id="headerDate"></div>
         </div>
+
+        <!-- Phần phải: User info + Cài đặt tài khoản (đưa từ dưới navbar lên) -->
         <div class="header-actions">
-            <span style="font-size: 13px; color: var(--hospital-text-secondary);" sec:authentication="name">username</span>
-            <a th:href="@{/profile}" class="btn btn-sm btn-outline-primary">
-                <i class="bi bi-person"></i> Hồ sơ
+            <div class="header-user-group">
+                <div class="header-user-avatar" id="headerAvatar">U</div>
+                <div class="header-user-info">
+                    <div class="header-user-name" id="headerUserName" sec:authentication="name">Username</div>
+                    <div class="header-user-role">
+                        <span sec:authorize="hasAuthority('ROLE_PATIENT')">Bệnh nhân</span>
+                        <span sec:authorize="hasAuthority('ROLE_DOCTOR')">Bác sĩ</span>
+                        <span sec:authorize="hasAuthority('ROLE_ADMIN')">Quản trị viên</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-divider"></div>
+            
+            <!-- Chỉnh sửa thông tin tài khoản đưa lên Header -->
+            <a th:href="@{/profile}" class="btn-header-profile" title="Thiết lập tài khoản">
+                <i class="bi bi-gear-fill"></i> Thiết lập
             </a>
-            <form th:action="@{/logout}" method="post" style="margin: 0;">
-                <button type="submit" class="btn-logout">
-                    <i class="bi bi-box-arrow-right"></i> Dang xuat
-                </button>
-            </form>
         </div>
+
+        <!-- JS: Lời chào động + Ngày tháng (Đưa VÀO TRONG header th:fragment để tránh bị Thymeleaf strip) -->
+        <script th:inline="none">
+            document.addEventListener('DOMContentLoaded', function () {
+                var hour = new Date().getHours();
+                var greeting = 'Xin chào';
+                if (hour >= 5 && hour < 12) greeting = 'Chào buổi sáng';
+                else if (hour >= 12 && hour < 18) greeting = 'Chào buổi chiều';
+                else greeting = 'Chào buổi tối';
+
+                var nameEl = document.getElementById('headerUserName');
+                var name = nameEl ? nameEl.textContent.trim() : '';
+                var greetEl = document.getElementById('headerGreeting');
+                if (greetEl) {
+                    greetEl.textContent = greeting + (name ? ', ' + name : '') + ' 👋';
+                }
+
+                // Ngày tháng
+                var days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+                var now = new Date();
+                var dateStr = days[now.getDay()] + ', ngày ' + now.getDate() + ' tháng ' + (now.getMonth() + 1) + ' năm ' + now.getFullYear();
+                var dateEl = document.getElementById('headerDate');
+                if (dateEl) dateEl.textContent = dateStr;
+            });
+        </script>
     </header>
 </body>
 </html>

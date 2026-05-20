@@ -11,9 +11,12 @@ import java.util.Optional;
 @Repository
 public interface PatientRepository extends JpaRepository<Patient, Long> {
 
-    // Tim ho so benh nhan mac dinh (SELF) cua mot tai khoan
-    Optional<Patient> findByUserIdAndRelation(Long userId, PatientRelation relation);
+    // Tim ho so benh nhan mac dinh (SELF) cua mot tai khoan chua bi xoa
+    Optional<Patient> findByUserIdAndRelationAndIsDeletedFalse(Long userId, PatientRelation relation);
 
-    // Lay tat ca ho so benh nhan cua mot tai khoan
-    List<Patient> findAllByUserId(Long userId);
+    // Lay tat ca ho so benh nhan cua mot tai khoan chua bi xoa
+    List<Patient> findAllByUserIdAndIsDeletedFalse(Long userId);
+
+    // Tim kiem benh nhan theo so CCCD/CMND de validate doc lap
+    Optional<Patient> findByIdentityCard(String identityCard);
 }

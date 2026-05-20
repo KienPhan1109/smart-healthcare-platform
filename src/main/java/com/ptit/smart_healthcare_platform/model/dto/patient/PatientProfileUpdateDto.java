@@ -4,7 +4,7 @@ import com.ptit.smart_healthcare_platform.model.enums.BloodType;
 import com.ptit.smart_healthcare_platform.model.enums.Gender;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -24,7 +24,7 @@ public class PatientProfileUpdateDto {
     private String fullName;
 
     @NotNull(message = "Ngày sinh không được để trống")
-    @Past(message = "Ngày sinh phải ở trong quá khứ")
+    @PastOrPresent(message = "Ngày sinh phải ở trong quá khứ hoặc hiện tại")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 

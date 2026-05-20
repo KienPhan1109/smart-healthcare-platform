@@ -1,5 +1,7 @@
 package com.ptit.smart_healthcare_platform.model.entity;
 
+import com.ptit.smart_healthcare_platform.model.enums.DoctorStatus;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,7 +43,7 @@ public class Doctor {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private com.ptit.smart_healthcare_platform.model.enums.DoctorStatus status = com.ptit.smart_healthcare_platform.model.enums.DoctorStatus.ACTIVE;
+    private DoctorStatus status = DoctorStatus.ACTIVE;
 
     @Column(name = "created_by", length = 50)
     private String createdBy;

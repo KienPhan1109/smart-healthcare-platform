@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Khám bệnh & Kê đơn</title>
+</head>
+<body>
+    <div layout:fragment="content" class="exam-container">
+        <link rel="stylesheet" th:href="@{/css/doctor.css}">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Khám bệnh & Kê đơn</h2>
+            <a th:href="@{/doctor/dashboard}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Trở về
+            </a>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+
+        <!-- Thông tin bệnh nhân tóm tắt -->
+        <div class="patient-summary">
+            <div class="summary-item">
+                <span class="summary-label">Bệnh nhân</span>
+                <span class="summary-value" th:text="${appointment.patient.fullName}">Nguyễn Văn A</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Giới tính / Năm sinh</span>
+                <span class="summary-value" th:text="${appointment.patient.gender.name() == 'MALE' ? 'Nam' : 'Nữ'} + ' - ' + ${#temporals.format(appointment.patient.dateOfBirth, 'yyyy')}">Nam - 1990</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Mã lịch khám</span>
+                <span class="summary-value" th:text="'#' + ${appointment.id}">#123</span>
+            </div>
+            <div class="summary-item">
+                <span class="summary-label">Triệu chứng khai báo</span>
+                <span class="summary-value" th:text="${appointment.symptoms}">Đau đầu chóng mặt</span>
+            </div>
+        </div>
+
+        <form th:action="@{/doctor/appointments/{id}/examine(id=${appointment.id})}" th:object="${examinationForm}" method="post" id="examinationForm">
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Kết quả khám</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label required">Chẩn đoán bệnh</label>
+                        <input type="text" class="form-control" th:field="*{diagnosis}" placeholder="Nhập chẩn đoán lâm sàng...">
+                        <div class="text-danger mt-1" th:if="${#fields.hasErrors('diagnosis')}" th:errors="*{diagnosis}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Ghi chú / Lời dặn</label>
+                        <textarea class="form-control" th:field="*{note}" rows="3" placeholder="Nhập lời dặn dò cho bệnh nhân..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Đơn thuốc (Tùy chọn)</h5>
+                    
+                    <div class="prescription-list" id="prescriptionList">
+                        <!-- Hiển thị lại danh sách thuốc nếu có lỗi (khi submit lại) -->
+                        <div th:each="item, iterStat : *{prescriptionItems}" class="prescription-item">
+                            <div>
+                                <label class="form-label required">Tên thuốc</label>
+                                <select class="form-select medicine-select" th:field="*{prescriptionItems[__${iterStat.index}__].medicineId}">
+                                    <option value="">-- Chọn thuốc --</option>
+                                    <option th:each="med : ${medicines}" 
+                                            th:value="${med.id}" 
+                                            th:text="${med.name} + ' (' + ${med.unit} + ') - Tồn: ' + ${med.stockQuantity}"
+                                            th:data-price="${med.price}"
+                                            th:data-stock="${med.stockQuantity}"
+                                            th:data-instruction="${med.usageInstruction}"></option>
+                                </select>
+                                <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('prescriptionItems[' + iterStat.index + '].medicineId')}" th:errors="*{prescriptionItems[__${iterStat.index}__].medicineId}"></div>
+                            </div>
+                            <div>
+                                <label class="form-label">Đơn giá (VNĐ)</label>
+                                <input type="text" class="form-control price-input" readonly placeholder="0">
+                            </div>
+                            <div>
+                                <label class="form-label required">Số lượng</label>
+                                <input type="number" class="form-control qty-input" th:field="*{prescriptionItems[__${iterStat.index}__].quantity}" min="1">
+                                <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('prescriptionItems[' + iterStat.index + '].quantity')}" th:errors="*{prescriptionItems[__${iterStat.index}__].quantity}"></div>
+                            </div>
+                            <div>
+                                <label class="form-label required">Tác dụng / Cách dùng</label>
+                                <input type="text" class="form-control instruction-input" th:field="*{prescriptionItems[__${iterStat.index}__].instruction}" placeholder="VD: Ngày uống 2 lần...">
+                                <div class="text-danger mt-1 small" th:if="${#fields.hasErrors('prescriptionItems[' + iterStat.index + '].instruction')}" th:errors="*{prescriptionItems[__${iterStat.index}__].instruction}"></div>
+                            </div>
+                            <div class="text-end">
+                                <button type="button" class="btn-remove-item" title="Xóa thuốc này" onclick="this.closest('.prescription-item').remove()">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="add-medicine-btn" id="btnAddMedicine">
+                        <i class="bi bi-plus-circle"></i> Thêm thuốc vào đơn
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a th:href="@{/doctor/dashboard}" class="btn btn-secondary">Hủy</a>
+                <button type="submit" class="btn btn-success px-4" id="btnSubmit">
+                    <i class="bi bi-check2-circle"></i> Hoàn tất khám bệnh
+                </button>
+            </div>
+        </form>
+
+        <!-- Template cho một dòng thuốc (ẩn) -->
+        <template id="medicineTemplate">
+            <div class="prescription-item">
+                <div>
+                    <label class="form-label required">Tên thuốc</label>
+                    <select class="form-select medicine-select" name="prescriptionItems[INDEX].medicineId">
+                        <option value="">-- Chọn thuốc --</option>
+                        <option th:each="med : ${medicines}" 
+                                th:value="${med.id}" 
+                                th:text="${med.name} + ' (' + ${med.unit} + ') - Tồn: ' + ${med.stockQuantity}"
+                                th:data-price="${#numbers.formatDecimal(med.price, 0, 'COMMA', 0, 'POINT')}"
+                                th:data-stock="${med.stockQuantity}"
+                                th:data-instruction="${med.usageInstruction}"></option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Đơn giá (VNĐ)</label>
+                    <input type="text" class="form-control price-input" readonly placeholder="0">
+                </div>
+                <div>
+                    <label class="form-label required">Số lượng</label>
+                    <input type="number" class="form-control qty-input" name="prescriptionItems[INDEX].quantity" min="1" value="1">
+                </div>
+                <div>
+                    <label class="form-label required">Tác dụng / Cách dùng</label>
+                    <input type="text" class="form-control instruction-input" name="prescriptionItems[INDEX].instruction" placeholder="VD: Ngày uống 2 lần...">
+                </div>
+                <div class="text-end">
+                    <button type="button" class="btn-remove-item" title="Xóa thuốc này" onclick="this.closest('.prescription-item').remove()">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </template>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Đếm số lượng item hiện có (nếu form bị lỗi và render lại)
+                let itemIndex = document.querySelectorAll('#prescriptionList .prescription-item').length;
+                const prescriptionList = document.getElementById('prescriptionList');
+                const btnAddMedicine = document.getElementById('btnAddMedicine');
+                const template = document.getElementById('medicineTemplate');
+
+                // Hàm thiết lập sự kiện cho một dòng thuốc
+                function setupRowEvents(row) {
+                    const select = row.querySelector('.medicine-select');
+                    const instructionInput = row.querySelector('.instruction-input');
+                    const priceInput = row.querySelector('.price-input');
+                    const qtyInput = row.querySelector('.qty-input');
+                    
+                    // Nếu đã có giá trị sẵn (lúc render lại)
+                    if(select.selectedIndex > 0) {
+                        const opt = select.options[select.selectedIndex];
+                        priceInput.value = opt.getAttribute('data-price') || '0';
+                        qtyInput.max = opt.getAttribute('data-stock') || '999';
+                    }
+
+                    select.addEventListener('change', function() {
+                        const selectedOption = this.options[this.selectedIndex];
+                        if (selectedOption && selectedOption.value !== "") {
+                            const defaultInstruction = selectedOption.getAttribute('data-instruction');
+                            const price = selectedOption.getAttribute('data-price');
+                            const stock = selectedOption.getAttribute('data-stock');
+                            
+                            if (defaultInstruction && !instructionInput.value) {
+                                instructionInput.value = defaultInstruction;
+                            }
+                            if (price) {
+                                priceInput.value = price;
+                            }
+                            if (stock) {
+                                qtyInput.max = stock;
+                                // Nếu số lượng đang nhập > tồn kho, set lại bằng tồn kho
+                                if (parseInt(qtyInput.value) > parseInt(stock)) {
+                                    qtyInput.value = stock;
+                                }
+                            }
+                        } else {
+                            priceInput.value = '';
+                            qtyInput.max = '';
+                        }
+                    });
+
+                    // Ràng buộc số lượng không vượt quá max khi nhập tay
+                    qtyInput.addEventListener('input', function() {
+                        const maxVal = parseInt(this.max);
+                        const val = parseInt(this.value);
+                        if(maxVal && val > maxVal) {
+                            this.value = maxVal;
+                        }
+                    });
+                }
+
+                // Cài đặt sự kiện cho các row đã có sẵn
+                document.querySelectorAll('#prescriptionList .prescription-item').forEach(setupRowEvents);
+
+                btnAddMedicine.addEventListener('click', function() {
+                    // Clone template
+                    const clone = template.content.cloneNode(true);
+                    
+                    // Thay thế chuỗi INDEX bằng chỉ số hiện tại
+                    const html = clone.querySelector('.prescription-item').outerHTML.replace(/INDEX/g, itemIndex);
+                    
+                    // Append HTML mới vào list
+                    prescriptionList.insertAdjacentHTML('beforeend', html);
+                    
+                    // Tìm phần tử vừa được thêm
+                    const newRow = prescriptionList.lastElementChild;
+                    
+                    // Cài đặt sự kiện
+                    setupRowEvents(newRow);
+
+                    itemIndex++;
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

@@ -11,26 +11,6 @@ public class DashboardController {
         return "patient/dashboard";
     }
 
-    @GetMapping("/doctor/dashboard")
-    public String doctorDashboard() {
-        return "doctor/dashboard";
-    }
-
-    @GetMapping("/coordinator/dashboard")
-    public String coordinatorDashboard() {
-        return "coordinator/dashboard";
-    }
-
-    @GetMapping("/pharmacist/dashboard")
-    public String pharmacistDashboard() {
-        return "pharmacist/dashboard";
-    }
-
-    @GetMapping("/cashier/dashboard")
-    public String cashierDashboard() {
-        return "cashier/dashboard";
-    }
-
     @GetMapping("/admin/dashboard")
     public String adminDashboard() {
         return "admin/dashboard";

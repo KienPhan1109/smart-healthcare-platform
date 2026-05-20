@@ -57,6 +57,12 @@ public class Patient {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "is_deleted", nullable = false)
+    private Boolean isDeleted = false;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
     private PatientProfile patientProfile;
 }

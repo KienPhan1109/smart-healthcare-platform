@@ -198,6 +198,9 @@
 .status-cancelled { background-color: #f8d7da; color: #721c24; }
 .status-active { background-color: #cce5ff; color: #004085; }
 .status-completed { background-color: #d1ecf1; color: #0c5460; }
+.status-expired { background-color: #e2e3e5; color: #383d41; }
+.status-waiting-payment { background-color: #fff3cd; color: #856404; }
+.status-waiting-approval { background-color: #cff4fc; color: #055160; }
 
 /* Countdown & Progress Bar for Payment */
 .countdown-container {
@@ -344,3 +347,241 @@
     color: #721c24;
     border-left: 5px solid #dc3545;
 }
+
+/* ========== Booking Step Indicator ========== */
+.booking-step-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 20px 0;
+}
+
+.booking-step-indicator .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+}
+
+.booking-step-indicator .step.active {
+    opacity: 1;
+}
+
+.booking-step-indicator .step-number {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.booking-step-indicator .step.active .step-number {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+.booking-step-indicator .step-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.booking-step-indicator .step.active .step-label {
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+.booking-step-indicator .step-line {
+    width: 60px;
+    height: 3px;
+    background: var(--border-color);
+    margin: 0 8px;
+    margin-bottom: 22px;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.booking-step-indicator .step-line.active {
+    background: var(--primary-gradient);
+}
+
+/* ========== Doctor Summary Card ========== */
+.doctor-summary-card {
+    background: linear-gradient(135deg, #e6f2ff, #f0f7ff);
+    border: 1px solid rgba(0, 102, 204, 0.15);
+    border-radius: 12px;
+    padding: 20px 24px;
+}
+
+.doctor-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+/* ========== Date Selector Grid ========== */
+.date-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.date-select-card {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--white);
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.date-select-card:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.12);
+    transform: translateY(-2px);
+}
+
+.date-select-card input[type="radio"] {
+    display: none;
+}
+
+.date-select-card:has(input:checked) {
+    border-color: var(--primary-blue);
+    background: linear-gradient(135deg, #e6f2ff, #cce5ff);
+    color: var(--primary-blue-dark);
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+/* ========== Session Label ========== */
+.session-label {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+/* ========== Time Slot Grid ========== */
+.time-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.time-slot-card {
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.time-slot-card:hover:not(.disabled) {
+    border-color: var(--primary-blue);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.12);
+    transform: translateY(-2px);
+}
+
+.time-slot-card input[type="radio"] {
+    display: none;
+}
+
+.time-slot-card:has(input:checked) {
+    border-color: var(--primary-blue);
+    background: linear-gradient(135deg, #e6f2ff, #cce5ff);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
+}
+
+.time-slot-card:has(input:checked) .slot-time {
+    color: var(--primary-blue-dark);
+}
+
+.time-slot-card:has(input:checked) .slot-status-free {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.time-slot-card.disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: #f8f9fa;
+    text-decoration: line-through;
+}
+
+.slot-time {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.slot-status-free {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--success);
+    background: #d4edda;
+    padding: 2px 10px;
+    border-radius: 12px;
+}
+
+.slot-status-booked {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--danger);
+    background: #f8d7da;
+    padding: 2px 10px;
+    border-radius: 12px;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+    .time-slot-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .date-selector-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .booking-step-indicator .step-line {
+        width: 30px;
+    }
+    .booking-step-indicator .step-label {
+        font-size: 0.7rem;
+    }
+}
+
+/* ========== Danger Card Header for Cancel/Delete ========== */
+.patient-card-header-danger {
+    background: linear-gradient(135deg, #dc3545, #ff6b6b) !important;
+    color: var(--white) !important;
+}
+

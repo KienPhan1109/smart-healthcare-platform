@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Xác Nhận Hủy Lịch Khám</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="patient-card">
+                        <div class="patient-card-header patient-card-header-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i> Xác Nhận Hủy Lịch Khám
+                        </div>
+                        <div class="patient-card-body">
+                            
+                            <p class="mb-4 text-center">Bạn đang yêu cầu hủy lịch khám dưới đây. Vui lòng kiểm tra lại thông tin và cung cấp lý do hủy trước khi xác nhận.</p>
+                            
+                            <div class="p-4 bg-light rounded-4 mb-4">
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Bác sĩ:</div>
+                                    <div class="col-7 fw-bold" th:text="${appointment.doctor.academicRank != null ? appointment.doctor.academicRank + ' ' + appointment.doctor.user.fullName : 'BS. ' + appointment.doctor.user.fullName}">BS. Nguyễn Văn A</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Chuyên khoa:</div>
+                                    <div class="col-7 fw-bold" th:text="${appointment.doctor.specialty.name}">Khoa Nội</div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-5 text-muted">Bệnh nhân:</div>
+                                    <div class="col-7 fw-bold" th:text="${appointment.patient.fullName}">Trần Văn B</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-muted">Thời gian khám:</div>
+                                    <div class="col-7 fw-bold text-primary" th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm - dd/MM/yyyy')}">08:00 - 25/12/2026</div>
+                                </div>
+                            </div>
+
+                            <form th:action="@{/patient/appointments/cancel/{id}(id=${appointment.id})}" method="post">
+                                <div class="premium-form-group mb-4">
+                                    <label class="premium-label">Lý do hủy (Không bắt buộc)</label>
+                                    <textarea class="premium-textarea" name="cancelReason" rows="3" placeholder="Nhập lý do hủy lịch của bạn..."></textarea>
+                                </div>
+                                
+                                <div class="alert alert-warning small border-0" style="background-color: #fff3cd; color: #856404;">
+                                    <i class="bi bi-info-circle-fill me-1"></i> Lưu ý: Hành động này không thể hoàn tác. Khung giờ khám này sẽ được giải phóng cho bệnh nhân khác trên hệ thống.
+                                </div>
+
+                                <div class="d-flex gap-3 mt-4">
+                                    <a th:href="@{/patient/appointments/history}" class="btn-premium-outline flex-grow-1 text-center py-2">
+                                        Quay lại
+                                    </a>
+                                    <button type="submit" class="btn btn-danger fw-bold flex-grow-1 py-2" style="border-radius: 12px; font-size: 1rem;">
+                                        <i class="bi bi-x-circle me-1"></i> Xác Nhận Hủy
+                                    </button>
+                                </div>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

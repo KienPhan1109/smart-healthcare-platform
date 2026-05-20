@@ -61,15 +61,12 @@
                                         <a th:href="@{/patient/profiles/edit/{id}(id=${patient.id})}" class="btn-premium-outline py-1 px-3">
                                             <i class="bi bi-pencil-square me-1"></i> Sửa
                                         </a>
-                                        <form th:if="${patient.relation != null and patient.relation.name() != 'SELF'}"
-                                              th:action="@{/patient/profiles/delete/{id}(id=${patient.id})}"
-                                              method="post"
-                                              style="display: inline;"
-                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa hồ sơ người thân này không?');">
-                                            <button type="submit" class="btn-danger-premium py-1 px-3" style="font-size: 0.9rem; padding: 7px 15px;">
-                                                <i class="bi bi-trash3 me-1"></i> Xóa
-                                            </button>
-                                        </form>
+                                        <a th:if="${patient.relation != null and patient.relation.name() != 'SELF'}"
+                                           th:href="@{/patient/profiles/delete/{id}(id=${patient.id})}"
+                                           class="btn-danger-premium py-1 px-3"
+                                           style="font-size: 0.9rem; padding: 7px 15px; text-decoration: none; display: inline-block;">
+                                            <i class="bi bi-trash3 me-1"></i> Xóa
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

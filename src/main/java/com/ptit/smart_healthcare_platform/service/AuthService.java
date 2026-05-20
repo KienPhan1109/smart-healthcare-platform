@@ -1,5 +1,7 @@
 package com.ptit.smart_healthcare_platform.service;
 
+import com.ptit.smart_healthcare_platform.model.dto.auth.ProfileUpdateRequestDto;
+
 import com.ptit.smart_healthcare_platform.model.dto.auth.RegisterRequestDto;
 import com.ptit.smart_healthcare_platform.model.entity.Patient;
 import com.ptit.smart_healthcare_platform.model.entity.Role;
@@ -98,7 +100,7 @@ public class AuthService {
     }
 
     @Transactional
-    public void updateProfile(String currentPhone, com.ptit.smart_healthcare_platform.model.dto.auth.ProfileUpdateRequestDto dto) {
+    public void updateProfile(String currentPhone, ProfileUpdateRequestDto dto) {
         User user = userRepository.findByPhoneNumber(currentPhone)
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
 
@@ -147,7 +149,7 @@ public class AuthService {
         userRepository.save(user);
 
         // 4. Đồng bộ họ tên lên hồ sơ bệnh nhân gốc (SELF) của Patient nếu có
-        Optional<Patient> selfPatientOpt = patientRepository.findByUserIdAndRelation(user.getId(), PatientRelation.SELF);
+        Optional<Patient> selfPatientOpt = patientRepository.findByUserIdAndRelationAndIsDeletedFalse(user.getId(), PatientRelation.SELF);
         if (selfPatientOpt.isPresent()) {
             Patient self = selfPatientOpt.get();
             self.setFullName(dto.getFullName());

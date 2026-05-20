@@ -39,13 +39,9 @@
                             
                             <div class="mb-3">
                                 <label class="text-muted d-block small">Vai trò hệ thống</label>
-                                <div class="mt-1">
-                                    <span th:each="ur : ${user.userRoles}" class="me-1">
+                                                    <span th:each="ur : ${user.userRoles}" class="me-1">
                                         <span th:if="${ur.role.name.name() == 'ROLE_PATIENT'}" class="status-badge status-active">Bệnh nhân</span>
                                         <span th:if="${ur.role.name.name() == 'ROLE_DOCTOR'}" class="status-badge status-completed">Bác sĩ</span>
-                                        <span th:if="${ur.role.name.name() == 'ROLE_COORDINATOR'}" class="status-badge status-pending">Điều phối viên</span>
-                                        <span th:if="${ur.role.name.name() == 'ROLE_PHARMACIST'}" class="status-badge status-paid">Dược sĩ</span>
-                                        <span th:if="${ur.role.name.name() == 'ROLE_CASHIER'}" class="status-badge status-completed">Thu ngân</span>
                                         <span th:if="${ur.role.name.name() == 'ROLE_ADMIN'}" class="status-badge status-cancelled">Quản trị viên</span>
                                     </span>
                                 </div>
@@ -60,7 +56,7 @@
                                 <label class="text-muted d-block small">Ngày đăng ký</label>
                                 <span class="fw-bold" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm') : 'Chưa rõ'}">01/01/2026</span>
                             </div>
-
+ 
                             <div class="mb-0">
                                 <label class="text-muted d-block small">Cập nhật lần cuối</label>
                                 <span class="fw-bold" th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'dd/MM/yyyy HH:mm') : 'Chưa có cập nhật'}">Chưa cập nhật</span>
@@ -68,7 +64,7 @@
                         </div>
                     </div>
                 </div>
-
+ 
                 <!-- Right Column: Account Edit Form -->
                 <div class="col-md-8">
                     <div class="patient-card">
@@ -81,12 +77,12 @@
                                 <div th:if="${#fields.hasErrors('global')}" class="alert-message alert-danger mb-4">
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:errors="*{global}">Lỗi hệ thống</span>
                                 </div>
-
+ 
                                 <!-- 1. Basic Info Section -->
                                 <h5 class="fw-bold mb-3" style="color: var(--primary-blue-dark)">
                                     <i class="bi bi-person-lines-fill me-2"></i>1. Thông tin cơ bản
                                 </h5>
-
+ 
                                 <div class="premium-form-group">
                                     <label class="premium-label" for="fullName">Họ và tên *</label>
                                     <input type="text" class="premium-input" id="fullName" th:field="*{fullName}" 
@@ -94,7 +90,7 @@
                                            placeholder="Nhập họ và tên đầy đủ của bạn">
                                     <div class="error-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Lỗi họ tên</div>
                                 </div>
-
+ 
                                 <div class="premium-form-group">
                                     <label class="premium-label" for="email">Địa chỉ Email</label>
                                     <input type="email" class="premium-input" id="email" th:field="*{email}" 
@@ -102,9 +98,9 @@
                                            placeholder="Nhập địa chỉ email (ví dụ: email@gmail.com)">
                                     <div class="error-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Lỗi email</div>
                                 </div>
-
+ 
                                 <hr class="my-4">
-
+ 
                                 <!-- 2. Password Change Section -->
                                 <h5 class="fw-bold mb-2" style="color: var(--primary-blue-dark)">
                                     <i class="bi bi-key-fill me-2"></i>2. Thay đổi mật khẩu (Tùy chọn)
@@ -112,7 +108,7 @@
                                 <p class="text-muted small mb-4">
                                     <i class="bi bi-info-circle me-1"></i> Để bảo mật, nếu không có nhu cầu đổi mật khẩu, vui lòng bỏ trống cả 3 trường nhập liệu bên dưới.
                                 </p>
-
+ 
                                 <div class="premium-form-group">
                                     <label class="premium-label" for="oldPassword">Mật khẩu hiện tại</label>
                                     <div style="position: relative;">
@@ -125,7 +121,7 @@
                                     </div>
                                     <div class="error-feedback" th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}">Lỗi mật khẩu hiện tại</div>
                                 </div>
-
+ 
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="premium-form-group">
@@ -156,16 +152,13 @@
                                         </div>
                                     </div>
                                 </div>
-
+ 
                                 <!-- Action Buttons -->
                                 <div class="d-flex justify-content-end mt-4 gap-3">
                                     <!-- Nút quay lại động theo phân quyền người dùng -->
                                     <a th:href="${#authorization.expression('hasAuthority(''ROLE_PATIENT'')') ? '/patient/dashboard' : 
                                                  (#authorization.expression('hasAuthority(''ROLE_DOCTOR'')') ? '/doctor/dashboard' : 
-                                                 (#authorization.expression('hasAuthority(''ROLE_COORDINATOR'')') ? '/coordinator/dashboard' : 
-                                                 (#authorization.expression('hasAuthority(''ROLE_PHARMACIST'')') ? '/pharmacist/dashboard' : 
-                                                 (#authorization.expression('hasAuthority(''ROLE_CASHIER'')') ? '/cashier/dashboard' : 
-                                                 (#authorization.expression('hasAuthority(''ROLE_ADMIN'')') ? '/admin/dashboard' : '/')))))}" 
+                                                 (#authorization.expression('hasAuthority(''ROLE_ADMIN'')') ? '/admin/dashboard' : '/'))}" 
                                        class="btn-premium-outline">
                                         <i class="bi bi-arrow-left-circle me-1"></i> Quay lại
                                     </a>

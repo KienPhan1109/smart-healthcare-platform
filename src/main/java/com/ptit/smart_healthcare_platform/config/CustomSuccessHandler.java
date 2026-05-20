@@ -51,10 +51,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             String role = authority.getAuthority();
             switch (role) {
                 case "ROLE_ADMIN": return "/admin/dashboard";
-                case "ROLE_COORDINATOR": return "/coordinator/dashboard";
                 case "ROLE_DOCTOR": return "/doctor/dashboard";
-                case "ROLE_PHARMACIST": return "/pharmacist/dashboard";
-                case "ROLE_CASHIER": return "/cashier/dashboard";
                 case "ROLE_PATIENT": return "/patient/dashboard";
             }
         }

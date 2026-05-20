@@ -2,9 +2,8 @@ package com.ptit.smart_healthcare_platform.model.dto.patient;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import com.ptit.smart_healthcare_platform.constant.ValidationConstants;
@@ -20,7 +19,7 @@ public class PatientProfileUpdateRequestDto {
     private String fullName;
 
     @NotNull(message = "Ngày sinh không được để trống")
-    @Past(message = "Ngày sinh phải là ngày trong quá khứ")
+    @PastOrPresent(message = "Ngày sinh phải là ngày trong quá khứ hoặc hiện tại")
     private LocalDate dateOfBirth;
 
     @NotBlank(message = "Giới tính không được để trống")
@@ -34,10 +33,8 @@ public class PatientProfileUpdateRequestDto {
     private String allergies;
     private String bloodType;
 
-    @Positive(message = "Chiều cao phải là số dương")
     private BigDecimal height;
 
-    @Positive(message = "Cân nặng phải là số dương")
     private BigDecimal weight;
 
     @Pattern(regexp = ValidationConstants.BHYT_REGEX, message = "Mã số thẻ BHYT phải đúng định dạng Việt Nam (2 chữ cái in hoa đầu và 13 chữ số tiếp theo, VD: GD4797918800001)")
