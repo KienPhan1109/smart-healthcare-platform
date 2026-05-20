@@ -44,7 +44,7 @@ public class OtpController {
         return ResponseEntity.ok(Map.of(
                 "success", true,
                 "otp", otp,
-                "message", "Ma OTP da duoc gui toi " + phone
+                "message", "Mã OTP đã được gửi tới " + phone
         ));
     }
 
@@ -60,7 +60,7 @@ public class OtpController {
             return ResponseEntity.ok(Map.of("verified", true));
         }
 
-        return ResponseEntity.ok(Map.of("verified", false, "message", "Ma OTP khong chinh xac"));
+        return ResponseEntity.ok(Map.of("verified", false, "message", "Mã OTP không chính xác"));
     }
 
     // Dat lai mat khau sau khi xac thuc OTP thanh cong
@@ -71,18 +71,18 @@ public class OtpController {
         String otpPhone = (String) session.getAttribute("otp_phone");
 
         if (otpVerified == null || !otpVerified || otpPhone == null) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Chua xac thuc OTP"));
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Chưa xác thực OTP"));
         }
 
         String newPassword = body.get("newPassword");
         String confirmPassword = body.get("confirmPassword");
 
         if (!newPassword.equals(confirmPassword)) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mat khau xac nhan khong khop"));
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mật khẩu xác nhận không khớp"));
         }
 
         if (newPassword.length() < 6) {
-            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mat khau phai co it nhat 6 ky tu"));
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", "Mật khẩu phải có ít nhất 6 ký tự"));
         }
 
         try {
@@ -91,7 +91,7 @@ public class OtpController {
             session.removeAttribute("otp_code");
             session.removeAttribute("otp_phone");
             session.removeAttribute("otp_verified");
-            return ResponseEntity.ok(Map.of("success", true, "message", "Doi mat khau thanh cong"));
+            return ResponseEntity.ok(Map.of("success", true, "message", "Đổi mật khẩu thành công"));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }

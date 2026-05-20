@@ -23,6 +23,24 @@
                     Tong quan
                 </a>
             </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PATIENT')">
+                <a th:href="@{/patient/profiles}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-people"></i></span>
+                    Quản lý hồ sơ
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PATIENT')">
+                <a th:href="@{/patient/appointments/book}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-calendar-plus"></i></span>
+                    Đặt lịch khám
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_PATIENT')">
+                <a th:href="@{/patient/appointments/history}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-clock-history"></i></span>
+                    Lịch sử khám bệnh
+                </a>
+            </li>
 
             <!-- DOCTOR Menu -->
             <li sec:authorize="hasAuthority('ROLE_DOCTOR')">
@@ -97,6 +115,9 @@
                         <span sec:authorize="hasAuthority('ROLE_ADMIN')">Quan tri vien</span>
                     </div>
                 </div>
+                <a th:href="@{/profile}" class="ms-auto text-white-50 fs-5" title="Chỉnh sửa thông tin">
+                    <i class="bi bi-person-gear"></i>
+                </a>
             </div>
         </div>
     </nav>

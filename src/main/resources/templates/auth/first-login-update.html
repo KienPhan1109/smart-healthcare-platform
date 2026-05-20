@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cập nhật thông tin - Smart Healthcare</title>
+    <title>Cập nhật thông tin tài khoản - Smart Healthcare</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/5.3.8/css/bootstrap.min.css}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" th:href="@{/css/index.css}">
     <link rel="stylesheet" th:href="@{/css/auth.css}">
+    <style>
+        .update-card {
+            max-width: 600px;
+            width: 90%;
+        }
+    </style>
 </head>
 <body>
     <div class="auth-wrapper">
@@ -15,16 +21,29 @@
             <div style="text-align:center; margin-bottom: 24px;">
                 <div class="welcome-icon"><i class="bi bi-person-check"></i></div>
                 <h1 style="font-size: 20px; font-weight: 700; margin-bottom: 4px;">Chào mừng bạn đến với SHP!</h1>
-                <p style="font-size: 13px; color: var(--hospital-text-secondary);">Hoàn thiện thông tin cá nhân để trải nghiệm dịch vụ tốt hơn. Bạn có thể cập nhật sau.</p>
+                <p style="font-size: 13px; color: var(--hospital-text-secondary);">Hoàn thiện thông tin cá nhân của tài khoản để xác thực dịch vụ tốt hơn.</p>
             </div>
 
             <div th:if="${errorMessage}" class="alert-hospital danger">
                 <i class="bi bi-exclamation-triangle"></i> <span th:text="${errorMessage}"></span>
             </div>
 
+            <div th:if="${#fields.hasErrors('updateRequest.*')}" class="alert-hospital danger">
+                <i class="bi bi-exclamation-triangle"></i> Vui lòng kiểm tra lại thông tin nhập liệu
+            </div>
+
             <form th:action="@{/auth/first-login-update}" th:object="${updateRequest}" method="post" id="updateForm" novalidate>
+                
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="fullName">Họ và Tên *</label>
+                    <input type="text" class="form-control" id="fullName" th:field="*{fullName}" 
+                           th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid-hospital'" 
+                           placeholder="Ví dụ: Nguyễn Văn A">
+                    <div class="error-message show" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Địa chỉ Email (Gmail)</label>
                     <input type="email" class="form-control" id="email" th:field="*{email}" 
                            th:classappend="${#fields.hasErrors('email')} ? 'is-invalid-hospital'" 
                            placeholder="Ví dụ: email@gmail.com">
@@ -33,16 +52,16 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="dateOfBirth">Ngày sinh</label>
+                        <label for="dateOfBirth">Ngày sinh *</label>
                         <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}" 
                                th:classappend="${#fields.hasErrors('dateOfBirth')} ? 'is-invalid-hospital'">
                         <div class="error-message show" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
                     </div>
                     <div class="form-group">
-                        <label for="gender">Giới tính</label>
+                        <label for="gender">Giới tính *</label>
                         <select class="form-control" id="gender" th:field="*{gender}" 
                                th:classappend="${#fields.hasErrors('gender')} ? 'is-invalid-hospital'">
-                            <option value="">-- Chọn --</option>
+                            <option value="">-- Chọn giới tính --</option>
                             <option value="MALE">Nam</option>
                             <option value="FEMALE">Nữ</option>
                             <option value="OTHER">Khác</option>
@@ -53,7 +72,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="identityCard">Số CCCD</label>
+                        <label for="identityCard">Số CCCD / CMND</label>
                         <input type="text" class="form-control" id="identityCard" th:field="*{identityCard}" 
                                th:classappend="${#fields.hasErrors('identityCard')} ? 'is-invalid-hospital'" 
                                placeholder="Ví dụ: 001234567890" maxlength="12">
@@ -68,15 +87,16 @@
                     </div>
                 </div>
 
-                <button type="submit" name="action" value="save" class="btn-primary-hospital" id="btnSave">
-                    <i class="bi bi-check-circle"></i> Lưu thông tin
-                </button>
-                <button type="submit" name="action" value="skip" class="skip-btn" id="btnSkip">
-                    Cập nhật sau <i class="bi bi-arrow-right"></i>
-                </button>
+                <div class="d-flex flex-column gap-2 mt-4">
+                    <button type="submit" name="action" value="save" class="btn-primary-hospital" id="btnSave">
+                        <i class="bi bi-check-circle"></i> Lưu thông tin tài khoản
+                    </button>
+                    <button type="submit" name="action" value="skip" class="skip-btn" id="btnSkip">
+                        Cập nhật sau <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
-
 </body>
 </html>

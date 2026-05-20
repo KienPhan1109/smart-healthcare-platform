@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Đặt Lịch Khám</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="patient-card">
+                        <div class="patient-card-header">
+                            <i class="bi bi-calendar-plus me-2"></i> Đặt Lịch Khám Trực Tuyến
+                        </div>
+                        <div class="patient-card-body">
+                            
+                            <div th:if="${errorMessage}" class="alert-message alert-danger mb-4" th:text="${errorMessage}"></div>
+
+                            <!-- Form chọn chuyên khoa -->
+                            <form th:action="@{/patient/appointments/book}" method="get" id="specialtyForm" class="mb-4 pb-4 border-bottom">
+                                <div class="premium-form-group">
+                                    <label class="premium-label fw-bold" style="color: var(--primary-blue)">1. Chọn Chuyên Khoa</label>
+                                    <select class="premium-select" name="specialtyId" onchange="document.getElementById('specialtyForm').submit()">
+                                        <option value="">-- Vui lòng chọn chuyên khoa --</option>
+                                        <option th:each="spec : ${specialties}" 
+                                                th:value="${spec.id}" 
+                                                th:text="${spec.name}"
+                                                th:selected="${spec.id == selectedSpecialtyId}">Khoa Nội</option>
+                                    </select>
+                                </div>
+                            </form>
+
+                            <!-- Form đặt lịch chính -->
+                            <form th:if="${selectedSpecialtyId != null}" th:action="@{/patient/appointments/book(specialtyId=${selectedSpecialtyId})}" th:object="${dto}" method="post">
+                                
+                                <h5 class="fw-bold mb-3 mt-2" style="color: var(--primary-blue)">2. Chọn Bác Sĩ</h5>
+                                <div th:if="${#lists.isEmpty(doctors)}" class="text-muted fst-italic mb-4">
+                                    Hiện tại không có bác sĩ nào đang hoạt động trong chuyên khoa này.
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6" th:each="doc : ${doctors}">
+                                        <label class="doctor-select-card w-100">
+                                            <input type="radio" th:field="*{doctorId}" th:value="${doc.id}">
+                                            <div class="doctor-info">
+                                                <div class="doctor-name" th:text="${doc.academicRank != null ? doc.academicRank + ' ' + doc.user.fullName : 'BS. ' + doc.user.fullName}">BS. Nguyễn Văn A</div>
+                                                <div class="text-muted small mb-1" th:text="${doc.experienceYears + ' năm kinh nghiệm'}">5 năm kinh nghiệm</div>
+                                                <div class="doctor-fee" th:text="${#numbers.formatDecimal(doc.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">150,000 VNĐ</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <h5 class="fw-bold mb-3 mt-4" style="color: var(--primary-blue)">3. Chi Tiết Lịch Hẹn</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="premium-form-group">
+                                            <label class="premium-label">Chọn hồ sơ khám bệnh *</label>
+                                            <select class="premium-select" th:field="*{patientId}">
+                                                <option value="">-- Chọn bệnh nhân --</option>
+                                                <option th:each="prof : ${profiles}" 
+                                                        th:value="${prof.id}" 
+                                                        th:disabled="${prof.fullName == null or prof.fullName.blank or prof.dateOfBirth == null or prof.gender == null}"
+                                                        th:text="${prof.fullName + ' (' + (prof.relation == null ? 'Chưa rõ' : (prof.relation.name() == 'SELF' ? 'Bản thân' : (prof.relation.name() == 'CHILD' ? 'Con cái' : (prof.relation.name() == 'PARENT' ? 'Cha mẹ' : (prof.relation.name() == 'SPOUSE' ? 'Vợ chồng' : 'Khác'))))) + ')' + (prof.fullName == null or prof.fullName.blank or prof.dateOfBirth == null or prof.gender == null ? ' - Chưa hợp lệ (Thiếu Họ tên/Ngày sinh/Giới tính)' : '')}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="premium-form-group">
+                                            <label class="premium-label">Thời gian dự kiến *</label>
+                                            <input type="datetime-local" class="premium-input" th:field="*{appointmentTime}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="premium-form-group">
+                                    <label class="premium-label">Mô tả triệu chứng / Lý do khám *</label>
+                                    <textarea class="premium-textarea" th:field="*{symptoms}" placeholder="Mô tả chi tiết các triệu chứng bạn đang gặp phải..."></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-end mt-4">
+                                    <button type="submit" class="btn-premium px-5 py-2">
+                                        Tiến hành đặt lịch <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

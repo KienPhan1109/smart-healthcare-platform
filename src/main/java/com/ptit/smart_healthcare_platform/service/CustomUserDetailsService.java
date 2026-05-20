@@ -30,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String phoneNumber) throws UsernameNotFoundException {
         User user = userRepository.findByPhoneNumberWithRoles(phoneNumber)
-                .orElseThrow(() -> new UsernameNotFoundException("Khong tim thay tai khoan voi SĐT: " + phoneNumber));
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản với SĐT: " + phoneNumber));
 
         // Chan dang nhap neu tai khoan bi khoa
         boolean isEnabled = user.getStatus() == UserStatus.ACTIVE;

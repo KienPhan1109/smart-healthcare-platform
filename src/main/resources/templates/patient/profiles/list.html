@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Danh Sách Hồ Sơ Bệnh Nhân</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
+        <div class="container-fluid py-4">
+            
+            <div th:if="${successMessage}" class="alert-message alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert-message alert-danger" th:text="${errorMessage}"></div>
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold" style="color: var(--primary-blue-dark)">Quản Lý Hồ Sơ Bệnh Nhân</h2>
+                <a th:href="@{/patient/profiles/create}" class="btn-premium">
+                    <i class="bi bi-plus-circle me-2"></i>Thêm Hồ Sơ Người Thân
+                </a>
+            </div>
+
+            <div class="patient-card">
+                <div class="patient-card-header">
+                    Danh Sách Hồ Sơ Khám Bệnh
+                </div>
+                <div class="patient-card-body p-0">
+                    <div class="premium-table-container">
+                        <table class="premium-table">
+                            <thead>
+                            <tr>
+                                <th>Họ và Tên</th>
+                                <th>Mối Quan Hệ</th>
+                                <th>Ngày Sinh</th>
+                                <th>Giới Tính</th>
+                                <th>CCCD/CMND</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="patient : ${profiles}">
+                                <td class="fw-bold" th:text="${patient.fullName}">Nguyễn Văn A</td>
+                                <td>
+                                    <span class="status-badge" 
+                                          th:classappend="${patient.relation != null and patient.relation.name() == 'SELF' ? 'status-active' : 'status-completed'}"
+                                          th:text="${patient.relation == null ? 'Chưa rõ' : (patient.relation.name() == 'SELF' ? 'Bản thân' : (patient.relation.name() == 'CHILD' ? 'Con cái' : (patient.relation.name() == 'PARENT' ? 'Cha mẹ' : (patient.relation.name() == 'SPOUSE' ? 'Vợ chồng' : 'Khác'))))}">
+                                    </span>
+                                </td>
+                                <td th:text="${patient.dateOfBirth != null ? #temporals.format(patient.dateOfBirth, 'dd/MM/yyyy') : 'Chưa cập nhật'}">01/01/1990</td>
+                                <td th:text="${patient.gender == null ? 'Chưa cập nhật' : (patient.gender.name() == 'MALE' ? 'Nam' : (patient.gender.name() == 'FEMALE' ? 'Nữ' : 'Khác'))}">Nam</td>
+                                <td th:text="${patient.identityCard != null ? patient.identityCard : 'Chưa cập nhật'}">123456789012</td>
+                                <td>
+                                    <span class="status-badge"
+                                          th:classappend="${patient.fullName != null and !patient.fullName.blank and patient.dateOfBirth != null and patient.gender != null ? 'status-paid' : 'status-cancelled'}"
+                                          th:text="${patient.fullName != null and !patient.fullName.blank and patient.dateOfBirth != null and patient.gender != null ? 'Hợp lệ' : 'Chưa hợp lệ'}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a th:href="@{/patient/profiles/edit/{id}(id=${patient.id})}" class="btn-premium-outline py-1 px-3">
+                                            <i class="bi bi-pencil-square me-1"></i> Sửa
+                                        </a>
+                                        <form th:if="${patient.relation != null and patient.relation.name() != 'SELF'}"
+                                              th:action="@{/patient/profiles/delete/{id}(id=${patient.id})}"
+                                              method="post"
+                                              style="display: inline;"
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa hồ sơ người thân này không?');">
+                                            <button type="submit" class="btn-danger-premium py-1 px-3" style="font-size: 0.9rem; padding: 7px 15px;">
+                                                <i class="bi bi-trash3 me-1"></i> Xóa
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(profiles)}">
+                                <td colspan="7" class="text-center py-4 text-muted">Chưa có hồ sơ bệnh nhân nào</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

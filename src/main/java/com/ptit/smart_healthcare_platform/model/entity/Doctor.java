@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,9 @@ public class Doctor {
 
     @Column(nullable = false)
     private Integer experienceYears = 0;
+
+    @Column(name = "exam_fee", nullable = false, precision = 12, scale = 2)
+    private BigDecimal examFee = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

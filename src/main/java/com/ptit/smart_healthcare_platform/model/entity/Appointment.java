@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "appointments",
         uniqueConstraints = {
                 // CORE-05: Chống xung đột - cùng 1 bác sĩ không bị đặt trùng khung giờ
-                @UniqueConstraint(columnNames = {"doctor_id", "appointment_time"})
+                @UniqueConstraint(columnNames = {"doctor_id", "appointment_time", "is_deleted"})
         })
 @Getter
 @Setter

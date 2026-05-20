@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Thanh Toán Phí Khám</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
+        
+        <!-- Meta refresh: Server-side fallback for no-JS countdown -->
+        <th:block th:if="${!isExpired && payment.status.name() == 'PENDING'}">
+            <meta http-equiv="refresh" content="10">
+        </th:block>
+
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    
+                    <div th:if="${errorMessage}" class="alert-message alert-danger mb-4" th:text="${errorMessage}"></div>
+
+                    <!-- Expired State -->
+                    <div th:if="${isExpired || payment.status.name() == 'CANCELLED'}" class="text-center mt-5">
+                        <i class="bi bi-x-circle text-danger" style="font-size: 5rem;"></i>
+                        <h2 class="fw-bold mt-4 text-danger">Lịch Hẹn Đã Hết Hạn</h2>
+                        <p class="text-muted fs-5 mt-3">Lịch hẹn này đã quá thời hạn 3 phút giữ chỗ hoặc đã bị hủy.</p>
+                        <a th:href="@{/patient/appointments/book}" class="btn-premium mt-4">Đặt Lịch Mới</a>
+                        <a th:href="@{/patient/appointments/history}" class="btn-premium-outline mt-4 ms-3">Xem Lịch Sử</a>
+                    </div>
+
+                    <!-- Active Payment State -->
+                    <div th:if="${!isExpired && payment.status.name() == 'PENDING'}" class="patient-card">
+                        <div class="patient-card-header d-flex justify-content-center" style="background: linear-gradient(135deg, #ffc107, #ff9800); color: #333;">
+                            <i class="bi bi-lock me-2"></i> Hệ Thống Đang Giữ Chỗ
+                        </div>
+                        <div class="patient-card-body p-4">
+                            
+                            <div class="countdown-container">
+                                <p class="mb-1 text-uppercase fw-bold" style="letter-spacing: 1px;">Thời gian giữ chỗ còn lại</p>
+                                <div class="countdown-timer">
+                                    <span th:text="${#numbers.formatInteger(secondsRemaining / 60, 2)}">03</span>:<span th:text="${#numbers.formatInteger(secondsRemaining % 60, 2)}">00</span>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar-animated" th:style="'width: ' + (${secondsRemaining} * 100 / 180) + '%'"></div>
+                                </div>
+                                <p class="mt-3 small opacity-75 fst-italic">Vui lòng hoàn tất thanh toán trước khi thời gian kết thúc.<br>Trang sẽ tự động cập nhật sau mỗi 10 giây.</p>
+                            </div>
+
+                            <h5 class="fw-bold border-bottom pb-2 mb-3" style="color: var(--primary-blue)">Thông Tin Lịch Khám</h5>
+                            <div class="row mb-4">
+                                <div class="col-sm-4 text-muted">Bệnh nhân:</div>
+                                <div class="col-sm-8 fw-bold" th:text="${appointment.patient.fullName}">Nguyễn Văn A</div>
+                                
+                                <div class="col-sm-4 text-muted mt-2">Bác sĩ:</div>
+                                <div class="col-sm-8 fw-bold mt-2" th:text="${appointment.doctor.academicRank != null ? appointment.doctor.academicRank + ' ' + appointment.doctor.user.fullName : 'BS. ' + appointment.doctor.user.fullName}">BS. Trần B</div>
+                                
+                                <div class="col-sm-4 text-muted mt-2">Chuyên khoa:</div>
+                                <div class="col-sm-8 fw-bold mt-2" th:text="${appointment.doctor.specialty.name}">Khoa Nội</div>
+                                
+                                <div class="col-sm-4 text-muted mt-2">Thời gian:</div>
+                                <div class="col-sm-8 fw-bold mt-2 text-primary" th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm - dd/MM/yyyy')}">14:00 - 25/12/2026</div>
+                            </div>
+
+                            <div class="bg-light p-3 rounded text-center mb-4 border">
+                                <p class="text-muted mb-1">Số tiền cần thanh toán</p>
+                                <h2 class="fw-bold mb-0" style="color: var(--danger)" th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">150,000 VNĐ</h2>
+                            </div>
+
+                            <div class="payment-methods">
+                                <form th:action="@{/patient/appointments/pay/{id}/simulate(id=${appointment.id})}" method="post">
+                                    <input type="hidden" name="method" value="VNPAY">
+                                    <button type="submit" class="btn-vnpay"><i class="bi bi-qr-code me-2"></i> Giả lập VNPAY</button>
+                                </form>
+                                <form th:action="@{/patient/appointments/pay/{id}/simulate(id=${appointment.id})}" method="post">
+                                    <input type="hidden" name="method" value="MOMO">
+                                    <button type="submit" class="btn-momo"><i class="bi bi-wallet2 me-2"></i> Giả lập MOMO</button>
+                                </form>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <!-- Already Paid State -->
+                    <div th:if="${payment.status.name() == 'PAID'}" class="text-center mt-5">
+                        <i class="bi bi-check-circle text-success" style="font-size: 5rem;"></i>
+                        <h2 class="fw-bold mt-4 text-success">Đã Thanh Toán</h2>
+                        <p class="text-muted fs-5 mt-3">Lịch hẹn này đã được thanh toán thành công.</p>
+                        <a th:href="@{/patient/appointments/history}" class="btn-premium mt-4">Xem Lịch Sử</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Chỉnh sửa thông tin tài khoản - Smart Healthcare</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
+        
+        <div class="container py-4">
+            <!-- Alert Messages -->
+            <div th:if="${successMessage}" class="alert-message alert-success mb-4">
+                <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}"></span>
+            </div>
+            
+            <div th:if="${#fields.hasErrors('dto.*')}" class="alert-message alert-danger mb-4">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> Vui lòng kiểm tra lại thông tin nhập liệu dưới đây.
+            </div>
+
+            <div class="row">
+                <!-- Left Column: Read-only Account Details -->
+                <div class="col-md-4">
+                    <div class="patient-card">
+                        <div class="patient-card-header">
+                            <span><i class="bi bi-shield-lock me-2"></i>Thông tin tài khoản</span>
+                        </div>
+                        <div class="patient-card-body">
+                            <div class="mb-4 text-center">
+                                <div class="avatar-circle mx-auto mb-3" 
+                                     style="width: 80px; height: 80px; background: var(--primary-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold;"
+                                     th:text="${#strings.substring(user.fullName, 0, 1)}">U</div>
+                                <h4 class="fw-bold mb-1" th:text="${user.fullName}">Nguyễn Văn A</h4>
+                                <p class="text-muted mb-0" th:text="${user.phoneNumber}">0901000001</p>
+                            </div>
+                            
+                            <hr class="my-3">
+                            
+                            <div class="mb-3">
+                                <label class="text-muted d-block small">Vai trò hệ thống</label>
+                                <div class="mt-1">
+                                    <span th:each="ur : ${user.userRoles}" class="me-1">
+                                        <span th:if="${ur.role.name.name() == 'ROLE_PATIENT'}" class="status-badge status-active">Bệnh nhân</span>
+                                        <span th:if="${ur.role.name.name() == 'ROLE_DOCTOR'}" class="status-badge status-completed">Bác sĩ</span>
+                                        <span th:if="${ur.role.name.name() == 'ROLE_COORDINATOR'}" class="status-badge status-pending">Điều phối viên</span>
+                                        <span th:if="${ur.role.name.name() == 'ROLE_PHARMACIST'}" class="status-badge status-paid">Dược sĩ</span>
+                                        <span th:if="${ur.role.name.name() == 'ROLE_CASHIER'}" class="status-badge status-completed">Thu ngân</span>
+                                        <span th:if="${ur.role.name.name() == 'ROLE_ADMIN'}" class="status-badge status-cancelled">Quản trị viên</span>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="text-muted d-block small">Số điện thoại đăng nhập</label>
+                                <span class="fw-bold" th:text="${user.phoneNumber}">0901000001</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="text-muted d-block small">Ngày đăng ký</label>
+                                <span class="fw-bold" th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'dd/MM/yyyy HH:mm') : 'Chưa rõ'}">01/01/2026</span>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="text-muted d-block small">Cập nhật lần cuối</label>
+                                <span class="fw-bold" th:text="${user.updatedAt != null ? #temporals.format(user.updatedAt, 'dd/MM/yyyy HH:mm') : 'Chưa có cập nhật'}">Chưa cập nhật</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Account Edit Form -->
+                <div class="col-md-8">
+                    <div class="patient-card">
+                        <div class="patient-card-header">
+                            <span><i class="bi bi-pencil-square me-2"></i>Thay đổi thông tin cá nhân</span>
+                        </div>
+                        <div class="patient-card-body">
+                            <form th:action="@{/profile}" th:object="${dto}" method="post" novalidate>
+                                
+                                <div th:if="${#fields.hasErrors('global')}" class="alert-message alert-danger mb-4">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:errors="*{global}">Lỗi hệ thống</span>
+                                </div>
+
+                                <!-- 1. Basic Info Section -->
+                                <h5 class="fw-bold mb-3" style="color: var(--primary-blue-dark)">
+                                    <i class="bi bi-person-lines-fill me-2"></i>1. Thông tin cơ bản
+                                </h5>
+
+                                <div class="premium-form-group">
+                                    <label class="premium-label" for="fullName">Họ và tên *</label>
+                                    <input type="text" class="premium-input" id="fullName" th:field="*{fullName}" 
+                                           th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid-hospital'"
+                                           placeholder="Nhập họ và tên đầy đủ của bạn">
+                                    <div class="error-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Lỗi họ tên</div>
+                                </div>
+
+                                <div class="premium-form-group">
+                                    <label class="premium-label" for="email">Địa chỉ Email</label>
+                                    <input type="email" class="premium-input" id="email" th:field="*{email}" 
+                                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid-hospital'"
+                                           placeholder="Nhập địa chỉ email (ví dụ: email@gmail.com)">
+                                    <div class="error-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Lỗi email</div>
+                                </div>
+
+                                <hr class="my-4">
+
+                                <!-- 2. Password Change Section -->
+                                <h5 class="fw-bold mb-2" style="color: var(--primary-blue-dark)">
+                                    <i class="bi bi-key-fill me-2"></i>2. Thay đổi mật khẩu (Tùy chọn)
+                                </h5>
+                                <p class="text-muted small mb-4">
+                                    <i class="bi bi-info-circle me-1"></i> Để bảo mật, nếu không có nhu cầu đổi mật khẩu, vui lòng bỏ trống cả 3 trường nhập liệu bên dưới.
+                                </p>
+
+                                <div class="premium-form-group">
+                                    <label class="premium-label" for="oldPassword">Mật khẩu hiện tại</label>
+                                    <div style="position: relative;">
+                                        <input type="password" class="premium-input" id="oldPassword" name="oldPassword" th:value="*{oldPassword}"
+                                               th:classappend="${#fields.hasErrors('oldPassword')} ? 'is-invalid-hospital'"
+                                               placeholder="Nhập mật khẩu hiện tại để xác minh danh tính" style="padding-right: 40px;">
+                                        <span onclick="togglePasswordVisibility('oldPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6c757d; z-index: 10;">
+                                            <i class="bi bi-eye"></i>
+                                        </span>
+                                    </div>
+                                    <div class="error-feedback" th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}">Lỗi mật khẩu hiện tại</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="premium-form-group">
+                                            <label class="premium-label" for="newPassword">Mật khẩu mới</label>
+                                            <div style="position: relative;">
+                                                <input type="password" class="premium-input" id="newPassword" name="newPassword" th:value="*{newPassword}"
+                                                       th:classappend="${#fields.hasErrors('newPassword')} ? 'is-invalid-hospital'"
+                                                       placeholder="Mật khẩu mới (tối thiểu 6 ký tự)" style="padding-right: 40px;">
+                                                <span onclick="togglePasswordVisibility('newPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6c757d; z-index: 10;">
+                                                    <i class="bi bi-eye"></i>
+                                                </span>
+                                            </div>
+                                            <div class="error-feedback" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}">Lỗi mật khẩu mới</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="premium-form-group">
+                                            <label class="premium-label" for="confirmPassword">Xác nhận mật khẩu mới</label>
+                                            <div style="position: relative;">
+                                                <input type="password" class="premium-input" id="confirmPassword" name="confirmPassword" th:value="*{confirmPassword}"
+                                                       th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid-hospital'"
+                                                       placeholder="Nhập lại mật khẩu mới" style="padding-right: 40px;">
+                                                <span onclick="togglePasswordVisibility('confirmPassword', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #6c757d; z-index: 10;">
+                                                    <i class="bi bi-eye"></i>
+                                                </span>
+                                            </div>
+                                            <div class="error-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Lỗi xác nhận mật khẩu</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-end mt-4 gap-3">
+                                    <!-- Nút quay lại động theo phân quyền người dùng -->
+                                    <a th:href="${#authorization.expression('hasAuthority(''ROLE_PATIENT'')') ? '/patient/dashboard' : 
+                                                 (#authorization.expression('hasAuthority(''ROLE_DOCTOR'')') ? '/doctor/dashboard' : 
+                                                 (#authorization.expression('hasAuthority(''ROLE_COORDINATOR'')') ? '/coordinator/dashboard' : 
+                                                 (#authorization.expression('hasAuthority(''ROLE_PHARMACIST'')') ? '/pharmacist/dashboard' : 
+                                                 (#authorization.expression('hasAuthority(''ROLE_CASHIER'')') ? '/cashier/dashboard' : 
+                                                 (#authorization.expression('hasAuthority(''ROLE_ADMIN'')') ? '/admin/dashboard' : '/')))))}" 
+                                       class="btn-premium-outline">
+                                        <i class="bi bi-arrow-left-circle me-1"></i> Quay lại
+                                    </a>
+                                    <button type="submit" class="btn-premium">
+                                        <i class="bi bi-check-circle me-1"></i> Lưu Thay Đổi
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script>
+            function togglePasswordVisibility(fieldId, element) {
+                const input = document.getElementById(fieldId);
+                const icon = element.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('bi-eye');
+                    icon.classList.add('bi-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('bi-eye-slash');
+                    icon.classList.add('bi-eye');
+                }
+            }
+        </script>
+    </th:block>
+</body>
+</html>

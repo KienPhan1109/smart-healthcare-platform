@@ -34,11 +34,11 @@ public class DataSeeder implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         if (roleRepository.count() > 0) {
-            System.out.println("[DataSeeder] Du lieu da ton tai, bo qua seed.");
+            System.out.println("[DataSeeder] Dữ liệu đã tồn tại, bỏ qua seed.");
             return;
         }
 
-        System.out.println("[DataSeeder] Bat dau nap du lieu mau...");
+        System.out.println("[DataSeeder] Bắt đầu nạp dữ liệu mẫu...");
 
         // === 1. Tao 6 Role ===
         Role rolePatient = createRole(RoleName.ROLE_PATIENT);
@@ -65,10 +65,10 @@ public class DataSeeder implements CommandLineRunner {
         selfPatient.setCreatedAt(LocalDateTime.now());
         patientRepository.save(selfPatient);
 
-        System.out.println("[DataSeeder] Hoan tat! 6 Role + 6 tai khoan mau da duoc tao.");
-        System.out.println("[DataSeeder] Dang nhap bang so dien thoai, mat khau: 123456");
-        System.out.println("  - 0901000001 (Benh nhan) / 0901000002 (Bac si) / 0901000003 (Dieu phoi)");
-        System.out.println("  - 0901000004 (Duoc si) / 0901000005 (Thu ngan) / 0901000006 (Admin)");
+        System.out.println("[DataSeeder] Hoàn tất! 6 Vai trò + 6 tài khoản mẫu đã được tạo.");
+        System.out.println("[DataSeeder] Đăng nhập bằng số điện thoại, mật khẩu: 123456");
+        System.out.println("  - 0901000001 (Bệnh nhân) / 0901000002 (Bác sĩ) / 0901000003 (Điều phối)");
+        System.out.println("  - 0901000004 (Dược sĩ) / 0901000005 (Thu ngân) / 0901000006 (Admin)");
     }
 
     private Role createRole(RoleName name) {

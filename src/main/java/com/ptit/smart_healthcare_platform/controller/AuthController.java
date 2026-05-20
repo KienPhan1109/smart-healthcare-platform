@@ -33,19 +33,44 @@ public class AuthController {
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
     private final org.springframework.security.authentication.AuthenticationManager authenticationManager;
     private final com.ptit.smart_healthcare_platform.config.CustomSuccessHandler successHandler;
+    private final jakarta.validation.Validator validator;
+    private final com.ptit.smart_healthcare_platform.repository.PatientProfileRepository patientProfileRepository;
 
     public AuthController(AuthService authService,
                           UserRepository userRepository,
                           PatientRepository patientRepository,
                           org.springframework.security.crypto.password.PasswordEncoder passwordEncoder,
                           org.springframework.security.authentication.AuthenticationManager authenticationManager,
-                          com.ptit.smart_healthcare_platform.config.CustomSuccessHandler successHandler) {
+                          com.ptit.smart_healthcare_platform.config.CustomSuccessHandler successHandler,
+                          jakarta.validation.Validator validator,
+                          com.ptit.smart_healthcare_platform.repository.PatientProfileRepository patientProfileRepository) {
         this.authService = authService;
         this.userRepository = userRepository;
         this.patientRepository = patientRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.successHandler = successHandler;
+        this.validator = validator;
+        this.patientProfileRepository = patientProfileRepository;
+    }
+
+    @GetMapping("/")
+    public String home(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated() 
+                && !(authentication instanceof org.springframework.security.authentication.AnonymousAuthenticationToken)) {
+            for (org.springframework.security.core.GrantedAuthority authority : authentication.getAuthorities()) {
+                String role = authority.getAuthority();
+                switch (role) {
+                    case "ROLE_ADMIN": return "redirect:/admin/dashboard";
+                    case "ROLE_COORDINATOR": return "redirect:/coordinator/dashboard";
+                    case "ROLE_DOCTOR": return "redirect:/doctor/dashboard";
+                    case "ROLE_PHARMACIST": return "redirect:/pharmacist/dashboard";
+                    case "ROLE_CASHIER": return "redirect:/cashier/dashboard";
+                    case "ROLE_PATIENT": return "redirect:/patient/dashboard";
+                }
+            }
+        }
+        return "redirect:/login";
     }
 
     @GetMapping("/login")
@@ -64,23 +89,25 @@ public class AuthController {
             return "auth/login";
         }
         try {
-            org.springframework.security.authentication.UsernamePasswordAuthenticationToken token = 
-                new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(dto.getPhoneNumber(), dto.getPassword());
+            org.springframework.security.authentication.UsernamePasswordAuthenticationToken token =
+                    new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(dto.getPhoneNumber(), dto.getPassword());
             Authentication authentication = authenticationManager.authenticate(token);
             org.springframework.security.core.context.SecurityContextHolder.getContext().setAuthentication(authentication);
 
             HttpSession session = request.getSession(true);
-            session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, 
-                org.springframework.security.core.context.SecurityContextHolder.getContext());
+            session.setAttribute(org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
+                    org.springframework.security.core.context.SecurityContextHolder.getContext());
 
             // Goi truc tiep successHandler de thuc hien redirect dung chuan bao mat va logic ho so
             try {
                 successHandler.onAuthenticationSuccess(request, response, authentication);
-            } catch (Exception e) {
+            } catch (
+                    Exception e) {
                 // Xử lý ngoại lệ redirect nếu có
             }
             return null; // Response da duoc committed boi successHandler.sendRedirect
-        } catch (org.springframework.security.core.AuthenticationException e) {
+        } catch (
+                org.springframework.security.core.AuthenticationException e) {
             bindingResult.reject("loginError", "Số điện thoại hoặc mật khẩu không chính xác");
             return "auth/login";
         }
@@ -210,7 +237,8 @@ public class AuthController {
             session.removeAttribute("reg_otp_verified");
             redirectAttributes.addFlashAttribute("successMessage", "Đăng ký tài khoản thành công! Vui lòng đăng nhập.");
             return "redirect:/login";
-        } catch (IllegalArgumentException e) {
+        } catch (
+                IllegalArgumentException e) {
             model.addAttribute("step", 3);
             model.addAttribute("step1Dto", new com.ptit.smart_healthcare_platform.model.dto.auth.RegisterStep1Dto());
             model.addAttribute("errorMessage", e.getMessage());
@@ -234,7 +262,9 @@ public class AuthController {
         }
 
         if (!model.containsAttribute("updateRequest")) {
-            model.addAttribute("updateRequest", new com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto());
+            com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto updateRequest = new com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto();
+            userOpt.ifPresent(u -> updateRequest.setFullName(u.getFullName()));
+            model.addAttribute("updateRequest", updateRequest);
         }
         return "auth/first-login-update";
     }
@@ -242,7 +272,7 @@ public class AuthController {
     // Xu ly cap nhat thong tin hoac bo qua
     @PostMapping("/auth/first-login-update")
     public String processFirstLoginUpdate(Authentication authentication,
-                                          @Valid @ModelAttribute("updateRequest") com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto dto,
+                                          @ModelAttribute("updateRequest") com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto dto,
                                           BindingResult bindingResult,
                                           @RequestParam(required = false) String action,
                                           RedirectAttributes redirectAttributes,
@@ -250,7 +280,7 @@ public class AuthController {
 
         String phoneNumber = authentication.getName();
         User user = userRepository.findByPhoneNumber(phoneNumber)
-                .orElseThrow(() -> new RuntimeException("Khong tim thay tai khoan"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
 
         if ("skip".equals(action)) {
             // Nguoi dung nhan "Cap nhat sau" -> danh dau da hoan thanh de khong hoi lai
@@ -261,6 +291,14 @@ public class AuthController {
             return "redirect:/patient/dashboard";
         }
 
+        // Run validation manually
+        java.util.Set<jakarta.validation.ConstraintViolation<com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto>> violations = validator.validate(dto);
+        for (jakarta.validation.ConstraintViolation<com.ptit.smart_healthcare_platform.model.dto.auth.FirstLoginUpdateRequestDto> violation : violations) {
+            String propertyPath = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+            bindingResult.rejectValue(propertyPath, "invalid", message);
+        }
+
         // Validate ngay sinh neu co nhap
         if (dto.getDateOfBirth() != null && !dto.getDateOfBirth().isBlank()) {
             try {
@@ -268,8 +306,19 @@ public class AuthController {
                 if (dob.isAfter(LocalDate.now())) {
                     bindingResult.rejectValue("dateOfBirth", "invalid.dob", "Ngày sinh không được lớn hơn ngày hiện tại");
                 }
-            } catch (Exception e) {
+            } catch (
+                    Exception e) {
                 bindingResult.rejectValue("dateOfBirth", "invalid.dob", "Ngày sinh không hợp lệ");
+            }
+        }
+
+        // Validate BHYT uniqueness
+        String insuranceNumber = dto.getInsuranceNumber();
+        if (insuranceNumber != null && !insuranceNumber.isBlank()) {
+            Optional<com.ptit.smart_healthcare_platform.model.entity.PatientProfile> existingOpt = 
+                patientProfileRepository.findByInsuranceNumber(insuranceNumber);
+            if (existingOpt.isPresent() && !existingOpt.get().getId().equals(user.getId())) {
+                bindingResult.rejectValue("insuranceNumber", "duplicate", "Số thẻ BHYT đã được sử dụng trong hệ thống");
             }
         }
 
@@ -289,6 +338,7 @@ public class AuthController {
             user.setEmail(email);
         }
 
+        user.setFullName(dto.getFullName());
         user.setProfileCompleted(true);
         user.setUpdatedBy(phoneNumber);
         user.setUpdatedAt(LocalDateTime.now());
@@ -298,6 +348,7 @@ public class AuthController {
         Optional<Patient> selfPatientOpt = patientRepository.findByUserIdAndRelation(user.getId(), PatientRelation.SELF);
         if (selfPatientOpt.isPresent()) {
             Patient self = selfPatientOpt.get();
+            self.setFullName(dto.getFullName());
             if (dto.getDateOfBirth() != null && !dto.getDateOfBirth().isBlank()) {
                 self.setDateOfBirth(LocalDate.parse(dto.getDateOfBirth()));
             }
@@ -308,24 +359,23 @@ public class AuthController {
                 self.setIdentityCard(dto.getIdentityCard());
             }
 
-            // Cap nhat PatientProfile (BHYT)
-            String insuranceNumber = dto.getInsuranceNumber();
-            if (self.getPatientProfile() == null) {
-                var profile = new com.ptit.smart_healthcare_platform.model.entity.PatientProfile();
+            // Cap nhat PatientProfile (BHYT va cac gia tri default neu chua co)
+            com.ptit.smart_healthcare_platform.model.entity.PatientProfile profile = self.getPatientProfile();
+            if (profile == null) {
+                profile = new com.ptit.smart_healthcare_platform.model.entity.PatientProfile();
                 profile.setPatient(self);
                 profile.setCreatedBy(phoneNumber);
                 profile.setCreatedAt(LocalDateTime.now());
-                if (insuranceNumber != null && !insuranceNumber.isBlank()) {
-                    profile.setInsuranceNumber(insuranceNumber);
-                }
+                profile.setHeight(java.math.BigDecimal.ZERO);
+                profile.setWeight(java.math.BigDecimal.ZERO);
+                profile.setBloodType(com.ptit.smart_healthcare_platform.model.enums.BloodType.UNKNOWN);
                 self.setPatientProfile(profile);
             } else {
-                if (insuranceNumber != null && !insuranceNumber.isBlank()) {
-                    self.getPatientProfile().setInsuranceNumber(insuranceNumber);
-                }
-                self.getPatientProfile().setUpdatedBy(phoneNumber);
-                self.getPatientProfile().setUpdatedAt(LocalDateTime.now());
+                profile.setUpdatedBy(phoneNumber);
+                profile.setUpdatedAt(LocalDateTime.now());
             }
+
+            profile.setInsuranceNumber(dto.getInsuranceNumber());
 
             self.setUpdatedBy(phoneNumber);
             self.setUpdatedAt(LocalDateTime.now());
