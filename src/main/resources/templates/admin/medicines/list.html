@@ -55,12 +55,12 @@
                                     </td>
                                     <td class="px-4 text-center">
                                         <a th:href="@{/admin/medicines/{id}/edit(id=${medicine.id})}" class="btn btn-sm btn-outline-primary rounded-circle" title="Chỉnh sửa"><i class="bi bi-pencil"></i></a>
-                                        <form th:action="@{/admin/medicines/{id}/delete(id=${medicine.id})}" method="post" class="d-inline" th:if="${medicine.status.name() == 'SELLING'}">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle ms-1" title="Ngừng bán" onclick="return confirm('Bạn có chắc chắn muốn ngừng bán loại thuốc này?');"><i class="bi bi-slash-circle"></i></button>
-                                        </form>
-                                        <form th:action="@{/admin/medicines/{id}/restore(id=${medicine.id})}" method="post" class="d-inline" th:if="${medicine.status.name() == 'STOPPED'}">
-                                            <button type="submit" class="btn btn-sm btn-outline-success rounded-circle ms-1" title="Mở bán lại" onclick="return confirm('Bạn có chắc chắn muốn mở bán lại loại thuốc này?');"><i class="bi bi-arrow-clockwise"></i></button>
-                                        </form>
+                                        <a th:href="@{/admin/medicines/{id}/confirm-stop(id=${medicine.id})}" class="btn btn-sm btn-outline-danger rounded-circle ms-1" title="Ngừng bán" th:if="${medicine.status.name() == 'SELLING'}">
+                                            <i class="bi bi-slash-circle"></i>
+                                        </a>
+                                        <a th:href="@{/admin/medicines/{id}/confirm-restore(id=${medicine.id})}" class="btn btn-sm btn-outline-success rounded-circle ms-1" title="Mở bán lại" th:if="${medicine.status.name() == 'STOPPED'}">
+                                            <i class="bi bi-arrow-clockwise"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 <tr th:if="${medicines.isEmpty()}">

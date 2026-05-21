@@ -52,6 +52,33 @@ public class AdminController {
                               Authentication authentication,
                               Model model,
                               RedirectAttributes redirectAttributes) {
+        // Enforce validation for email on backend
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
+            bindingResult.rejectValue("email", "NotEmpty", "Email không được để trống");
+        } else if (!dto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            bindingResult.rejectValue("email", "Email", "Email không hợp lệ");
+        }
+
+        // Enforce doctor specialty fields if role is ROLE_DOCTOR
+        if (dto.getRoleName() == RoleName.ROLE_DOCTOR) {
+            if (dto.getSpecialtyId() == null) {
+                bindingResult.rejectValue("specialtyId", "NotEmpty", "Vui lòng chọn chuyên khoa cho bác sĩ");
+            }
+            if (dto.getExamFee() == null) {
+                bindingResult.rejectValue("examFee", "NotEmpty", "Phí khám không được để trống");
+            } else if (dto.getExamFee().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                bindingResult.rejectValue("examFee", "Min", "Phí khám không được âm");
+            }
+            if (dto.getAcademicRank() == null || dto.getAcademicRank().trim().isEmpty()) {
+                bindingResult.rejectValue("academicRank", "NotEmpty", "Học hàm / Học vị không được để trống");
+            }
+            if (dto.getExperienceYears() == null) {
+                bindingResult.rejectValue("experienceYears", "NotEmpty", "Năm kinh nghiệm không được để trống");
+            } else if (dto.getExperienceYears() < 0) {
+                bindingResult.rejectValue("experienceYears", "Min", "Năm kinh nghiệm không được âm");
+            }
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("specialties", adminService.getAllSpecialties());
             return "admin/staffs/form";
@@ -76,6 +103,7 @@ public class AdminController {
             dto.setFullName(user.getFullName());
             dto.setPhoneNumber(user.getPhoneNumber());
             dto.setEmail(user.getEmail());
+            dto.setPassword("********"); // Dummy password to bypass validation
 
             // Nếu là bác sĩ, load thêm thông tin doctor
             boolean isDoctor = user.getUserRoles().stream()
@@ -102,10 +130,44 @@ public class AdminController {
 
     @PostMapping("/staffs/{id}/update")
     public String updateStaff(@PathVariable Long id,
-                              @ModelAttribute("dto") StaffRequestDto dto,
+                              @Valid @ModelAttribute("dto") StaffRequestDto dto,
+                              BindingResult bindingResult,
                               Authentication authentication,
                               Model model,
                               RedirectAttributes redirectAttributes) {
+        // Enforce validation for email on backend
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
+            bindingResult.rejectValue("email", "NotEmpty", "Email không được để trống");
+        } else if (!dto.getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            bindingResult.rejectValue("email", "Email", "Email không hợp lệ");
+        }
+
+        // Enforce doctor specialty fields if role is ROLE_DOCTOR
+        if (dto.getRoleName() == RoleName.ROLE_DOCTOR) {
+            if (dto.getSpecialtyId() == null) {
+                bindingResult.rejectValue("specialtyId", "NotEmpty", "Vui lòng chọn chuyên khoa cho bác sĩ");
+            }
+            if (dto.getExamFee() == null) {
+                bindingResult.rejectValue("examFee", "NotEmpty", "Phí khám không được để trống");
+            } else if (dto.getExamFee().compareTo(java.math.BigDecimal.ZERO) < 0) {
+                bindingResult.rejectValue("examFee", "Min", "Phí khám không được âm");
+            }
+            if (dto.getAcademicRank() == null || dto.getAcademicRank().trim().isEmpty()) {
+                bindingResult.rejectValue("academicRank", "NotEmpty", "Học hàm / Học vị không được để trống");
+            }
+            if (dto.getExperienceYears() == null) {
+                bindingResult.rejectValue("experienceYears", "NotEmpty", "Năm kinh nghiệm không được để trống");
+            } else if (dto.getExperienceYears() < 0) {
+                bindingResult.rejectValue("experienceYears", "Min", "Năm kinh nghiệm không được âm");
+            }
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("specialties", adminService.getAllSpecialties());
+            model.addAttribute("editMode", true);
+            model.addAttribute("staffUser", adminService.getStaffById(id));
+            return "admin/staffs/edit";
+        }
         try {
             adminService.updateStaff(id, dto, authentication.getName());
             redirectAttributes.addFlashAttribute("successMessage", "Đã cập nhật thông tin nhân viên thành công!");
@@ -117,6 +179,40 @@ public class AdminController {
             model.addAttribute("staffUser", adminService.getStaffById(id));
             return "admin/staffs/edit";
         }
+    }
+
+    @GetMapping("/staffs/{id}/confirm-lock")
+    public String showConfirmLockStaff(@PathVariable Long id, Model model) {
+        User user = adminService.getStaffById(id);
+        
+        boolean isDoctor = user.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName() == RoleName.ROLE_DOCTOR);
+        if (isDoctor) {
+            Doctor doctor = doctorRepository.findByUserId(id).orElse(null);
+            model.addAttribute("doctor", doctor);
+        }
+        
+        model.addAttribute("staff", user);
+        model.addAttribute("isDoctor", isDoctor);
+        model.addAttribute("action", "lock");
+        return "admin/staffs/confirm-action";
+    }
+
+    @GetMapping("/staffs/{id}/confirm-unlock")
+    public String showConfirmUnlockStaff(@PathVariable Long id, Model model) {
+        User user = adminService.getStaffById(id);
+        
+        boolean isDoctor = user.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName() == RoleName.ROLE_DOCTOR);
+        if (isDoctor) {
+            Doctor doctor = doctorRepository.findByUserId(id).orElse(null);
+            model.addAttribute("doctor", doctor);
+        }
+        
+        model.addAttribute("staff", user);
+        model.addAttribute("isDoctor", isDoctor);
+        model.addAttribute("action", "unlock");
+        return "admin/staffs/confirm-action";
     }
 
     @PostMapping("/staffs/{id}/lock")
@@ -150,6 +246,22 @@ public class AdminController {
     public String listMedicines(Model model) {
         model.addAttribute("medicines", adminService.getAllMedicines());
         return "admin/medicines/list";
+    }
+
+    @GetMapping("/medicines/{id}/confirm-stop")
+    public String showConfirmStopMedicine(@PathVariable Long id, Model model) {
+        var medicine = adminService.getMedicineById(id);
+        model.addAttribute("medicine", medicine);
+        model.addAttribute("action", "stop");
+        return "admin/medicines/confirm-action";
+    }
+
+    @GetMapping("/medicines/{id}/confirm-restore")
+    public String showConfirmRestoreMedicine(@PathVariable Long id, Model model) {
+        var medicine = adminService.getMedicineById(id);
+        model.addAttribute("medicine", medicine);
+        model.addAttribute("action", "restore");
+        return "admin/medicines/confirm-action";
     }
 
     @GetMapping("/medicines/create")

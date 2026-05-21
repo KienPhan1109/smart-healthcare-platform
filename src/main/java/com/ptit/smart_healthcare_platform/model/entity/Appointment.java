@@ -79,12 +79,19 @@ public class Appointment {
                 .anyMatch(p -> p.getStatus() == PaymentStatus.PAID);
     }
 
+    public boolean isExamFeeRefunded() {
+        if (payments == null) return false;
+        return payments.stream()
+                .filter(p -> !Boolean.TRUE.equals(p.getIsDeleted()) && p.getType() == PaymentType.EXAM_FEE)
+                .anyMatch(p -> p.getStatus() == PaymentStatus.REFUNDED);
+    }
+
     public boolean isExpired() {
         if (status == AppointmentStatus.CANCELLED) {
             return cancelReason != null && cancelReason.contains("Quá thời gian 3 phút");
         }
         if (status == AppointmentStatus.PENDING) {
-            return !isExamFeePaid() && java.time.LocalDateTime.now().isAfter(createdAt.plusMinutes(3));
+            return !isExamFeePaid() && LocalDateTime.now().isAfter(createdAt.plusMinutes(3));
         }
         return false;
     }

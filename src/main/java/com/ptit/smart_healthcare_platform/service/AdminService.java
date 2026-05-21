@@ -279,6 +279,14 @@ public class AdminService {
             monthlyRevenue[month - 1] = rev;
         }
         stats.put("monthlyRevenue", monthlyRevenue);
+        
+        List<Appointment> recentAppointments = appointmentRepository.findTop5ByOrderByCreatedAtDesc();
+        // Initialize lazy loads
+        for(Appointment appt : recentAppointments) {
+            if(appt.getPatient() != null) appt.getPatient().getFullName();
+            if(appt.getDoctor() != null && appt.getDoctor().getUser() != null) appt.getDoctor().getUser().getFullName();
+        }
+        stats.put("recentAppointments", recentAppointments);
 
         // Top 5 Doctors
         List<Object[]> topDoctorsRaw = appointmentRepository.findTopDoctorsByCompletedAppointments(PageRequest.of(0, 5));

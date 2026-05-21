@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     List<Doctor> findAllBySpecialtyIdAndStatus(Long specialtyId, DoctorStatus status);
+    List<Doctor> findAllBySpecialtyIdAndStatusAndUser_Status(Long specialtyId, DoctorStatus status, com.ptit.smart_healthcare_platform.model.enums.UserStatus userStatus);
     Optional<Doctor> findByUserId(Long userId);
     long countBySpecialtyId(Long specialtyId);
 }

@@ -96,7 +96,7 @@ public class PatientAppointmentController {
 
         // Bước 2: Hiển thị danh sách bác sĩ thuộc chuyên khoa
         model.addAttribute("selectedSpecialtyId", specialtyId);
-        model.addAttribute("doctors", doctorRepository.findAllBySpecialtyIdAndStatus(specialtyId, DoctorStatus.ACTIVE));
+        model.addAttribute("doctors", doctorRepository.findAllBySpecialtyIdAndStatusAndUser_Status(specialtyId, DoctorStatus.ACTIVE, com.ptit.smart_healthcare_platform.model.enums.UserStatus.ACTIVE));
 
         if (doctorId == null) {
             return "patient/appointments/book";
@@ -280,6 +280,10 @@ public class PatientAppointmentController {
                 redirectAttributes.addFlashAttribute("errorMessage", "Lịch hẹn này không thể hủy được nữa.");
                 return "redirect:/patient/appointments/history";
             }
+            
+            boolean eligibleForRefund = Duration.between(LocalDateTime.now(), appointment.getAppointmentTime()).toHours() >= 24;
+            model.addAttribute("eligibleForRefund", eligibleForRefund);
+            model.addAttribute("currentTime", LocalDateTime.now());
             
             model.addAttribute("appointment", appointment);
             return "patient/appointments/cancel";

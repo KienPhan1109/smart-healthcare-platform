@@ -37,4 +37,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
            "GROUP BY d " +
            "ORDER BY total DESC")
     List<Object[]> findTopDoctorsByCompletedAppointments(Pageable pageable);
+    
+    List<Appointment> findTop5ByOrderByCreatedAtDesc();
 }

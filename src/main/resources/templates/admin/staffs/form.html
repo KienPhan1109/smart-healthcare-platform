@@ -40,8 +40,9 @@
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label fw-bold">Email</label>
-                                <input type="email" th:field="*{email}" class="form-control" placeholder="Nhập địa chỉ email (không bắt buộc)">
+                                <label class="form-label fw-bold">Email <span class="text-danger">*</span></label>
+                                <input type="email" th:field="*{email}" class="form-control" th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" placeholder="Nhập địa chỉ email">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                             </div>
 
                             <div class="col-md-6">
@@ -70,23 +71,27 @@
                             <h6 class="fw-bold text-dark mb-3"><i class="bi bi-heart-pulse text-danger me-2"></i> Thông Tin Chuyên Môn (Dành cho Bác sĩ)</h6>
                             <div class="row g-4">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Chuyên khoa</label>
-                                    <select th:field="*{specialtyId}" class="form-select" id="specialtySelect">
+                                    <label class="form-label fw-bold">Chuyên khoa <span class="text-danger">*</span></label>
+                                    <select th:field="*{specialtyId}" class="form-select" id="specialtySelect" th:classappend="${#fields.hasErrors('specialtyId')} ? 'is-invalid' : ''">
                                         <option value="">-- Chọn chuyên khoa --</option>
                                         <option th:each="spec : ${specialties}" th:value="${spec.id}" th:text="${spec.name}"></option>
                                     </select>
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('specialtyId')}" th:errors="*{specialtyId}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Phí Khám (VNĐ)</label>
-                                    <input type="number" th:field="*{examFee}" class="form-control" id="examFeeInput" placeholder="Ví dụ: 150000">
+                                    <label class="form-label fw-bold">Phí Khám (VNĐ) <span class="text-danger">*</span></label>
+                                    <input type="number" th:field="*{examFee}" class="form-control" id="examFeeInput" th:classappend="${#fields.hasErrors('examFee')} ? 'is-invalid' : ''" placeholder="Ví dụ: 150000">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('examFee')}" th:errors="*{examFee}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Học hàm / Học vị</label>
-                                    <input type="text" th:field="*{academicRank}" class="form-control" placeholder="Ví dụ: ThS.BS, PGS.TS">
+                                    <label class="form-label fw-bold">Học hàm / Học vị <span class="text-danger">*</span></label>
+                                    <input type="text" th:field="*{academicRank}" class="form-control" th:classappend="${#fields.hasErrors('academicRank')} ? 'is-invalid' : ''" placeholder="Ví dụ: ThS.BS, PGS.TS">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('academicRank')}" th:errors="*{academicRank}"></div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Năm kinh nghiệm</label>
-                                    <input type="number" th:field="*{experienceYears}" class="form-control" placeholder="Ví dụ: 5">
+                                    <label class="form-label fw-bold">Năm kinh nghiệm <span class="text-danger">*</span></label>
+                                    <input type="number" th:field="*{experienceYears}" class="form-control" th:classappend="${#fields.hasErrors('experienceYears')} ? 'is-invalid' : ''" placeholder="Ví dụ: 5">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('experienceYears')}" th:errors="*{experienceYears}"></div>
                                 </div>
                             </div>
                         </div>

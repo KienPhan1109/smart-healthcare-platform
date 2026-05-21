@@ -114,8 +114,10 @@ public class AuthController {
                 // Xử lý ngoại lệ redirect nếu có
             }
             return null; // Response da duoc committed boi successHandler.sendRedirect
-        } catch (
-                org.springframework.security.core.AuthenticationException e) {
+        } catch (org.springframework.security.authentication.DisabledException | org.springframework.security.authentication.LockedException e) {
+            bindingResult.reject("loginError", "Tài khoản của bạn đã bị khóa");
+            return "auth/login";
+        } catch (org.springframework.security.core.AuthenticationException e) {
             bindingResult.reject("loginError", "Số điện thoại hoặc mật khẩu không chính xác");
             return "auth/login";
         }

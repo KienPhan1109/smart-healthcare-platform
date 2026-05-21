@@ -32,9 +32,30 @@
                                     <div class="col-5 text-muted">Bệnh nhân:</div>
                                     <div class="col-7 fw-bold" th:text="${appointment.patient.fullName}">Trần Văn B</div>
                                 </div>
-                                <div class="row">
+                                <div class="row mb-2">
                                     <div class="col-5 text-muted">Thời gian khám:</div>
                                     <div class="col-7 fw-bold text-primary" th:text="${#temporals.format(appointment.appointmentTime, 'HH:mm - dd/MM/yyyy')}">08:00 - 25/12/2026</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-5 text-muted">Thời điểm hủy:</div>
+                                    <div class="col-7 fw-bold text-secondary" th:text="${#temporals.format(currentTime, 'HH:mm - dd/MM/yyyy')}">10:00 - 24/12/2026</div>
+                                </div>
+                            </div>
+
+                            <!-- Cảnh báo hoàn tiền -->
+                            <div th:if="${eligibleForRefund}" class="alert alert-success border-0 rounded-3 p-3 mb-4 d-flex align-items-start gap-3" style="background-color: #e8f5e9; color: #2e7d32; border-left: 5px solid #4caf50 !important;">
+                                <i class="bi bi-check-circle-fill fs-4 text-success"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Đủ điều kiện hoàn phí khám (100%)</h6>
+                                    <p class="mb-0 small">Thời gian hủy lịch sớm hơn 24 giờ trước giờ khám. Sau khi xác nhận hủy, hệ thống sẽ thực hiện giả lập hoàn phí khám <strong th:text="${#numbers.formatDecimal(appointment.doctor.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></strong> cho bạn.</p>
+                                </div>
+                            </div>
+
+                            <div th:unless="${eligibleForRefund}" class="alert alert-danger border-0 rounded-3 p-3 mb-4 d-flex align-items-start gap-3" style="background-color: #ffebee; color: #c62828; border-left: 5px solid #f44336 !important;">
+                                <i class="bi bi-exclamation-triangle-fill fs-4 text-danger"></i>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Không đủ điều kiện hoàn phí khám</h6>
+                                    <p class="mb-0 small">Thời gian hủy lịch cách giờ khám <strong>ít hơn 24 giờ</strong>. Bạn vẫn có thể hủy lịch để giải phóng slot nhưng phí khám <strong th:text="${#numbers.formatDecimal(appointment.doctor.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></strong> đã thanh toán sẽ <strong>không được hoàn lại</strong>.</p>
                                 </div>
                             </div>
 
@@ -45,7 +66,7 @@
                                 </div>
                                 
                                 <div class="alert alert-warning small border-0" style="background-color: #fff3cd; color: #856404;">
-                                    <i class="bi bi-info-circle-fill me-1"></i> Lưu ý: Hành động này không thể hoàn tác. Khung giờ khám này sẽ được giải phóng cho bệnh nhân khác trên hệ thống.
+                                    <i class="bi bi-info-circle-fill me-1"></i> Lưu ý: Hành động này không thể hoàn tác. Khung giờ khám này sẽ được giải phóng để bệnh nhân khác chọn lịch.
                                 </div>
 
                                 <div class="d-flex gap-3 mt-4">

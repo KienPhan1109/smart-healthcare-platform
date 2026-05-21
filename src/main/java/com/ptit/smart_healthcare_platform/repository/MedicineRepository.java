@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface MedicineRepository extends JpaRepository<Medicine, Long> {
     List<Medicine> findAllByStatus(MedicineStatus status);
+    List<Medicine> findAllByStatusAndStockQuantityGreaterThan(MedicineStatus status, Integer stockQuantity);
 }

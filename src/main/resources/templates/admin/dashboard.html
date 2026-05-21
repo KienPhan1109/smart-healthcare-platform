@@ -10,65 +10,68 @@
 <body>
     <div layout:fragment="content">
         <div class="container-fluid py-4">
-            <h2 class="mb-4 fw-bold" style="color: var(--hospital-primary-dark);">Thống Kê Hoạt Động Của Nền Tảng</h2>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold text-primary mb-0"><i class="bi bi-speedometer2 me-2"></i>Thống Kê Tổng Quan Hệ Thống</h2>
+                <span class="text-muted" th:text="${#temporals.format(#temporals.createNow(), 'EEEE, dd MMMM yyyy', new java.util.Locale('vi', 'VN'))}"></span>
+            </div>
 
             <!-- Cards -->
             <div class="row g-4 mb-5">
                 <div class="col-xl-3 col-md-6">
-                    <div class="card shadow-sm border-0 bg-primary text-white h-100 rounded-3 hover-elevate transition-all">
-                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Tổng Bệnh Nhân</h6>
-                                <h2 class="fw-bold mb-0" th:text="${stats.totalPatients}">0</h2>
+                    <div class="card shadow border-0 rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #0d6efd 0%, #0098f0 100%);">
+                        <div class="card-body p-4 text-white position-relative">
+                            <div class="position-absolute end-0 top-50 translate-middle-y me-4" style="opacity: 0.2;">
+                                <i class="bi bi-people-fill" style="font-size: 5rem;"></i>
                             </div>
-                            <i class="bi bi-people-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <h6 class="text-white-50 fw-semibold text-uppercase tracking-wide mb-3">Tổng Bệnh Nhân</h6>
+                            <h1 class="display-5 fw-bold mb-0" th:text="${stats.totalPatients}">0</h1>
                         </div>
                     </div>
                 </div>
                 
                 <div class="col-xl-3 col-md-6">
-                    <div class="card shadow-sm border-0 bg-success text-white h-100 rounded-3 hover-elevate transition-all">
-                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Đội Ngũ Bác Sĩ</h6>
-                                <h2 class="fw-bold mb-0" th:text="${stats.totalDoctors}">0</h2>
+                    <div class="card shadow border-0 rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #198754 0%, #20c997 100%);">
+                        <div class="card-body p-4 text-white position-relative">
+                            <div class="position-absolute end-0 top-50 translate-middle-y me-4" style="opacity: 0.2;">
+                                <i class="bi bi-person-badge-fill" style="font-size: 5rem;"></i>
                             </div>
-                            <i class="bi bi-person-badge-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <h6 class="text-white-50 fw-semibold text-uppercase tracking-wide mb-3">Đội Ngũ Bác Sĩ</h6>
+                            <h1 class="display-5 fw-bold mb-0" th:text="${stats.totalDoctors}">0</h1>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-xl-3 col-md-6">
-                    <div class="card shadow-sm border-0 bg-warning text-white h-100 rounded-3 hover-elevate transition-all">
-                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Lượt Khám</h6>
-                                <h2 class="fw-bold mb-0" th:text="${stats.totalAppointments}">0</h2>
+                    <div class="card shadow border-0 rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                        <div class="card-body p-4 text-white position-relative">
+                            <div class="position-absolute end-0 top-50 translate-middle-y me-4" style="opacity: 0.2;">
+                                <i class="bi bi-calendar-check-fill" style="font-size: 5rem;"></i>
                             </div>
-                            <i class="bi bi-calendar-check-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <h6 class="text-white-50 fw-semibold text-uppercase tracking-wide mb-3">Lượt Khám Bệnh</h6>
+                            <h1 class="display-5 fw-bold mb-0" th:text="${stats.totalAppointments}">0</h1>
                         </div>
                     </div>
                 </div>
 
                 <div class="col-xl-3 col-md-6">
-                    <div class="card shadow-sm border-0 bg-danger text-white h-100 rounded-3 hover-elevate transition-all">
-                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Tổng Doanh Thu</h6>
-                                <h2 class="fw-bold mb-0" th:text="${#numbers.formatDecimal(stats.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h2>
+                    <div class="card shadow border-0 rounded-4 overflow-hidden h-100" style="background: linear-gradient(135deg, #dc3545 0%, #f06595 100%);">
+                        <div class="card-body p-4 text-white position-relative">
+                            <div class="position-absolute end-0 top-50 translate-middle-y me-4" style="opacity: 0.2;">
+                                <i class="bi bi-cash-stack" style="font-size: 5rem;"></i>
                             </div>
-                            <i class="bi bi-cash-stack" style="font-size: 3rem; opacity: 0.5;"></i>
+                            <h6 class="text-white-50 fw-semibold text-uppercase tracking-wide mb-3">Tổng Doanh Thu</h6>
+                            <h2 class="fw-bold mb-0 mt-2" th:text="${#numbers.formatDecimal(stats.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h2>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="row g-4">
+            <div class="row g-4 mb-4">
                 <!-- Chart -->
                 <div class="col-xl-8">
-                    <div class="card shadow-sm border-0 rounded-3 h-100">
-                        <div class="card-header bg-white border-bottom p-4">
-                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Biểu Đồ Doanh Thu Theo Tháng (Năm Hiện Tại)</h5>
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-graph-up-arrow text-primary me-2"></i>Biểu Đồ Doanh Thu Theo Tháng</h5>
                         </div>
                         <div class="card-body p-4">
                             <canvas id="revenueChart" height="100"></canvas>
@@ -78,33 +81,84 @@
 
                 <!-- Leaderboard -->
                 <div class="col-xl-4">
-                    <div class="card shadow-sm border-0 rounded-3 h-100">
-                        <div class="card-header bg-white border-bottom p-4">
-                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-trophy-fill text-warning me-2"></i> Top Bác Sĩ Nổi Bật</h5>
+                    <div class="card shadow-sm border-0 rounded-4 h-100">
+                        <div class="card-header bg-white border-bottom pt-4 pb-3 px-4">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-award-fill text-warning me-2"></i>Top Bác Sĩ Hoạt Động Tích Cực</h5>
                         </div>
                         <div class="card-body p-0">
-                            <ul class="list-group list-group-flush">
-                                <li th:each="doctor, iter : ${stats.topDoctors}" class="list-group-item p-4 d-flex justify-content-between align-items-center hover-elevate transition-all border-bottom">
+                            <ul class="list-group list-group-flush rounded-bottom-4">
+                                <li th:each="doctor, iter : ${stats.topDoctors}" class="list-group-item px-4 py-3 d-flex justify-content-between align-items-center hover-elevate transition-all border-bottom">
                                     <div class="d-flex align-items-center">
-                                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-3 fw-bold"
+                                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-3 shadow-sm"
                                              th:classappend="${iter.index == 0 ? 'bg-warning' : (iter.index == 1 ? 'bg-secondary' : (iter.index == 2 ? 'bg-danger' : 'bg-primary'))}"
-                                             style="width: 45px; height: 45px; font-size: 1.2rem;" th:text="${iter.count}">
+                                             style="width: 48px; height: 48px; font-size: 1.25rem; font-weight: 700;" th:text="${iter.count}">
                                         </div>
                                         <div>
                                             <h6 class="fw-bold text-dark mb-1" th:text="${doctor.doctorName}">Tên bác sĩ</h6>
-                                            <small class="text-muted" th:text="${doctor.specialty}">Chuyên khoa</small>
+                                            <small class="text-muted"><i class="bi bi-hospital me-1"></i><span th:text="${doctor.specialty}">Chuyên khoa</span></small>
                                         </div>
                                     </div>
                                     <div class="text-end">
-                                        <span class="badge bg-success rounded-pill px-3 py-2">
-                                            <span th:text="${doctor.completedCount}"></span> ca
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 fw-semibold">
+                                            <i class="bi bi-check-circle-fill me-1"></i><span th:text="${doctor.completedCount}"></span> ca
                                         </span>
                                     </div>
                                 </li>
                                 <li th:if="${stats.topDoctors.isEmpty()}" class="list-group-item p-4 text-center text-muted">
-                                    Chưa có dữ liệu lịch khám hoàn thành.
+                                    Chưa có dữ liệu.
                                 </li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Appointments -->
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-header bg-white border-bottom pt-4 pb-3 px-4 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-calendar2-week text-info me-2"></i>Lịch Khám Mới Gần Đây</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light text-muted">
+                                        <tr>
+                                            <th class="ps-4">Thời Gian Khám</th>
+                                            <th>Bệnh Nhân</th>
+                                            <th>Bác Sĩ</th>
+                                            <th>Trạng Thái</th>
+                                            <th class="pe-4 text-end">Ngày Tạo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="appt : ${stats.recentAppointments}">
+                                            <td class="ps-4 fw-semibold text-primary" th:text="${#temporals.format(appt.appointmentTime, 'HH:mm - dd/MM/yyyy')}"></td>
+                                            <td>
+                                                <div class="fw-bold" th:text="${appt.patient.fullName}"></div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-semibold text-dark" th:text="${appt.doctor.academicRank != null ? appt.doctor.academicRank + ' ' + appt.doctor.user.fullName : 'BS. ' + appt.doctor.user.fullName}"></div>
+                                            </td>
+                                            <td>
+                                                <span th:if="${appt.status.name() == 'PENDING'}" class="badge bg-warning text-dark px-2 py-1 rounded-pill">Chờ thanh toán</span>
+                                                <span th:if="${appt.status.name() == 'CONFIRMED'}" class="badge bg-info text-dark px-2 py-1 rounded-pill">Sắp tới</span>
+                                                <span th:if="${appt.status.name() == 'EXAMINING'}" class="badge bg-primary px-2 py-1 rounded-pill">Đang khám</span>
+                                                <span th:if="${appt.status.name() == 'WAITING_FOR_LAB'}" class="badge bg-primary px-2 py-1 rounded-pill">Đang xét nghiệm</span>
+                                                <span th:if="${appt.status.name() == 'READY_FOR_REEXAM'}" class="badge bg-danger px-2 py-1 rounded-pill">Chờ tái khám</span>
+                                                <span th:if="${appt.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}" class="badge bg-warning text-dark px-2 py-1 rounded-pill">Chờ thanh toán thuốc</span>
+                                                <span th:if="${appt.status.name() == 'COMPLETED'}" class="badge bg-success px-2 py-1 rounded-pill">Thành công</span>
+                                                <span th:if="${appt.status.name() == 'CANCELLED'}" class="badge bg-secondary px-2 py-1 rounded-pill">Đã hủy</span>
+                                            </td>
+                                            <td class="pe-4 text-end text-muted small" th:text="${#temporals.format(appt.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                        </tr>
+                                        <tr th:if="${stats.recentAppointments.isEmpty()}">
+                                            <td colspan="5" class="text-center py-4 text-muted">Chưa có lịch hẹn nào.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

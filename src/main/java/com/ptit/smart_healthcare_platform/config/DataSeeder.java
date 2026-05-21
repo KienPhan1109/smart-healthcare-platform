@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
@@ -74,7 +75,7 @@ public class DataSeeder implements CommandLineRunner {
         selfPatient.setUser(patient);
         selfPatient.setFullName(patient.getFullName());
         selfPatient.setRelation(PatientRelation.SELF);
-        selfPatient.setDateOfBirth(java.time.LocalDate.of(1995, 10, 15));
+        selfPatient.setDateOfBirth(LocalDate.of(1995, 10, 15));
         selfPatient.setGender(Gender.MALE);
         selfPatient.setIdentityCard("001095000123");
         selfPatient.setCreatedBy("SYSTEM");
@@ -88,7 +89,7 @@ public class DataSeeder implements CommandLineRunner {
         profile.setHeight(new BigDecimal("170.0"));
         profile.setWeight(new BigDecimal("65.0"));
         profile.setInsuranceNumber("GD4797918800001");
-        profile.setInsuranceExpiryDate(java.time.LocalDate.of(2030, 12, 31));
+        profile.setInsuranceExpiryDate(LocalDate.of(2030, 12, 31));
         profile.setCreatedBy("SYSTEM");
         profile.setCreatedAt(LocalDateTime.now());
 

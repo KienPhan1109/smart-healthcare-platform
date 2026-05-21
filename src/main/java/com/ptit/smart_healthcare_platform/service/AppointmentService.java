@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -290,14 +291,17 @@ public class AppointmentService {
             throw new SecurityException("Bạn không có quyền hủy lịch hẹn này");
         }
 
+        boolean eligibleForRefund = Duration.between(LocalDateTime.now(), appointment.getAppointmentTime()).toHours() >= 24;
+        String prefix = eligibleForRefund ? "[Hủy trước 24h - Có hoàn tiền] " : "[Hủy trễ dưới 24h - Không hoàn tiền] ";
+
         appointment.setStatus(AppointmentStatus.CANCELLED);
-        appointment.setCancelReason(reason);
+        appointment.setCancelReason(prefix + reason);
         appointment.setIsDeleted(true); // Release the slot
         appointment.setUpdatedBy(actor);
         appointment.setUpdatedAt(LocalDateTime.now());
         appointmentRepository.save(appointment);
 
-        // Cancel pending payment if exists
+        // Cancel pending payment if exists, or refund if paid
         paymentRepository.findByAppointmentIdAndTypeAndIsDeletedFalse(id, PaymentType.EXAM_FEE)
                 .ifPresent(payment -> {
                     if (payment.getStatus() == PaymentStatus.PENDING) {
@@ -305,6 +309,13 @@ public class AppointmentService {
                         payment.setUpdatedBy(actor);
                         payment.setUpdatedAt(LocalDateTime.now());
                         paymentRepository.save(payment);
+                    } else if (payment.getStatus() == PaymentStatus.PAID) {
+                        if (eligibleForRefund) {
+                            payment.setStatus(PaymentStatus.REFUNDED);
+                            payment.setUpdatedBy(actor);
+                            payment.setUpdatedAt(LocalDateTime.now());
+                            paymentRepository.save(payment);
+                        }
                     }
                 });
     }

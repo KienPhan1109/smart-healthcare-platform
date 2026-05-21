@@ -80,7 +80,7 @@ public class DoctorAppointmentController {
             doctorService.startExamining(appt.getId(), doctor.getId());
 
             model.addAttribute("appointment", appt);
-            model.addAttribute("medicines", medicineRepository.findAllByStatus(MedicineStatus.SELLING));
+            model.addAttribute("medicines", medicineRepository.findAllByStatusAndStockQuantityGreaterThan(MedicineStatus.SELLING, 0));
             model.addAttribute("labTests", labTestRepository.findAllByOrderByNameAsc());
             
             // Nạp kết quả xét nghiệm nếu có (cho tái khám)

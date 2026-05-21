@@ -94,8 +94,16 @@
                                       </th:block>
                                   </td>
                                   <td>
-                                      <th:block th:if="${appt.isExpired() || (appt.status.name() == 'CANCELLED' and !appt.isExamFeePaid())}">
+                                      <th:block th:if="${appt.isExpired() || (appt.status.name() == 'CANCELLED' and !appt.isExamFeePaid() and !appt.isExamFeeRefunded())}">
                                           <span class="status-badge status-expired">Đã đóng</span>
+                                      </th:block>
+                                      
+                                      <th:block th:if="${appt.status.name() == 'CANCELLED' and appt.isExamFeePaid()}">
+                                          <span class="badge bg-secondary px-2 py-1 rounded-pill"><i class="bi bi-x-circle me-1"></i> Đã trả (Không hoàn)</span>
+                                      </th:block>
+
+                                      <th:block th:if="${appt.status.name() == 'CANCELLED' and appt.isExamFeeRefunded()}">
+                                          <span class="status-badge status-completed"><i class="bi bi-arrow-return-left me-1"></i> Đã hoàn tiền</span>
                                       </th:block>
                                       
                                       <!-- Phí khám -->

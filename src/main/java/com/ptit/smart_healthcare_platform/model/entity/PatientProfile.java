@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -47,7 +48,7 @@ public class PatientProfile {
 
     // Ngày hết hạn thẻ BHYT phục vụ việc tự động kiểm soát hiệu lực khi cấp phát
     @Column(name = "insurance_expiry_date")
-    private java.time.LocalDate insuranceExpiryDate;
+    private LocalDate insuranceExpiryDate;
 
     @Column(name = "created_by", length = 50)
     private String createdBy;

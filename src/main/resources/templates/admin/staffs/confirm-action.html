@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${action == 'lock' ? 'Xác Nhận Khóa Tài Khoản Nhân Sự' : 'Xác Nhận Mở Khóa Tài Khoản Nhân Sự'}">Xác Nhận Thao Tác</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container py-5" style="max-width: 700px;">
+            <div class="d-flex align-items-center mb-4 gap-3">
+                <a th:href="@{/admin/staffs}" class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);" th:text="${action == 'lock' ? 'Xác Nhận Khóa Tài Khoản' : 'Xác Nhận Mở Khóa Tài Khoản'}">Xác Nhận Thao Tác</h2>
+            </div>
+
+            <!-- Confirmation Card -->
+            <div class="card border-0 rounded-4 shadow-lg overflow-hidden">
+                <!-- Header themed based on action -->
+                <div class="p-4 text-white text-center" 
+                     th:style="${action == 'lock'} ? 'background: linear-gradient(135deg, #e53935, #c62828);' : 'background: linear-gradient(135deg, #43a047, #2e7d32);'">
+                    <i th:class="${action == 'lock'} ? 'bi bi-lock-fill display-4 mb-2 d-block' : 'bi bi-unlock-fill display-4 mb-2 d-block'"></i>
+                    <h4 class="fw-bold mb-0" th:text="${action == 'lock' ? 'Yêu Cầu Khóa Tài Khoản Nhân Sự' : 'Yêu Cầu Mở Khóa Tài Khoản Nhân Sự'}">Thao Tác Nhân Sự</h4>
+                </div>
+
+                <div class="card-body p-5">
+                    <p class="text-muted text-center mb-4" th:text="${action == 'lock' ? 'Bạn đang yêu cầu khóa tài khoản của nhân sự dưới đây. Vui lòng kiểm tra lại thông tin.' : 'Bạn đang yêu cầu mở khóa tài khoản của nhân sự dưới đây để khôi phục quyền truy cập.'}"></p>
+
+                    <!-- Staff details -->
+                    <div class="p-4 bg-light rounded-4 mb-4 border border-light">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Họ và Tên</span>
+                                <strong class="fs-5 text-dark" th:text="${staff.fullName}">Nguyễn Văn A</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Mã nhân sự</span>
+                                <strong class="fs-5 text-dark">#<span th:text="${staff.id}">12</span></strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Số điện thoại</span>
+                                <strong class="fs-5 text-dark" th:text="${staff.phoneNumber}">0987654321</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Địa chỉ Email</span>
+                                <strong class="fs-5 text-dark text-break" th:text="${staff.email != null ? staff.email : 'Chưa cập nhật'}">doctor@hospital.com</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Chức vụ</span>
+                                <div class="mt-1" th:each="ur : ${staff.userRoles}">
+                                    <span class="badge bg-info bg-opacity-10 text-info border border-info rounded-pill px-3 py-2"
+                                          th:if="${ur.role.name.name() == 'ROLE_DOCTOR'}"><i class="bi bi-heart-pulse me-1"></i> Bác Sĩ</span>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning rounded-pill px-3 py-2 text-dark"
+                                          th:if="${ur.role.name.name() == 'ROLE_TECHNICIAN'}"><i class="bi bi-activity me-1"></i> Kỹ Thuật Viên</span>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Trạng thái hiện tại</span>
+                                <span class="badge bg-success rounded-pill px-3 py-2 mt-1" th:if="${staff.status.name() == 'ACTIVE'}">Đang hoạt động</span>
+                                <span class="badge bg-danger rounded-pill px-3 py-2 mt-1" th:if="${staff.status.name() == 'LOCKED'}">Đã khóa</span>
+                            </div>
+                            
+                            <!-- Doctor specific specialty details -->
+                            <div class="col-12 border-top pt-3 mt-3" th:if="${isDoctor and doctor != null}">
+                                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-patch-check-fill me-1"></i> Thông Tin Chuyên Môn Bác Sĩ</h6>
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block">Chuyên khoa</span>
+                                        <strong class="text-dark" th:text="${doctor.specialty.name}">Nội khoa</strong>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block">Phí khám cơ bản</span>
+                                        <strong class="text-danger" th:text="${#numbers.formatDecimal(doctor.examFee, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">150,000 VNĐ</strong>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block">Học hàm / Học vị</span>
+                                        <strong class="text-dark" th:text="${doctor.academicRank}">ThS.BS</strong>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-muted small d-block">Kinh nghiệm khám</span>
+                                        <strong class="text-dark"><span th:text="${doctor.experienceYears}">5</span> năm</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Alert Banner -->
+                    <div th:if="${action == 'lock'}" class="alert alert-danger border-0 rounded-3 p-3 mb-4 d-flex align-items-start gap-3" style="background-color: #ffebee; color: #c62828;">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 text-danger"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Cảnh báo hệ quả thao tác</h6>
+                            <p class="mb-0 small">Khi tài khoản bị khóa, nhân viên này **sẽ ngay lập tức bị đăng xuất** khỏi toàn bộ thiết bị và không thể đăng nhập trở lại. Đồng thời, nếu đây là Bác sĩ, bệnh nhân mới sẽ **không thể đặt lịch hẹn mới** với bác sĩ này.</p>
+                        </div>
+                    </div>
+
+                    <div th:unless="${action == 'lock'}" class="alert alert-success border-0 rounded-3 p-3 mb-4 d-flex align-items-start gap-3" style="background-color: #e8f5e9; color: #2e7d32;">
+                        <i class="bi bi-info-circle-fill fs-5 mt-1 text-success"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Thông tin khôi phục tài khoản</h6>
+                            <p class="mb-0 small">Mở khóa tài khoản sẽ khôi phục toàn bộ quyền đăng nhập, làm việc bình thường của nhân viên này trên hệ thống bệnh viện.</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Form -->
+                    <form th:action="@{${action == 'lock' ? '/admin/staffs/' + staff.id + '/lock' : '/admin/staffs/' + staff.id + '/unlock'}}" method="post">
+                        <div class="d-flex gap-3 mt-4">
+                            <a th:href="@{/admin/staffs}" class="btn btn-outline-secondary fw-bold flex-grow-1 py-3 rounded-3">
+                                <i class="bi bi-x-lg me-1"></i> Quay lại
+                            </a>
+                            
+                            <button type="submit" class="btn text-white fw-bold flex-grow-1 py-3 rounded-3 shadow-sm transition-all"
+                                    th:style="${action == 'lock'} ? 'background-color: #c62828;' : 'background-color: #2e7d32;'"
+                                    th:onmouseover="${action == 'lock'} ? 'this.style.backgroundColor=\'#b71c1c\'' : 'this.style.backgroundColor=\'#1b5e20\''"
+                                    th:onmouseout="${action == 'lock'} ? 'this.style.backgroundColor=\'#c62828\'' : 'this.style.backgroundColor=\'#2e7d32\''">
+                                <i th:class="${action == 'lock'} ? 'bi bi-lock me-1' : 'bi bi-unlock me-1'"></i>
+                                <span th:text="${action == 'lock' ? 'Xác Nhận Khóa' : 'Xác Nhận Mở Khóa'}">Xác Nhận</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

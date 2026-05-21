@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${action == 'stop' ? 'Xác Nhận Ngừng Bán Thuốc' : 'Xác Nhận Mở Bán Lại Thuốc'}">Xác Nhận Thao Tác</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container py-5" style="max-width: 700px;">
+            <div class="d-flex align-items-center mb-4 gap-3">
+                <a th:href="@{/admin/medicines}" class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);" th:text="${action == 'stop' ? 'Xác Nhận Ngừng Bán Thuốc' : 'Xác Nhận Mở Bán Lại Thuốc'}">Xác Nhận Thao Tác</h2>
+            </div>
+
+            <!-- Confirmation Card -->
+            <div class="card border-0 rounded-4 shadow-lg overflow-hidden">
+                <!-- Header themed based on action -->
+                <div class="p-4 text-white text-center" 
+                     th:style="${action == 'stop'} ? 'background: linear-gradient(135deg, #e53935, #c62828);' : 'background: linear-gradient(135deg, #43a047, #2e7d32);'">
+                    <i th:class="${action == 'stop'} ? 'bi bi-slash-circle-fill display-4 mb-2 d-block' : 'bi bi-check-circle-fill display-4 mb-2 d-block'"></i>
+                    <h4 class="fw-bold mb-0" th:text="${action == 'stop' ? 'Yêu Cầu Dừng Kinh Doanh Thuốc' : 'Yêu Cầu Kích Hoạt Lại Thuốc'}">Thao Tác Thuốc</h4>
+                </div>
+
+                <div class="card-body p-5">
+                    <p class="text-muted text-center mb-4" th:text="${action == 'stop' ? 'Bạn đang yêu cầu ngừng bán loại thuốc dưới đây. Vui lòng kiểm tra lại kỹ thông tin sản phẩm.' : 'Bạn đang yêu cầu khôi phục trạng thái mở bán loại thuốc dưới đây để bác sĩ tiếp tục kê đơn.'}"></p>
+
+                    <!-- Medicine details -->
+                    <div class="p-4 bg-light rounded-4 mb-4 border border-light">
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Tên sản phẩm</span>
+                                <strong class="fs-5 text-dark" th:text="${medicine.name}">Panadol</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Mã sản phẩm</span>
+                                <strong class="fs-5 text-dark">#<span th:text="${medicine.id}">12</span></strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Đơn vị tính</span>
+                                <strong class="fs-5 text-dark" th:text="${medicine.unit}">Hộp</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Đơn giá niêm yết</span>
+                                <strong class="fs-5 text-danger" th:text="${#numbers.formatDecimal(medicine.price, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">50,000 VNĐ</strong>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Số lượng tồn kho</span>
+                                <span class="badge rounded-pill px-3 py-2 mt-1 fs-6" 
+                                      th:classappend="${medicine.stockQuantity > 50 ? 'bg-success' : (medicine.stockQuantity > 0 ? 'bg-warning text-dark' : 'bg-danger')}"
+                                      th:text="${medicine.stockQuantity}">100</span>
+                            </div>
+                            <div class="col-sm-6">
+                                <span class="text-muted small d-block">Trạng thái hiện tại</span>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2 mt-1" th:if="${medicine.status.name() == 'SELLING'}">Đang bán</span>
+                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill px-3 py-2 mt-1" th:if="${medicine.status.name() == 'STOPPED'}">Ngừng bán</span>
+                            </div>
+                            <div class="col-12" th:if="${medicine.usageInstruction != null and !medicine.usageInstruction.isEmpty()}">
+                                <span class="text-muted small d-block mb-1">Hướng dẫn sử dụng / Chỉ định</span>
+                                <div class="bg-white p-3 rounded-3 text-secondary small border" style="min-height: 60px;" th:text="${medicine.usageInstruction}"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Warning Alert Banner -->
+                    <div th:if="${action == 'stop'}" class="alert alert-danger border-0 rounded-3 p-3 mb-4 d-flex align-items-start gap-3" style="background-color: #ffebee; color: #c62828;">
+                        <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 text-danger"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Lưu ý cực kỳ quan trọng</h6>
+                            <p class="mb-0 small">Khi dừng bán thuốc, sản phẩm này **sẽ không xuất hiện** trong danh mục để Bác sĩ kê đơn mới. Tuy nhiên, các đơn thuốc đã kê từ trước đó vẫn lưu giữ thông tin bình thường để phục vụ tra cứu.</p>
+                        </div>
+                    </div>
+
+                    <div th:unless="${action == 'stop'}" class="alert alert-success border-0 rounded-3 p-3 mb-4 d-flex align-items-start gap-3" style="background-color: #e8f5e9; color: #2e7d32;">
+                        <i class="bi bi-info-circle-fill fs-5 mt-1 text-success"></i>
+                        <div>
+                            <h6 class="fw-bold mb-1">Thông tin hoạt động</h6>
+                            <p class="mb-0 small">Mở bán lại sẽ giúp sản phẩm **ngay lập tức xuất hiện trở lại** trên hệ thống kê đơn của Bác sĩ. Các chức năng xuất nhập kho cũng hoạt động bình thường.</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons Form -->
+                    <form th:action="@{${action == 'stop' ? '/admin/medicines/' + medicine.id + '/delete' : '/admin/medicines/' + medicine.id + '/restore'}}" method="post">
+                        <div class="d-flex gap-3 mt-4">
+                            <a th:href="@{/admin/medicines}" class="btn btn-outline-secondary fw-bold flex-grow-1 py-3 rounded-3">
+                                <i class="bi bi-x-lg me-1"></i> Quay lại
+                            </a>
+                            
+                            <button type="submit" class="btn text-white fw-bold flex-grow-1 py-3 rounded-3 shadow-sm transition-all"
+                                    th:style="${action == 'stop'} ? 'background-color: #c62828;' : 'background-color: #2e7d32;'"
+                                    th:onmouseover="${action == 'stop'} ? 'this.style.backgroundColor=\'#b71c1c\'' : 'this.style.backgroundColor=\'#1b5e20\''"
+                                    th:onmouseout="${action == 'stop'} ? 'this.style.backgroundColor=\'#c62828\'' : 'this.style.backgroundColor=\'#2e7d32\''">
+                                <i th:class="${action == 'stop'} ? 'bi bi-slash-circle me-1' : 'bi bi-arrow-clockwise me-1'"></i>
+                                <span th:text="${action == 'stop' ? 'Xác Nhận Ngừng Bán' : 'Xác Nhận Mở Bán'}">Xác Nhận</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
