@@ -24,6 +24,23 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
+            <!-- Thanh tìm kiếm -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <form th:action="@{/admin/medicines}" method="get" class="row g-3">
+                        <div class="col-md-9">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm theo Tên thuốc...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i> Lọc kết quả</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -40,7 +57,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="medicine : ${medicines}" class="border-bottom hover-elevate transition-all">
+                                <tr th:if="${medicinesPage.content.isEmpty()}">
+                                    <td colspan="7" class="text-center py-4 text-muted">Không tìm thấy thuốc nào phù hợp.</td>
+                                </tr>
+                                <tr th:each="medicine : ${medicinesPage.content}" class="border-bottom hover-elevate transition-all">
                                     <td class="px-4 fw-bold text-muted">#<span th:text="${medicine.id}"></span></td>
                                     <td class="px-4 fw-bold text-dark" th:text="${medicine.name}">Panadol</td>
                                     <td class="px-4" th:text="${medicine.unit}">Viên</td>
@@ -63,14 +83,31 @@
                                         </a>
                                     </td>
                                 </tr>
-                                <tr th:if="${medicines.isEmpty()}">
-                                    <td colspan="7" class="text-center py-5 text-muted">Chưa có thuốc nào trong hệ thống.</td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
+            <!-- Phân trang -->
+            <div class="d-flex justify-content-center mt-4" th:if="${medicinesPage.totalPages > 1}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item" th:classappend="${medicinesPage.first} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/admin/medicines(page=${medicinesPage.number - 1}, keyword=${keyword})}" tabindex="-1">Trước</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, medicinesPage.totalPages - 1)}"
+                            th:classappend="${medicinesPage.number == i} ? 'active' : ''">
+                            <a class="page-link" th:href="@{/admin/medicines(page=${i}, keyword=${keyword})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${medicinesPage.last} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/admin/medicines(page=${medicinesPage.number + 1}, keyword=${keyword})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
         </div>
     </div>
 </body>

@@ -32,8 +32,17 @@ public class AdminController {
 
     // --- Staff Management ---
     @GetMapping("/staffs")
-    public String listStaffs(Model model) {
-        model.addAttribute("staffs", adminService.getAllStaffs());
+    public String listStaffs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Long specialtyId,
+            Model model) {
+        
+        model.addAttribute("staffsPage", adminService.searchStaffs(keyword, specialtyId, page, size));
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("specialtyId", specialtyId);
+        model.addAttribute("specialties", adminService.getAllSpecialties());
         return "admin/staffs/list";
     }
 
@@ -241,10 +250,16 @@ public class AdminController {
         return "redirect:/admin/staffs";
     }
 
-    // --- Medicine Management ---
+    // --- Medicines ---
     @GetMapping("/medicines")
-    public String listMedicines(Model model) {
-        model.addAttribute("medicines", adminService.getAllMedicines());
+    public String listMedicines(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(required = false) String keyword,
+            Model model) {
+        
+        model.addAttribute("medicinesPage", adminService.searchMedicines(keyword, page, size));
+        model.addAttribute("keyword", keyword);
         return "admin/medicines/list";
     }
 

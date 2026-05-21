@@ -40,6 +40,34 @@
             </div>
         </div>
 
+        <!-- Hồ Sơ Sức Khỏe Nền -->
+        <div class="card mb-4 border-info" th:if="${appointment.patient.patientProfile != null}">
+            <div class="card-body">
+                <h5 class="card-title text-info mb-3"><i class="bi bi-person-vcard"></i> Hồ Sơ Sức Khỏe Nền</h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="mb-1 text-muted small">Nhóm máu</p>
+                        <p class="fw-bold" th:text="${appointment.patient.patientProfile.bloodType.name() != 'UNKNOWN' ? appointment.patient.patientProfile.bloodType.name() : 'Chưa cập nhật'}">A+</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="mb-1 text-muted small">Chiều cao / Cân nặng</p>
+                        <p class="fw-bold">
+                            <span th:text="${appointment.patient.patientProfile.height > 0 ? appointment.patient.patientProfile.height + ' cm' : '--'}"></span> / 
+                            <span th:text="${appointment.patient.patientProfile.weight > 0 ? appointment.patient.patientProfile.weight + ' kg' : '--'}"></span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1 text-muted small">Dị ứng</p>
+                        <p class="fw-bold text-danger" th:text="${appointment.patient.patientProfile.allergies != null and !appointment.patient.patientProfile.allergies.isEmpty() ? appointment.patient.patientProfile.allergies : 'Không có'}">Không có</p>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <p class="mb-1 text-muted small">Tiền sử bệnh lý</p>
+                        <p class="fw-bold mb-0" th:text="${appointment.patient.patientProfile.medicalHistory != null and !appointment.patient.patientProfile.medicalHistory.isEmpty() ? appointment.patient.patientProfile.medicalHistory : 'Không có tiền sử bệnh lý đặc biệt'}">Không có</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- === KẾT QUẢ / CHỈ ĐỊNH CẬN LÂM SÀNG === -->
         <div class="card mb-4 border-primary">
             <div class="card-body">

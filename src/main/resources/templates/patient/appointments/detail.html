@@ -91,6 +91,7 @@
 
                                     <th:block th:if="${appointment.status.name() == 'CONFIRMED' || appointment.status.name() == 'EXAMINING' || appointment.status.name() == 'WAITING_FOR_DRUG_PAYMENT' || appointment.status.name() == 'COMPLETED'}">
                                         <span class="text-success fw-bold"><i class="bi bi-check-circle me-1"></i> Đã đóng phí khám</span>
+                                        <span th:if="${examPayment != null}" class="text-muted small d-block font-monospace mt-1" th:text="'(' + ${examPayment.paymentMethod} + ' - ' + ${examPayment.transactionId} + ')'"></span>
                                     </th:block>
                                 </div>
                             </div>

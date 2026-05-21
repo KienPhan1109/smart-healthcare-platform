@@ -20,6 +20,7 @@ import jakarta.validation.Valid;
 import com.ptit.smart_healthcare_platform.repository.MedicalRecordRepository;
 import com.ptit.smart_healthcare_platform.model.entity.MedicalRecord;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +39,7 @@ import java.util.List;
 @Controller
 @RequestMapping("/patient/appointments")
 @RequiredArgsConstructor
+@Slf4j
 public class PatientAppointmentController {
 
     private final AppointmentService appointmentService;
@@ -323,11 +325,19 @@ public class PatientAppointmentController {
             MedicalRecord record = appointmentService.getMedicalRecordWithPrescriptionByAppointmentId(id);
             model.addAttribute("medicalRecord", record);
             
+            Payment examPayment = null;
+            try {
+                examPayment = paymentSimulationService.getExamFeePayment(id, user.getId());
+            } catch (IllegalStateException e) {
+                log.debug("Chưa có hóa đơn phí khám cho lịch hẹn {}: {}", id, e.getMessage());
+            }
+            model.addAttribute("examPayment", examPayment);
+            
             Payment drugPayment = null;
             try {
                 drugPayment = paymentSimulationService.getDrugFeePayment(id, user.getId());
-            } catch (Exception e) {
-                // Bỏ qua nếu chưa có hóa đơn thuốc
+            } catch (IllegalStateException e) {
+                log.debug("Chưa có hóa đơn tiền thuốc cho lịch hẹn {}: {}", id, e.getMessage());
             }
             model.addAttribute("drugPayment", drugPayment);
 
@@ -335,8 +345,8 @@ public class PatientAppointmentController {
             Payment labPayment = null;
             try {
                 labPayment = paymentSimulationService.getLabFeePayment(id, user.getId());
-            } catch (Exception e) {
-                // Bỏ qua nếu chưa có hóa đơn xét nghiệm
+            } catch (IllegalStateException e) {
+                log.debug("Chưa có hóa đơn xét nghiệm cho lịch hẹn {}: {}", id, e.getMessage());
             }
             model.addAttribute("labPayment", labPayment);
 

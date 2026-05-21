@@ -24,6 +24,29 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
 
+            <!-- Thanh tìm kiếm và lọc -->
+            <div class="card shadow-sm border-0 rounded-3 mb-4">
+                <div class="card-body">
+                    <form th:action="@{/admin/staffs}" method="get" class="row g-3">
+                        <div class="col-md-5">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-search"></i></span>
+                                <input type="text" class="form-control" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm theo Tên hoặc Số điện thoại...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select name="specialtyId" class="form-select">
+                                <option value="">-- Tất cả Chuyên khoa (dành cho Bác sĩ) --</option>
+                                <option th:each="spec : ${specialties}" th:value="${spec.id}" th:text="${spec.name}" th:selected="${specialtyId == spec.id}"></option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i> Lọc kết quả</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
             <div class="card shadow-sm border-0 rounded-3">
                 <div class="card-body p-0">
                     <div class="table-responsive">
@@ -39,7 +62,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr th:each="staff : ${staffs}" class="border-bottom hover-elevate transition-all">
+                                <tr th:if="${staffsPage.content.isEmpty()}">
+                                    <td colspan="6" class="text-center py-4 text-muted">Không tìm thấy nhân sự nào phù hợp.</td>
+                                </tr>
+                                <tr th:each="staff : ${staffsPage.content}" class="border-bottom hover-elevate transition-all">
                                     <td class="px-4 fw-bold text-muted">#<span th:text="${staff.id}"></span></td>
                                     <td class="px-4">
                                         <div class="d-flex align-items-center">
@@ -76,14 +102,31 @@
                                         </a>
                                     </td>
                                 </tr>
-                                <tr th:if="${staffs.isEmpty()}">
-                                    <td colspan="6" class="text-center py-5 text-muted">Chưa có nhân viên nào trong hệ thống.</td>
-                                </tr>
+
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
+            <!-- Phân trang -->
+            <div class="d-flex justify-content-center mt-4" th:if="${staffsPage.totalPages > 1}">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm">
+                        <li class="page-item" th:classappend="${staffsPage.first} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/admin/staffs(page=${staffsPage.number - 1}, keyword=${keyword}, specialtyId=${specialtyId})}" tabindex="-1">Trước</a>
+                        </li>
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, staffsPage.totalPages - 1)}"
+                            th:classappend="${staffsPage.number == i} ? 'active' : ''">
+                            <a class="page-link" th:href="@{/admin/staffs(page=${i}, keyword=${keyword}, specialtyId=${specialtyId})}" th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${staffsPage.last} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/admin/staffs(page=${staffsPage.number + 1}, keyword=${keyword}, specialtyId=${specialtyId})}">Sau</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
         </div>
     </div>
 </body>

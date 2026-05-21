@@ -6,7 +6,9 @@ import com.ptit.smart_healthcare_platform.model.entity.*;
 import com.ptit.smart_healthcare_platform.model.enums.*;
 import com.ptit.smart_healthcare_platform.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,14 +77,9 @@ public class AdminService {
     }
 
     // Lấy danh sách nhân sự (loại bỏ PATIENT, ADMIN, COORDINATOR)
-    public List<User> getAllStaffs() {
-        return userRepository.findAll().stream()
-                .filter(u -> u.getUserRoles().stream()
-                        .anyMatch(ur -> {
-                            RoleName rn = ur.getRole().getName();
-                            return rn == RoleName.ROLE_DOCTOR || rn == RoleName.ROLE_TECHNICIAN;
-                        }))
-                .toList();
+    public Page<User> searchStaffs(String keyword, Long specialtyId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.searchStaffs(keyword, specialtyId, pageable);
     }
 
     public User getStaffById(Long id) {
@@ -200,8 +197,12 @@ public class AdminService {
     }
 
     // --- Medicines ---
-    public List<Medicine> getAllMedicines() {
-        return medicineRepository.findAll();
+    public Page<Medicine> searchMedicines(String keyword, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            return medicineRepository.findByNameContainingIgnoreCase(keyword, pageable);
+        }
+        return medicineRepository.findAll(pageable);
     }
 
     public Medicine getMedicineById(Long id) {

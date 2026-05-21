@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,8 +38,10 @@ public class PatientProfileCreateDto {
     @Pattern(regexp = "^([0-9]{12})?$", message = "Căn cước công dân phải bao gồm đúng 12 chữ số")
     private String identityCard;
 
+    @PositiveOrZero(message = "Chiều cao không được là số âm")
     private BigDecimal height;
 
+    @PositiveOrZero(message = "Cân nặng không được là số âm")
     private BigDecimal weight;
 
     private BloodType bloodType;
