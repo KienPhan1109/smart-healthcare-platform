@@ -7,47 +7,130 @@
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="welcome-section">
-            <h2 class="welcome-title">Xin chào, Bệnh nhân!</h2>
-            <p class="welcome-subtitle">Chào mừng bạn đến với hệ thống khám bệnh trực tuyến Smart Healthcare Platform.</p>
-        </div>
+        <link rel="stylesheet" th:href="@{/css/patient.css}">
 
-        <div class="row g-3">
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Lịch hẹn sắp tới</div>
+        <div class="container-fluid py-4">
+            <!-- Welcome Section -->
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1" style="color: var(--hospital-primary-dark);">Xin chào, <span th:text="${userName}">Bệnh nhân</span>!</h2>
+                <p class="text-muted mb-0">Chào mừng bạn đến với hệ thống khám bệnh trực tuyến Smart Healthcare Platform.</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100 hover-elevate transition-all" style="border-left: 4px solid var(--hospital-primary) !important;">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.85rem;">Lịch hẹn sắp tới</h6>
+                                <h2 class="fw-bold mb-0" style="color: var(--hospital-primary);" th:text="${upcomingCount}">0</h2>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(21,101,192,0.1), rgba(66,165,245,0.1));">
+                                <i class="bi bi-calendar-check text-primary" style="font-size: 1.5rem;"></i>
+                            </div>
                         </div>
-                        <div class="stat-card-icon primary">
-                            <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100 hover-elevate transition-all" style="border-left: 4px solid var(--hospital-success) !important;">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.85rem;">Đã hoàn thành</h6>
+                                <h2 class="fw-bold mb-0" style="color: var(--hospital-success);" th:text="${completedCount}">0</h2>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(46,125,50,0.1), rgba(76,175,80,0.1));">
+                                <i class="bi bi-check-circle text-success" style="font-size: 1.5rem;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100 hover-elevate transition-all" style="border-left: 4px solid var(--hospital-warning) !important;">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-uppercase text-muted fw-bold mb-2" style="font-size: 0.85rem;">Tổng lượt khám</h6>
+                                <h2 class="fw-bold mb-0" style="color: var(--hospital-warning);" th:text="${totalCount}">0</h2>
+                            </div>
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; background: linear-gradient(135deg, rgba(245,127,23,0.1), rgba(255,167,38,0.1));">
+                                <i class="bi bi-clipboard2-pulse text-warning" style="font-size: 1.5rem;"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Bệnh án</div>
+
+            <!-- Quick Actions & Recent Appointments -->
+            <div class="row g-4">
+                <!-- Quick Actions -->
+                <div class="col-xl-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-header bg-white border-bottom p-4">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Thao tác nhanh</h5>
                         </div>
-                        <div class="stat-card-icon success">
-                            <i class="bi bi-file-earmark-medical"></i>
+                        <div class="card-body p-4 d-grid gap-3">
+                            <a th:href="@{/patient/appointments/book}" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold shadow-sm" style="padding: 14px;">
+                                <i class="bi bi-calendar-plus"></i> Đặt lịch khám mới
+                            </a>
+                            <a th:href="@{/patient/profiles}" class="btn btn-outline-primary btn-lg d-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold" style="padding: 14px;">
+                                <i class="bi bi-people"></i> Quản lý hồ sơ bệnh nhân
+                            </a>
+                            <a th:href="@{/patient/appointments/history}" class="btn btn-outline-secondary btn-lg d-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold" style="padding: 14px;">
+                                <i class="bi bi-clock-history"></i> Xem lịch sử khám bệnh
+                            </a>
+                            <a th:href="@{/profile}" class="btn btn-outline-dark btn-lg d-flex align-items-center justify-content-center gap-2 rounded-3 fw-bold" style="padding: 14px;">
+                                <i class="bi bi-gear"></i> Chỉnh sửa tài khoản
+                            </a>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Đơn thuốc</div>
+
+                <!-- Recent Appointments Table -->
+                <div class="col-xl-8">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-header bg-white border-bottom p-4 d-flex justify-content-between align-items-center">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-journal-medical text-primary me-2"></i>Lịch hẹn gần đây</h5>
+                            <a th:href="@{/patient/appointments/history}" class="text-primary fw-bold text-decoration-none">Xem tất cả <i class="bi bi-arrow-right"></i></a>
                         </div>
-                        <div class="stat-card-icon warning">
-                            <i class="bi bi-capsule"></i>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.8rem;">Mã</th>
+                                            <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.8rem;">Bác sĩ</th>
+                                            <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.8rem;">Thời gian</th>
+                                            <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.8rem;">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="a : ${recentAppointments}" class="border-bottom">
+                                            <td class="px-4 fw-bold text-muted">#<span th:text="${a.id}"></span></td>
+                                            <td class="px-4">
+                                                <span th:text="${a.doctor.user.fullName}">BS. Nguyễn</span>
+                                            </td>
+                                            <td class="px-4">
+                                                <span th:text="${#temporals.format(a.appointmentTime, 'HH:mm - dd/MM/yyyy')}">14:00 - 01/01/2026</span>
+                                            </td>
+                                            <td class="px-4">
+                                                <span class="status-badge status-pending" th:if="${a.status.name() == 'PENDING'}"><i class="bi bi-clock"></i> Chờ TT</span>
+                                                <span class="status-badge status-active" th:if="${a.status.name() == 'CONFIRMED'}"><i class="bi bi-check"></i> Đã xác nhận</span>
+                                                <span class="status-badge status-active" th:if="${a.status.name() == 'EXAMINING'}"><i class="bi bi-heart-pulse"></i> Đang khám</span>
+                                                <span class="status-badge status-waiting-payment" th:if="${a.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}"><i class="bi bi-capsule"></i> Chờ TT thuốc</span>
+                                                <span class="status-badge status-waiting-payment" th:if="${a.status.name() == 'WAITING_FOR_LAB'}"><i class="bi bi-droplet"></i> Chờ XN</span>
+                                                <span class="status-badge status-active" th:if="${a.status.name() == 'READY_FOR_REEXAM'}"><i class="bi bi-arrow-repeat"></i> Tái khám</span>
+                                                <span class="status-badge status-completed" th:if="${a.status.name() == 'COMPLETED'}"><i class="bi bi-check-circle"></i> Hoàn thành</span>
+                                                <span class="status-badge status-cancelled" th:if="${a.status.name() == 'CANCELLED'}"><i class="bi bi-x-circle"></i> Đã hủy</span>
+                                            </td>
+                                        </tr>
+                                        <tr th:if="${recentAppointments.isEmpty()}">
+                                            <td colspan="4" class="text-center py-5 text-muted">
+                                                <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                                <p class="mt-2 mb-0">Bạn chưa có lịch hẹn nào. Hãy đặt lịch khám ngay!</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

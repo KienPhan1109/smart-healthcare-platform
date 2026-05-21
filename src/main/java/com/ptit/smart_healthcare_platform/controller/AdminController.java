@@ -2,6 +2,10 @@ package com.ptit.smart_healthcare_platform.controller;
 
 import com.ptit.smart_healthcare_platform.model.dto.admin.MedicineRequestDto;
 import com.ptit.smart_healthcare_platform.model.dto.admin.StaffRequestDto;
+import com.ptit.smart_healthcare_platform.model.entity.Doctor;
+import com.ptit.smart_healthcare_platform.model.entity.User;
+import com.ptit.smart_healthcare_platform.model.enums.RoleName;
+import com.ptit.smart_healthcare_platform.repository.DoctorRepository;
 import com.ptit.smart_healthcare_platform.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminController {
 
     private final AdminService adminService;
+    private final DoctorRepository doctorRepository;
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
@@ -60,6 +65,84 @@ public class AdminController {
             model.addAttribute("specialties", adminService.getAllSpecialties());
             return "admin/staffs/form";
         }
+    }
+
+    @GetMapping("/staffs/{id}/edit")
+    public String showEditStaffForm(@PathVariable Long id, Model model) {
+        User user = adminService.getStaffById(id);
+        if (!model.containsAttribute("dto")) {
+            StaffRequestDto dto = new StaffRequestDto();
+            dto.setId(user.getId());
+            dto.setFullName(user.getFullName());
+            dto.setPhoneNumber(user.getPhoneNumber());
+            dto.setEmail(user.getEmail());
+
+            // Nếu là bác sĩ, load thêm thông tin doctor
+            boolean isDoctor = user.getUserRoles().stream()
+                    .anyMatch(ur -> ur.getRole().getName() == RoleName.ROLE_DOCTOR);
+            if (isDoctor) {
+                dto.setRoleName(RoleName.ROLE_DOCTOR);
+                Doctor doctor = doctorRepository.findByUserId(id).orElse(null);
+                if (doctor != null) {
+                    dto.setSpecialtyId(doctor.getSpecialty().getId());
+                    dto.setExamFee(doctor.getExamFee());
+                    dto.setAcademicRank(doctor.getAcademicRank());
+                    dto.setExperienceYears(doctor.getExperienceYears());
+                }
+            } else {
+                dto.setRoleName(RoleName.ROLE_TECHNICIAN);
+            }
+            model.addAttribute("dto", dto);
+        }
+        model.addAttribute("specialties", adminService.getAllSpecialties());
+        model.addAttribute("editMode", true);
+        model.addAttribute("staffUser", user);
+        return "admin/staffs/edit";
+    }
+
+    @PostMapping("/staffs/{id}/update")
+    public String updateStaff(@PathVariable Long id,
+                              @ModelAttribute("dto") StaffRequestDto dto,
+                              Authentication authentication,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            adminService.updateStaff(id, dto, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Đã cập nhật thông tin nhân viên thành công!");
+            return "redirect:/admin/staffs";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("specialties", adminService.getAllSpecialties());
+            model.addAttribute("editMode", true);
+            model.addAttribute("staffUser", adminService.getStaffById(id));
+            return "admin/staffs/edit";
+        }
+    }
+
+    @PostMapping("/staffs/{id}/lock")
+    public String lockStaff(@PathVariable Long id,
+                            Authentication authentication,
+                            RedirectAttributes redirectAttributes) {
+        try {
+            adminService.lockStaff(id, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Đã khóa tài khoản nhân viên!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/staffs";
+    }
+
+    @PostMapping("/staffs/{id}/unlock")
+    public String unlockStaff(@PathVariable Long id,
+                              Authentication authentication,
+                              RedirectAttributes redirectAttributes) {
+        try {
+            adminService.unlockStaff(id, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Đã mở khóa tài khoản nhân viên!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/staffs";
     }
 
     // --- Medicine Management ---
@@ -120,5 +203,23 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/admin/medicines";
+    }
+
+    @PostMapping("/medicines/{id}/restore")
+    public String restoreMedicine(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            adminService.restoreMedicine(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Đã mở bán lại thuốc thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/medicines";
+    }
+
+    // --- Specialty Overview ---
+    @GetMapping("/specialties")
+    public String listSpecialties(Model model) {
+        model.addAttribute("specialtiesData", adminService.getSpecialtiesWithDoctorCount());
+        return "admin/specialties/list";
     }
 }

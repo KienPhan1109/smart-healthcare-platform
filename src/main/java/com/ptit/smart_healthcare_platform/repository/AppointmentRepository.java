@@ -29,6 +29,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     List<Appointment> findAllByDoctorIdAndIsDeletedFalseOrderByAppointmentTimeAsc(Long doctorId);
 
+    boolean existsByDoctorIdAndStatusInAndIsDeletedFalse(Long doctorId, List<AppointmentStatus> statuses);
+
     @Query("SELECT d, COUNT(a.id) as total " +
            "FROM Appointment a JOIN a.doctor d " +
            "WHERE a.status = 'COMPLETED' AND a.isDeleted = false " +

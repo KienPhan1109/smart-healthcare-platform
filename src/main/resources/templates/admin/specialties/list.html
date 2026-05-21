@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Danh mục Chuyên khoa</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);"><i class="bi bi-heart-pulse text-primary me-2"></i> Tổng Quan Chuyên Khoa</h2>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4 col-lg-3" th:each="data : ${specialtiesData}">
+                    <div class="card shadow-sm border-0 h-100 rounded-3 hover-elevate transition-all" style="border-top: 4px solid var(--hospital-primary) !important;">
+                        <div class="card-body p-4 text-center">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 70px; height: 70px; background: rgba(13, 110, 253, 0.1);">
+                                <i class="bi bi-activity text-primary" style="font-size: 2rem;"></i>
+                            </div>
+                            <h5 class="fw-bold mb-2 text-dark" th:text="${data.specialty.name}">Tên Chuyên Khoa</h5>
+                            <p class="text-muted small mb-3" th:text="${data.specialty.description}">Mô tả chuyên khoa...</p>
+                            <div class="d-flex justify-content-center align-items-center gap-2">
+                                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill border border-primary">
+                                    <i class="bi bi-people-fill me-1"></i> <span th:text="${data.doctorCount}"></span> Bác sĩ
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div th:if="${specialtiesData.isEmpty()}" class="col-12 text-center py-5 text-muted">
+                    Chưa có dữ liệu chuyên khoa.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -49,12 +49,14 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
     private String determineTargetUrl(Authentication authentication) {
         for (GrantedAuthority authority : authentication.getAuthorities()) {
             String role = authority.getAuthority();
-            switch (role) {
-                case "ROLE_ADMIN": return "/admin/dashboard";
-                case "ROLE_DOCTOR": return "/doctor/dashboard";
-                case "ROLE_TECHNICIAN": return "/technician/dashboard";
-                case "ROLE_PATIENT": return "/patient/dashboard";
-            }
+            assert role != null;
+            return switch (role) {
+                case "ROLE_ADMIN" -> "/admin/dashboard";
+                case "ROLE_DOCTOR" -> "/doctor/dashboard";
+                case "ROLE_TECHNICIAN" -> "/technician/dashboard";
+                case "ROLE_PATIENT" -> "/patient/dashboard";
+                default -> "/auth/login";
+            };
         }
         return "/login?error";
     }

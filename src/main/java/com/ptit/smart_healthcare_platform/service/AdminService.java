@@ -3,10 +3,7 @@ package com.ptit.smart_healthcare_platform.service;
 import com.ptit.smart_healthcare_platform.model.dto.admin.MedicineRequestDto;
 import com.ptit.smart_healthcare_platform.model.dto.admin.StaffRequestDto;
 import com.ptit.smart_healthcare_platform.model.entity.*;
-import com.ptit.smart_healthcare_platform.model.enums.DoctorStatus;
-import com.ptit.smart_healthcare_platform.model.enums.MedicineStatus;
-import com.ptit.smart_healthcare_platform.model.enums.RoleName;
-import com.ptit.smart_healthcare_platform.model.enums.UserStatus;
+import com.ptit.smart_healthcare_platform.model.enums.*;
 import com.ptit.smart_healthcare_platform.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.YearMonth;
 import java.util.*;
 
 @Service
@@ -35,6 +31,12 @@ public class AdminService {
     public void createStaff(StaffRequestDto dto, String creator) {
         if (userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
             throw new RuntimeException("Số điện thoại đã tồn tại trong hệ thống");
+        }
+        // Kiểm tra trùng email toàn hệ thống
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            if (userRepository.existsByEmail(dto.getEmail())) {
+                throw new RuntimeException("Email này đã được sử dụng bởi tài khoản khác");
+            }
         }
 
         User user = new User();
@@ -72,15 +74,129 @@ public class AdminService {
         }
     }
 
+    // Lấy danh sách nhân sự (loại bỏ PATIENT, ADMIN, COORDINATOR)
     public List<User> getAllStaffs() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getUserRoles().stream()
-                        .anyMatch(ur -> ur.getRole().getName() != RoleName.ROLE_PATIENT && ur.getRole().getName() != RoleName.ROLE_ADMIN))
+                        .anyMatch(ur -> {
+                            RoleName rn = ur.getRole().getName();
+                            return rn == RoleName.ROLE_DOCTOR || rn == RoleName.ROLE_TECHNICIAN;
+                        }))
                 .toList();
+    }
+
+    public User getStaffById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân sự"));
+    }
+
+    // --- Cập nhật nhân sự (Phương án B: chỉ cho phép nếu không có lịch hẹn PENDING/CONFIRMED) ---
+    @Transactional
+    public void updateStaff(Long userId, StaffRequestDto dto, String updater) {
+        User user = getStaffById(userId);
+        checkStaffHasActiveAppointments(user);
+
+        // Kiểm tra trùng email (trừ email hiện tại)
+        if (dto.getEmail() != null && !dto.getEmail().isBlank()) {
+            if (!dto.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(dto.getEmail())) {
+                throw new RuntimeException("Email này đã được sử dụng bởi tài khoản khác");
+            }
+        }
+        // Kiểm tra trùng SĐT (trừ SĐT hiện tại)
+        if (!dto.getPhoneNumber().equals(user.getPhoneNumber()) && userRepository.existsByPhoneNumber(dto.getPhoneNumber())) {
+            throw new RuntimeException("Số điện thoại đã tồn tại trong hệ thống");
+        }
+
+        user.setFullName(dto.getFullName());
+        user.setPhoneNumber(dto.getPhoneNumber());
+        user.setEmail(dto.getEmail());
+        user.setUpdatedBy(updater);
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        // Cập nhật thông tin Bác sĩ nếu là ROLE_DOCTOR
+        boolean isDoctor = user.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName() == RoleName.ROLE_DOCTOR);
+        if (isDoctor) {
+            Doctor doctor = doctorRepository.findByUserId(userId)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy thông tin bác sĩ"));
+            if (dto.getSpecialtyId() != null) {
+                Specialty specialty = specialtyRepository.findById(dto.getSpecialtyId())
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy chuyên khoa"));
+                doctor.setSpecialty(specialty);
+            }
+            if (dto.getExamFee() != null) {
+                doctor.setExamFee(dto.getExamFee());
+            }
+            if (dto.getAcademicRank() != null) {
+                doctor.setAcademicRank(dto.getAcademicRank());
+            }
+            if (dto.getExperienceYears() != null) {
+                doctor.setExperienceYears(dto.getExperienceYears());
+            }
+            doctor.setUpdatedBy(updater);
+            doctor.setUpdatedAt(LocalDateTime.now());
+            doctorRepository.save(doctor);
+        }
+    }
+
+    // --- Khóa nhân sự ---
+    @Transactional
+    public void lockStaff(Long userId, String updater) {
+        User user = getStaffById(userId);
+        checkStaffHasActiveAppointments(user);
+        user.setStatus(UserStatus.LOCKED);
+        user.setUpdatedBy(updater);
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    // --- Mở khóa nhân sự ---
+    @Transactional
+    public void unlockStaff(Long userId, String updater) {
+        User user = getStaffById(userId);
+        user.setStatus(UserStatus.ACTIVE);
+        user.setUpdatedBy(updater);
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    // Kiểm tra nhân sự có lịch hẹn đang hoạt động không
+    private void checkStaffHasActiveAppointments(User user) {
+        boolean isDoctor = user.getUserRoles().stream()
+                .anyMatch(ur -> ur.getRole().getName() == RoleName.ROLE_DOCTOR);
+        if (isDoctor) {
+            Doctor doctor = doctorRepository.findByUserId(user.getId()).orElse(null);
+            if (doctor != null) {
+                boolean hasActive = appointmentRepository.existsByDoctorIdAndStatusInAndIsDeletedFalse(
+                        doctor.getId(),
+                        List.of(AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED,
+                                AppointmentStatus.EXAMINING, AppointmentStatus.WAITING_FOR_DRUG_PAYMENT,
+                                AppointmentStatus.WAITING_FOR_LAB, AppointmentStatus.READY_FOR_REEXAM)
+                );
+                if (hasActive) {
+                    throw new RuntimeException("Không thể thao tác do bác sĩ này đang có lịch hẹn chưa hoàn thành");
+                }
+            }
+        }
     }
 
     public List<Specialty> getAllSpecialties() {
         return specialtyRepository.findAll();
+    }
+
+    // --- Tổng quan Chuyên khoa cho Admin ---
+    public List<Map<String, Object>> getSpecialtiesWithDoctorCount() {
+        List<Specialty> specialties = specialtyRepository.findAll();
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Specialty s : specialties) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("specialty", s);
+            long count = doctorRepository.countBySpecialtyId(s.getId());
+            map.put("doctorCount", count);
+            result.add(map);
+        }
+        return result;
     }
 
     // --- Medicines ---
@@ -119,6 +235,15 @@ public class AdminService {
     public void deleteMedicine(Long id) {
         Medicine medicine = getMedicineById(id);
         medicine.setStatus(MedicineStatus.STOPPED);
+        medicineRepository.save(medicine);
+    }
+
+    // --- Khôi phục thuốc đã ngừng bán ---
+    @Transactional
+    public void restoreMedicine(Long id) {
+        Medicine medicine = getMedicineById(id);
+        medicine.setStatus(MedicineStatus.SELLING);
+        medicine.setUpdatedAt(LocalDateTime.now());
         medicineRepository.save(medicine);
     }
 

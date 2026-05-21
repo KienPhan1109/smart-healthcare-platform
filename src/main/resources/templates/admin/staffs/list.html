@@ -64,11 +64,16 @@
                                     </td>
                                     <td class="px-4">
                                         <span class="badge bg-success" th:if="${staff.status.name() == 'ACTIVE'}">Hoạt động</span>
-                                        <span class="badge bg-danger" th:if="${staff.status.name() == 'INACTIVE'}">Đã khóa</span>
+                                        <span class="badge bg-danger" th:if="${staff.status.name() == 'LOCKED'}">Đã khóa</span>
                                     </td>
                                     <td class="px-4 text-center">
-                                        <button class="btn btn-sm btn-outline-primary rounded-circle" title="Chỉnh sửa (Sắp ra mắt)"><i class="bi bi-pencil"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger rounded-circle ms-2" title="Khóa tài khoản (Sắp ra mắt)"><i class="bi bi-lock"></i></button>
+                                        <a th:href="@{/admin/staffs/{id}/edit(id=${staff.id})}" class="btn btn-sm btn-outline-primary rounded-circle" title="Chỉnh sửa"><i class="bi bi-pencil"></i></a>
+                                        <form th:if="${staff.status.name() == 'ACTIVE'}" th:action="@{/admin/staffs/{id}/lock(id=${staff.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle ms-1" title="Khóa tài khoản" onclick="return confirm('Bạn có chắc muốn khóa tài khoản này không?');"><i class="bi bi-lock"></i></button>
+                                        </form>
+                                        <form th:if="${staff.status.name() == 'LOCKED'}" th:action="@{/admin/staffs/{id}/unlock(id=${staff.id})}" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-outline-success rounded-circle ms-1" title="Mở khóa" onclick="return confirm('Bạn có chắc muốn mở khóa tài khoản này không?');"><i class="bi bi-unlock"></i></button>
+                                        </form>
                                     </td>
                                 </tr>
                                 <tr th:if="${staffs.isEmpty()}">

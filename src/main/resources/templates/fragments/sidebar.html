@@ -72,6 +72,12 @@
                 </a>
             </li>
             <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/admin/specialties}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-heart-pulse"></i></span>
+                    Danh mục Chuyên khoa
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
                 <a th:href="@{/admin/medicines}" class="sidebar-nav-link">
                     <span class="sidebar-nav-icon"><i class="bi bi-capsule"></i></span>
                     Danh mục Thuốc
