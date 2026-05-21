@@ -3,69 +3,193 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/main}">
 <head>
-    <title>Quản trị - Tổng quan</title>
+    <title>Thống kê Tổng quan Admin</title>
+    <!-- Thêm Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div layout:fragment="content">
-        <div class="welcome-section">
-            <h2 class="welcome-title">Bảng điều khiển Quản trị viên</h2>
-            <p class="welcome-subtitle">Quản lý tài khoản nhân sự, theo dõi doanh thu và giám sát hệ thống.</p>
-        </div>
+        <div class="container-fluid py-4">
+            <h2 class="mb-4 fw-bold" style="color: var(--hospital-primary-dark);">Thống Kê Hoạt Động Của Nền Tảng</h2>
 
-        <div class="row g-3">
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Tổng tài khoản</div>
+            <!-- Cards -->
+            <div class="row g-4 mb-5">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card shadow-sm border-0 bg-primary text-white h-100 rounded-3 hover-elevate transition-all">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Tổng Bệnh Nhân</h6>
+                                <h2 class="fw-bold mb-0" th:text="${stats.totalPatients}">0</h2>
+                            </div>
+                            <i class="bi bi-people-fill" style="font-size: 3rem; opacity: 0.5;"></i>
                         </div>
-                        <div class="stat-card-icon primary">
-                            <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                
+                <div class="col-xl-3 col-md-6">
+                    <div class="card shadow-sm border-0 bg-success text-white h-100 rounded-3 hover-elevate transition-all">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Đội Ngũ Bác Sĩ</h6>
+                                <h2 class="fw-bold mb-0" th:text="${stats.totalDoctors}">0</h2>
+                            </div>
+                            <i class="bi bi-person-badge-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card shadow-sm border-0 bg-warning text-white h-100 rounded-3 hover-elevate transition-all">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Lượt Khám</h6>
+                                <h2 class="fw-bold mb-0" th:text="${stats.totalAppointments}">0</h2>
+                            </div>
+                            <i class="bi bi-calendar-check-fill" style="font-size: 3rem; opacity: 0.5;"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card shadow-sm border-0 bg-danger text-white h-100 rounded-3 hover-elevate transition-all">
+                        <div class="card-body p-4 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="text-white-50 text-uppercase fw-bold mb-2">Tổng Doanh Thu</h6>
+                                <h2 class="fw-bold mb-0" th:text="${#numbers.formatDecimal(stats.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</h2>
+                            </div>
+                            <i class="bi bi-cash-stack" style="font-size: 3rem; opacity: 0.5;"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Bác sĩ</div>
+
+            <div class="row g-4">
+                <!-- Chart -->
+                <div class="col-xl-8">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-header bg-white border-bottom p-4">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-fill text-primary me-2"></i>Biểu Đồ Doanh Thu Theo Tháng (Năm Hiện Tại)</h5>
                         </div>
-                        <div class="stat-card-icon success">
-                            <i class="bi bi-person-badge"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0</div>
-                            <div class="stat-card-label">Lịch khám hôm nay</div>
-                        </div>
-                        <div class="stat-card-icon warning">
-                            <i class="bi bi-calendar-event"></i>
+                        <div class="card-body p-4">
+                            <canvas id="revenueChart" height="100"></canvas>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-card-value">0 VND</div>
-                            <div class="stat-card-label">Doanh thu tháng</div>
+
+                <!-- Leaderboard -->
+                <div class="col-xl-4">
+                    <div class="card shadow-sm border-0 rounded-3 h-100">
+                        <div class="card-header bg-white border-bottom p-4">
+                            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-trophy-fill text-warning me-2"></i> Top Bác Sĩ Nổi Bật</h5>
                         </div>
-                        <div class="stat-card-icon danger">
-                            <i class="bi bi-bar-chart-line"></i>
+                        <div class="card-body p-0">
+                            <ul class="list-group list-group-flush">
+                                <li th:each="doctor, iter : ${stats.topDoctors}" class="list-group-item p-4 d-flex justify-content-between align-items-center hover-elevate transition-all border-bottom">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-3 fw-bold"
+                                             th:classappend="${iter.index == 0 ? 'bg-warning' : (iter.index == 1 ? 'bg-secondary' : (iter.index == 2 ? 'bg-danger' : 'bg-primary'))}"
+                                             style="width: 45px; height: 45px; font-size: 1.2rem;" th:text="${iter.count}">
+                                        </div>
+                                        <div>
+                                            <h6 class="fw-bold text-dark mb-1" th:text="${doctor.doctorName}">Tên bác sĩ</h6>
+                                            <small class="text-muted" th:text="${doctor.specialty}">Chuyên khoa</small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-success rounded-pill px-3 py-2">
+                                            <span th:text="${doctor.completedCount}"></span> ca
+                                        </span>
+                                    </div>
+                                </li>
+                                <li th:if="${stats.topDoctors.isEmpty()}" class="list-group-item p-4 text-center text-muted">
+                                    Chưa có dữ liệu lịch khám hoàn thành.
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div layout:fragment="scripts">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var rawRevenue = /*[[${stats.monthlyRevenue}]]*/ [];
+            
+            // Xử lý null
+            var revenueData = [];
+            for (var i = 0; i < 12; i++) {
+                revenueData.push(rawRevenue[i] || 0);
+            }
+
+            var ctx = document.getElementById('revenueChart').getContext('2d');
+            var revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'],
+                    datasets: [{
+                        label: 'Doanh thu (VNĐ)',
+                        data: revenueData,
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        borderColor: 'rgba(13, 110, 253, 1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: 'rgba(13, 110, 253, 1)',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        fill: true,
+                        tension: 0.4 // Làm cong đường nối
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 14 },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000000) return (value / 1000000).toFixed(1) + 'Tr';
+                                    if (value >= 1000) return (value / 1000).toFixed(0) + 'K';
+                                    return value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            /*]]>*/
+        </script>
     </div>
 </body>
 </html>

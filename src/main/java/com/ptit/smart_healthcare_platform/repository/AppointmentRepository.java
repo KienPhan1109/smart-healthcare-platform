@@ -2,7 +2,9 @@ package com.ptit.smart_healthcare_platform.repository;
 
 import com.ptit.smart_healthcare_platform.model.entity.Appointment;
 import com.ptit.smart_healthcare_platform.model.enums.AppointmentStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -26,4 +28,11 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             Long doctorId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
     List<Appointment> findAllByDoctorIdAndIsDeletedFalseOrderByAppointmentTimeAsc(Long doctorId);
+
+    @Query("SELECT d, COUNT(a.id) as total " +
+           "FROM Appointment a JOIN a.doctor d " +
+           "WHERE a.status = 'COMPLETED' AND a.isDeleted = false " +
+           "GROUP BY d " +
+           "ORDER BY total DESC")
+    List<Object[]> findTopDoctorsByCompletedAppointments(Pageable pageable);
 }

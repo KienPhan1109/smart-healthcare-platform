@@ -15,9 +15,11 @@ import com.ptit.smart_healthcare_platform.repository.AppointmentRepository;
 import com.ptit.smart_healthcare_platform.repository.DoctorRepository;
 import com.ptit.smart_healthcare_platform.repository.PaymentRepository;
 import com.ptit.smart_healthcare_platform.repository.UserRepository;
+import com.ptit.smart_healthcare_platform.repository.LabOrderRepository;
 import com.ptit.smart_healthcare_platform.repository.MedicalRecordRepository;
 import com.ptit.smart_healthcare_platform.model.entity.MedicalRecord;
 import com.ptit.smart_healthcare_platform.model.entity.Prescription;
+import com.ptit.smart_healthcare_platform.model.entity.PrescriptionDetail;
 import com.ptit.smart_healthcare_platform.model.entity.PrescriptionDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ public class AppointmentService {
     private final PatientProfileService patientProfileService;
     private final UserRepository userRepository;
     private final MedicalRecordRepository medicalRecordRepository;
+    private final LabOrderRepository labOrderRepository;
 
     /** Số ngày tối đa cho phép đặt lịch trước */
     private static final int MAX_BOOKING_DAYS_AHEAD = 7;
@@ -189,13 +192,24 @@ public class AppointmentService {
         }
 
         return allAppointments.stream().filter(appt -> {
+            boolean hasPendingLabOrder = false;
+            if (appt.getStatus() == AppointmentStatus.WAITING_FOR_LAB) {
+                hasPendingLabOrder = labOrderRepository.findByAppointmentIdAndIsDeletedFalse(appt.getId())
+                        .map(order -> "PENDING".equals(order.getStatus()))
+                        .orElse(false);
+            }
+
             switch (statusFilter.toUpperCase()) {
                 case "UPCOMING":
-                    return appt.getStatus() == AppointmentStatus.CONFIRMED 
-                        || appt.getStatus() == AppointmentStatus.EXAMINING;
+                    return appt.getStatus() == AppointmentStatus.CONFIRMED;
+                case "IN_PROGRESS":
+                    return appt.getStatus() == AppointmentStatus.EXAMINING
+                        || appt.getStatus() == AppointmentStatus.READY_FOR_REEXAM
+                        || (appt.getStatus() == AppointmentStatus.WAITING_FOR_LAB && !hasPendingLabOrder);
                 case "UNPAID":
                     return appt.getStatus() == AppointmentStatus.PENDING 
-                        || appt.getStatus() == AppointmentStatus.WAITING_FOR_DRUG_PAYMENT;
+                        || appt.getStatus() == AppointmentStatus.WAITING_FOR_DRUG_PAYMENT
+                        || (appt.getStatus() == AppointmentStatus.WAITING_FOR_LAB && hasPendingLabOrder);
                 case "COMPLETED":
                     return appt.getStatus() == AppointmentStatus.COMPLETED;
                 case "CANCELLED":

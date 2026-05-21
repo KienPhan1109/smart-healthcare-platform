@@ -1,11 +1,13 @@
 package com.ptit.smart_healthcare_platform.service;
 
 import com.ptit.smart_healthcare_platform.model.entity.Appointment;
+import com.ptit.smart_healthcare_platform.model.entity.LabOrder;
 import com.ptit.smart_healthcare_platform.model.entity.Payment;
 import com.ptit.smart_healthcare_platform.model.enums.AppointmentStatus;
 import com.ptit.smart_healthcare_platform.model.enums.PaymentStatus;
 import com.ptit.smart_healthcare_platform.model.enums.PaymentType;
 import com.ptit.smart_healthcare_platform.repository.AppointmentRepository;
+import com.ptit.smart_healthcare_platform.repository.LabOrderRepository;
 import com.ptit.smart_healthcare_platform.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,7 @@ public class PaymentSimulationService {
 
     private final PaymentRepository paymentRepository;
     private final AppointmentRepository appointmentRepository;
+    private final LabOrderRepository labOrderRepository;
 
     @Transactional(readOnly = true)
     public Payment getExamFeePayment(Long appointmentId, Long userId) {
@@ -109,5 +112,58 @@ public class PaymentSimulationService {
         appointment.setUpdatedBy(actor);
         appointment.setUpdatedAt(LocalDateTime.now());
         appointmentRepository.save(appointment);
+    }
+
+    // =============================================
+    // PHÂN HỆ CẬN LÂM SÀNG: Thanh toán phí xét nghiệm
+    // =============================================
+
+    @Transactional(readOnly = true)
+    public Payment getLabFeePayment(Long appointmentId, Long userId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lịch hẹn"));
+
+        if (!appointment.getPatient().getUser().getId().equals(userId)) {
+            throw new SecurityException("Bạn không có quyền xem thông tin thanh toán này");
+        }
+
+        return paymentRepository.findByAppointmentIdAndTypeAndIsDeletedFalse(appointmentId, PaymentType.LAB_FEE)
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy hóa đơn phí xét nghiệm"));
+    }
+
+    @Transactional
+    public void processSimulatedLabPayment(Long appointmentId, String method, Long userId, String actor) {
+        Payment payment = getLabFeePayment(appointmentId, userId);
+        Appointment appointment = payment.getAppointment();
+
+        if (payment.getStatus() == PaymentStatus.PAID) {
+            throw new IllegalStateException("Hóa đơn xét nghiệm này đã được thanh toán");
+        }
+
+        if (appointment.getStatus() != AppointmentStatus.WAITING_FOR_LAB) {
+            throw new IllegalStateException("Trạng thái lịch hẹn không hợp lệ để thanh toán phí xét nghiệm");
+        }
+
+        // Update payment
+        payment.setStatus(PaymentStatus.PAID);
+        payment.setPaidAt(LocalDateTime.now());
+        payment.setPaymentMethod(method);
+        payment.setTransactionId("LAB-" + UUID.randomUUID().toString());
+        payment.setUpdatedBy(actor);
+        payment.setUpdatedAt(LocalDateTime.now());
+        paymentRepository.save(payment);
+
+        // Cập nhật trạng thái LabOrder → PAID (Kỹ thuật viên có thể bắt đầu thực hiện)
+        LabOrder labOrder = labOrderRepository.findByAppointmentIdAndIsDeletedFalse(appointmentId)
+                .orElse(null);
+        if (labOrder != null) {
+            labOrder.setStatus("PAID");
+            labOrder.setUpdatedBy(actor);
+            labOrder.setUpdatedAt(LocalDateTime.now());
+            labOrderRepository.save(labOrder);
+        }
+
+        // Lưu ý: Trạng thái Appointment vẫn giữ WAITING_FOR_LAB
+        // Chỉ chuyển sang READY_FOR_REEXAM khi Kỹ thuật viên hoàn tất trả kết quả
     }
 }

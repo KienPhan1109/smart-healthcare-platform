@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Dashboard Kỹ Thuật Viên</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/technician.css}">
+        <div class="container-fluid py-4">
+            <div class="tech-dashboard">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);">Phòng Xét Nghiệm Cận Lâm Sàng</h2>
+                <span class="status-badge status-pending" th:text="'Tổng chờ xử lý: ' + ${totalPending}">0</span>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <div class="tech-stats">
+                <!-- Phòng Huyết học -->
+                <a th:href="@{/technician/room/HEMATOLOGY}" class="room-card hematology">
+                    <div class="room-icon hematology">
+                        <i class="bi bi-droplet-half"></i>
+                    </div>
+                    <div class="room-info">
+                        <h5>Phòng Huyết học & Hóa sinh</h5>
+                        <p>Xét nghiệm máu, sinh hóa, nước tiểu</p>
+                    </div>
+                    <div class="room-badge" th:classappend="${hematologyCount == 0 ? 'empty' : ''}" th:text="${hematologyCount}">0</div>
+                </a>
+
+                <!-- Phòng Siêu âm -->
+                <a th:href="@{/technician/room/ULTRASOUND}" class="room-card ultrasound">
+                    <div class="room-icon ultrasound">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                    <div class="room-info">
+                        <h5>Phòng Siêu âm & Thăm dò chức năng</h5>
+                        <p>Siêu âm ổ bụng, điện tâm đồ ECG</p>
+                    </div>
+                    <div class="room-badge" th:classappend="${ultrasoundCount == 0 ? 'empty' : ''}" th:text="${ultrasoundCount}">0</div>
+                </a>
+
+                <!-- Phòng Chẩn đoán hình ảnh -->
+                <a th:href="@{/technician/room/IMAGING}" class="room-card imaging">
+                    <div class="room-icon imaging">
+                        <i class="bi bi-file-earmark-image"></i>
+                    </div>
+                    <div class="room-info">
+                        <h5>Phòng Chẩn đoán hình ảnh</h5>
+                        <p>Chụp X-Quang, MRI</p>
+                    </div>
+                    <div class="room-badge" th:classappend="${imagingCount == 0 ? 'empty' : ''}" th:text="${imagingCount}">0</div>
+                </a>
+            </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -40,6 +40,93 @@
             </div>
         </div>
 
+        <!-- === KẾT QUẢ / CHỈ ĐỊNH CẬN LÂM SÀNG === -->
+        <div class="card mb-4 border-primary">
+            <div class="card-body">
+                <h5 class="card-title text-primary mb-3"><i class="bi bi-file-medical"></i> Cận lâm sàng (Xét nghiệm / Chẩn đoán hình ảnh)</h5>
+                
+                <!-- 1. Chưa có chỉ định nào -> Cho phép chọn và tạo LabOrder -->
+                <div th:if="${labOrder == null}">
+                    <form th:action="@{/doctor/appointments/{id}/lab-order(id=${appointment.id})}" method="post">
+                        <p class="text-muted small mb-3">Chọn các xét nghiệm cần thiết, bệnh nhân sẽ được yêu cầu đi đóng phí và thực hiện xét nghiệm trước khi quay lại lấy đơn thuốc.</p>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6 col-lg-4" th:each="test : ${labTests}">
+                                <label class="lab-test-card" th:for="'test_' + ${test.id}">
+                                    <input class="form-check-input" type="checkbox" name="labTestIds" th:value="${test.id}" th:id="'test_' + ${test.id}" onchange="this.closest('.lab-test-card').classList.toggle('selected', this.checked)">
+                                    
+                                    <div class="lab-test-icon">
+                                        <i class="bi bi-activity text-primary" th:if="${test.roomType == 'ULTRASOUND'}"></i>
+                                        <i class="bi bi-droplet-half text-danger" th:if="${test.roomType == 'HEMATOLOGY'}"></i>
+                                        <i class="bi bi-file-earmark-image text-purple" th:if="${test.roomType == 'IMAGING'}"></i>
+                                    </div>
+                                    
+                                    <div class="lab-test-info">
+                                        <span class="lab-test-name" th:text="${test.name}">Tên xét nghiệm</span>
+                                        <span class="lab-test-room" th:text="${test.roomType}">Phòng</span>
+                                        <span class="lab-test-price" th:text="${#numbers.formatDecimal(test.price, 0, 'COMMA', 0, 'POINT')} + ' đ'">Giá</span>
+                                    </div>
+                                    
+                                    <div class="lab-test-check-indicator">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-send-plus"></i> Phát phiếu chỉ định xét nghiệm
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- 2. Đã có chỉ định -> Hiển thị trạng thái & kết quả -->
+                <div th:if="${labOrder != null}">
+                    <div class="d-flex align-items-center mb-3">
+                        <span class="badge bg-warning text-dark me-2" th:if="${labOrder.status == 'PENDING'}">Chờ bệnh nhân đóng phí</span>
+                        <span class="badge bg-info me-2" th:if="${labOrder.status == 'PAID'}">Đang thực hiện xét nghiệm</span>
+                        <span class="badge bg-success me-2" th:if="${labOrder.status == 'COMPLETED'}">Đã có kết quả toàn bộ</span>
+                        <small class="text-muted">Tổng phí: <strong th:text="${#numbers.formatDecimal(labOrder.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'">0</strong></small>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Loại xét nghiệm</th>
+                                    <th>Trạng thái</th>
+                                    <th>Kết quả phân tích</th>
+                                    <th>Thời gian trả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="detail : ${labOrder.details}">
+                                    <td>
+                                        <strong th:text="${detail.labTest.name}">Tên</strong><br>
+                                        <small class="text-muted" th:text="${detail.labTest.roomType}">Phòng</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-success" th:if="${detail.result != null}"><i class="bi bi-check-circle"></i> Đã trả kết quả</span>
+                                        <span class="text-secondary" th:if="${detail.result == null}"><i class="bi bi-clock"></i> Đang chờ...</span>
+                                    </td>
+                                    <td>
+                                        <div th:if="${detail.result != null}" style="white-space: pre-line; font-size: 0.9rem;" th:text="${detail.result}"></div>
+                                        <span th:if="${detail.result == null}" class="text-muted fst-italic">Chưa có kết quả</span>
+                                    </td>
+                                    <td class="small text-muted" th:text="${detail.completedAt != null ? #temporals.format(detail.completedAt, 'HH:mm dd/MM') : '-'}"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Khóa nút hoàn tất khám nếu chưa có kết quả đầy đủ -->
+                    <div th:if="${labOrder.status != 'COMPLETED'}" class="alert alert-warning mt-3 mb-0 py-2">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> Bệnh nhân đang thực hiện xét nghiệm. Vui lòng chờ đến khi có kết quả để chẩn đoán & kê đơn.
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <form th:action="@{/doctor/appointments/{id}/examine(id=${appointment.id})}" th:object="${examinationForm}" method="post" id="examinationForm">
             
             <div class="card mb-4">
@@ -109,7 +196,8 @@
 
             <div class="d-flex justify-content-end gap-2">
                 <a th:href="@{/doctor/dashboard}" class="btn btn-secondary">Hủy</a>
-                <button type="submit" class="btn btn-success px-4" id="btnSubmit">
+                <button type="submit" class="btn btn-success px-4" id="btnSubmit" 
+                        th:disabled="${labOrder != null and labOrder.status != 'COMPLETED'}">
                     <i class="bi bi-check2-circle"></i> Hoàn tất khám bệnh
                 </button>
             </div>

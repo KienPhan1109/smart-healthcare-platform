@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${dto.id == null ? 'Thêm Thuốc Mới' : 'Cập Nhật Thuốc'}">Form Thuốc</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container py-4" style="max-width: 900px;">
+            <div class="d-flex align-items-center mb-4 gap-3">
+                <a th:href="@{/admin/medicines}" class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);" th:text="${dto.id == null ? 'Thêm Loại Thuốc Mới' : 'Cập Nhật Thông Tin Thuốc'}">Thêm Thuốc Mới</h2>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-5">
+                    <form th:action="@{/admin/medicines/save}" method="post" th:object="${dto}">
+                        <input type="hidden" th:field="*{id}" />
+                        
+                        <h5 class="fw-bold text-primary mb-4 border-bottom pb-2"><i class="bi bi-info-square me-2"></i> Thông Tin Chi Tiết Thuốc</h5>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold">Tên Thuốc <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{name}" class="form-control fw-bold text-dark" th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" placeholder="Ví dụ: Panadol Extra">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Đơn Vị Tính <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{unit}" class="form-control" th:classappend="${#fields.hasErrors('unit')} ? 'is-invalid' : ''" placeholder="Viên, Lọ, Chai...">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Đơn Giá (VNĐ) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{price}" class="form-control text-danger fw-bold" th:classappend="${#fields.hasErrors('price')} ? 'is-invalid' : ''" placeholder="50000">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Số Lượng Tồn Kho Ban Đầu <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{stockQuantity}" class="form-control" th:classappend="${#fields.hasErrors('stockQuantity')} ? 'is-invalid' : ''" placeholder="100">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('stockQuantity')}" th:errors="*{stockQuantity}"></div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Hướng Dẫn Sử Dụng (Mặc định)</label>
+                                <textarea th:field="*{usageInstruction}" class="form-control" rows="4" placeholder="Uống sau khi ăn, Ngày 2 lần..."></textarea>
+                                <div class="form-text text-muted"><i class="bi bi-info-circle me-1"></i> Bác sĩ có thể tùy chỉnh lại khi kê đơn cho bệnh nhân.</div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                            <a th:href="@{/admin/medicines}" class="btn btn-outline-secondary fw-bold px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn-premium px-5 shadow-sm"><i class="bi bi-save me-2"></i> Lưu Thông Tin Thuốc</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

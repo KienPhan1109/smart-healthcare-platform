@@ -52,6 +52,7 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
             switch (role) {
                 case "ROLE_ADMIN": return "/admin/dashboard";
                 case "ROLE_DOCTOR": return "/doctor/dashboard";
+                case "ROLE_TECHNICIAN": return "/technician/dashboard";
                 case "ROLE_PATIENT": return "/patient/dashboard";
             }
         }

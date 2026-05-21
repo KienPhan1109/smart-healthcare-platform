@@ -29,6 +29,11 @@
                                 <span th:if="${appointment.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán</span>
                                 <span th:if="${appointment.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
                                 <span th:if="${appointment.status.name() == 'EXAMINING'}" class="badge bg-info px-3 py-2 rounded-pill fs-6">Đang khám bệnh</span>
+                                <th:block th:if="${appointment.status.name() == 'WAITING_FOR_LAB'}">
+                                    <span th:if="${labOrder != null and labOrder.status.name() == 'PENDING'}" class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6">Chờ đóng phí xét nghiệm</span>
+                                    <span th:if="${labOrder != null and labOrder.status.name() != 'PENDING'}" class="badge bg-primary px-3 py-2 rounded-pill fs-6">Đang thực hiện xét nghiệm</span>
+                                </th:block>
+                                <span th:if="${appointment.status.name() == 'READY_FOR_REEXAM'}" class="badge bg-danger px-3 py-2 rounded-pill fs-6">Chờ tái khám ưu tiên</span>
                                 <span th:if="${appointment.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}" class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6">Chờ thanh toán thuốc</span>
                                 <span th:if="${appointment.status.name() == 'COMPLETED'}" class="status-badge status-completed">Thành công</span>
                             </th:block>
@@ -107,6 +112,13 @@
                                     <th:block th:if="${appointment.status.name() == 'PENDING' and !appointment.isExpired()}">
                                         <a th:href="@{/patient/appointments/pay/{id}(id=${appointment.id})}" class="btn-premium">
                                             <i class="bi bi-credit-card me-1"></i> Thanh Toán Phí Khám
+                                        </a>
+                                    </th:block>
+
+                                    <!-- Nút thanh toán cận lâm sàng -->
+                                    <th:block th:if="${appointment.status.name() == 'WAITING_FOR_LAB' and labOrder != null and labOrder.status == 'PENDING'}">
+                                        <a th:href="@{/patient/appointments/pay-lab/{id}(id=${appointment.id})}" class="btn btn-warning fw-bold btn-action">
+                                            <i class="bi bi-droplet-half me-1"></i> Thanh Toán Xét Nghiệm
                                         </a>
                                     </th:block>
 
@@ -232,6 +244,11 @@
                                 <span th:if="${appointment.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán</span>
                                 <span th:if="${appointment.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
                                 <span th:if="${appointment.status.name() == 'EXAMINING'}" class="badge bg-info px-3 py-2 rounded-pill fs-6">Đang khám bệnh</span>
+                                <th:block th:if="${appointment.status.name() == 'WAITING_FOR_LAB'}">
+                                    <span th:if="${labOrder != null and labOrder.status == 'PENDING'}" class="badge bg-warning text-dark px-3 py-2 rounded-pill fs-6">Chờ đóng phí xét nghiệm</span>
+                                    <span th:if="${labOrder != null and labOrder.status != 'PENDING'}" class="badge bg-primary px-3 py-2 rounded-pill fs-6">Đang thực hiện xét nghiệm</span>
+                                </th:block>
+                                <span th:if="${appointment.status.name() == 'READY_FOR_REEXAM'}" class="badge bg-danger px-3 py-2 rounded-pill fs-6">Chờ tái khám ưu tiên</span>
                             </th:block>
                         </div>
                         
@@ -311,6 +328,72 @@
                                             <i class="bi bi-credit-card me-1"></i> Thanh Toán Phí Khám
                                         </a>
                                     </th:block>
+
+                                    <!-- Nút thanh toán cận lâm sàng -->
+                                    <th:block th:if="${appointment.status.name() == 'WAITING_FOR_LAB' and labOrder != null and labOrder.status == 'PENDING'}">
+                                        <a th:href="@{/patient/appointments/pay-lab/{id}(id=${appointment.id})}" class="btn btn-warning fw-bold btn-action">
+                                            <i class="bi bi-droplet-half me-1"></i> Thanh Toán Xét Nghiệm
+                                        </a>
+                                    </th:block>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KẾT QUẢ CẬN LÂM SÀNG -->
+            <div th:if="${labOrder != null}" class="row justify-content-center mt-4">
+                <div class="col-md-10 col-lg-8">
+                    <div class="patient-card">
+                        <div class="patient-card-header bg-info text-white">
+                            <span><i class="bi bi-file-medical me-2"></i> Kết Quả Cận Lâm Sàng</span>
+                            <span class="badge bg-light text-dark fs-6 rounded-pill float-end mt-1" th:if="${labOrder.status == 'COMPLETED'}">Đã có kết quả</span>
+                            <span class="badge bg-warning text-dark fs-6 rounded-pill float-end mt-1" th:if="${labOrder.status == 'PENDING'}">Chưa thanh toán</span>
+                            <span class="badge bg-primary text-white fs-6 rounded-pill float-end mt-1" th:if="${labOrder.status == 'PAID'}">Đang thực hiện</span>
+                        </div>
+                        <div class="patient-card-body p-4">
+                            <div class="table-responsive mb-3">
+                                <table class="table table-sm table-bordered bg-white align-middle">
+                                    <thead class="table-light text-center">
+                                        <tr>
+                                            <th>Loại xét nghiệm</th>
+                                            <th>Trạng thái</th>
+                                            <th>Kết quả</th>
+                                            <th>Thời gian trả</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="detail : ${labOrder.details}">
+                                            <td>
+                                                <strong th:text="${detail.labTest.name}"></strong>
+                                                <div class="text-muted small" th:text="${detail.labTest.roomType}"></div>
+                                            </td>
+                                            <td class="text-center">
+                                                <span class="text-success fw-bold" th:if="${detail.result != null}"><i class="bi bi-check-circle"></i> Đã trả</span>
+                                                <span class="text-secondary" th:if="${detail.result == null}"><i class="bi bi-clock"></i> Đang đợi...</span>
+                                            </td>
+                                            <td>
+                                                <div th:if="${detail.result != null}" style="white-space: pre-line; font-size: 0.9rem;" th:text="${detail.result}"></div>
+                                                <span th:if="${detail.result == null}" class="text-muted fst-italic">Chưa có kết quả</span>
+                                            </td>
+                                            <td class="text-center small text-muted" th:text="${detail.completedAt != null ? #temporals.format(detail.completedAt, 'HH:mm dd/MM') : '-'}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Trạng thái thanh toán phí xét nghiệm -->
+                            <div class="row align-items-center border-top pt-3 mt-3">
+                                <div class="col-sm-4 text-muted fw-semibold">Thanh toán phí XN:</div>
+                                <div class="col-sm-8">
+                                    <span th:if="${labPayment != null and labPayment.status.name() == 'PAID'}" class="text-success fw-bold">
+                                        <i class="bi bi-patch-check-fill me-1"></i> Đã thanh toán <span th:text="${#numbers.formatDecimal(labPayment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>
+                                        <span class="text-muted small d-block font-monospace" th:text="'(' + ${labPayment.paymentMethod} + ' - ' + ${labPayment.transactionId} + ')'"></span>
+                                    </span>
+                                    <span th:if="${labPayment != null and labPayment.status.name() == 'PENDING'}" class="text-danger fw-bold">
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Chưa thanh toán (<span th:text="${#numbers.formatDecimal(labPayment.amount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></span>)
+                                    </span>
                                 </div>
                             </div>
                         </div>

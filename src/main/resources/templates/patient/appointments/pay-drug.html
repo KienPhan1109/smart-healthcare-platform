@@ -94,56 +94,22 @@
                             </div>
 
                             <div class="payment-methods mt-4 border-top pt-4">
-                                <h5 class="mb-3 fw-bold">Chọn phương thức thanh toán:</h5>
-                                <form th:action="@{/patient/appointments/pay-drug/{id}/simulate(id=${appointment.id})}" method="post">
-                                    <div class="row g-3">
-                                        <!-- Momo -->
-                                        <div class="col-md-6">
-                                            <div class="payment-method-card h-100 p-3 border rounded">
-                                                <input class="form-check-input me-2" type="radio" name="method" id="momo" value="MOMO" required>
-                                                <label class="form-check-label stretched-link fw-bold" for="momo">
-                                                    <i class="bi bi-wallet-fill text-danger me-2"></i> Ví MoMo
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <!-- VNPay -->
-                                        <div class="col-md-6">
-                                            <div class="payment-method-card h-100 p-3 border rounded">
-                                                <input class="form-check-input me-2" type="radio" name="method" id="vnpay" value="VNPAY">
-                                                <label class="form-check-label stretched-link fw-bold" for="vnpay">
-                                                    <i class="bi bi-credit-card-2-front-fill text-primary me-2"></i> VNPay
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <!-- ATM -->
-                                        <div class="col-md-6">
-                                            <div class="payment-method-card h-100 p-3 border rounded">
-                                                <input class="form-check-input me-2" type="radio" name="method" id="atm" value="ATM">
-                                                <label class="form-check-label stretched-link fw-bold" for="atm">
-                                                    <i class="bi bi-bank2 text-success me-2"></i> Thẻ ATM Nội địa
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <!-- Tiền mặt -->
-                                        <div class="col-md-6">
-                                            <div class="payment-method-card h-100 p-3 border rounded">
-                                                <input class="form-check-input me-2" type="radio" name="method" id="cash" value="CASH">
-                                                <label class="form-check-label stretched-link fw-bold" for="cash">
-                                                    <i class="bi bi-cash-stack text-success me-2"></i> Thanh toán tại quầy thuốc
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="d-flex justify-content-between mt-4 border-top pt-4">
-                                        <a th:href="@{/patient/appointments/detail/{id}(id=${appointment.id})}" class="btn-premium-outline">
-                                            <i class="bi bi-arrow-left me-1"></i> Quay lại
-                                        </a>
-                                        <button type="submit" class="btn-premium btn-danger border-0">
-                                            Xác Nhận Thanh Toán <i class="bi bi-check2-circle ms-1"></i>
-                                        </button>
-                                    </div>
-                                </form>
+                                <h5 class="mb-3 fw-bold text-center">Chọn phương thức thanh toán:</h5>
+                                <div class="d-flex justify-content-center gap-3">
+                                    <form th:action="@{/patient/appointments/pay-drug/{id}/simulate(id=${appointment.id})}" method="post">
+                                        <input type="hidden" name="method" value="VNPAY">
+                                        <button type="submit" class="btn-vnpay"><i class="bi bi-qr-code me-2"></i> Giả lập VNPAY</button>
+                                    </form>
+                                    <form th:action="@{/patient/appointments/pay-drug/{id}/simulate(id=${appointment.id})}" method="post">
+                                        <input type="hidden" name="method" value="MOMO">
+                                        <button type="submit" class="btn-momo"><i class="bi bi-wallet2 me-2"></i> Giả lập MOMO</button>
+                                    </form>
+                                </div>
+                                <div class="text-center mt-4 border-top pt-4">
+                                    <a th:href="@{/patient/appointments/detail/{id}(id=${appointment.id})}" class="btn-premium-outline">
+                                        <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -151,28 +117,7 @@
             </div>
         </div>
 
-        <style>
-            .payment-method-card {
-                transition: all 0.2s ease-in-out;
-                background-color: #f8f9fa;
-                cursor: pointer;
-                position: relative;
-            }
-            .payment-method-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-                border-color: var(--primary-blue-light) !important;
-                background-color: #f0f7ff;
-            }
-            .payment-method-card input[type="radio"]:checked ~ label {
-                color: var(--primary-blue-dark);
-            }
-            .payment-method-card:has(input[type="radio"]:checked) {
-                border-color: var(--primary-blue-dark) !important;
-                background-color: #e0f2fe;
-                box-shadow: 0 0 0 1px var(--primary-blue-dark);
-            }
-        </style>
+
     </div>
 </body>
 </html>

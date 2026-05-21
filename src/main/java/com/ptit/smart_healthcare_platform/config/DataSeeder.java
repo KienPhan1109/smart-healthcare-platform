@@ -8,6 +8,7 @@ import com.ptit.smart_healthcare_platform.repository.UserRepository;
 import com.ptit.smart_healthcare_platform.repository.SpecialtyRepository;
 import com.ptit.smart_healthcare_platform.repository.DoctorRepository;
 import com.ptit.smart_healthcare_platform.repository.MedicineRepository;
+import com.ptit.smart_healthcare_platform.repository.LabTestRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class DataSeeder implements CommandLineRunner {
     private final SpecialtyRepository specialtyRepository;
     private final DoctorRepository doctorRepository;
     private final MedicineRepository medicineRepository;
+    private final LabTestRepository labTestRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DataSeeder(RoleRepository roleRepository,
@@ -33,6 +35,7 @@ public class DataSeeder implements CommandLineRunner {
                       SpecialtyRepository specialtyRepository,
                       DoctorRepository doctorRepository,
                       MedicineRepository medicineRepository,
+                      LabTestRepository labTestRepository,
                       PasswordEncoder passwordEncoder) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
@@ -40,6 +43,7 @@ public class DataSeeder implements CommandLineRunner {
         this.specialtyRepository = specialtyRepository;
         this.doctorRepository = doctorRepository;
         this.medicineRepository = medicineRepository;
+        this.labTestRepository = labTestRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -53,14 +57,16 @@ public class DataSeeder implements CommandLineRunner {
 
         System.out.println("[DataSeeder] Bắt đầu nạp dữ liệu mẫu...");
 
-        // === 1. Tao 3 Role (Patient, Doctor, Admin) ===
+        // === 1. Tao 4 Role (Patient, Doctor, Admin, Technician) ===
         Role rolePatient = createRole(RoleName.ROLE_PATIENT);
         Role roleDoctor = createRole(RoleName.ROLE_DOCTOR);
         Role roleAdmin = createRole(RoleName.ROLE_ADMIN);
+        Role roleTechnician = createRole(RoleName.ROLE_TECHNICIAN);
 
         // === 2. Tao tai khoan mau - Mat khau chung: 123456 ===
         User patient = createUser("0901000001", "Nguyen Van Benh", "patient1@shp.vn", true, rolePatient);
         User doc1 = createUser("0901000002", "Tran Thi Bac Si", "doctor1@shp.vn", true, roleDoctor);
+        createUser("0901000003", "Kỹ Thuật Viên Cận Lâm Sàng", "technician@shp.vn", true, roleTechnician);
         createUser("0901000006", "Quan Tri Vien", "admin@shp.vn", true, roleAdmin);
 
         // === 3. Tao ho so benh nhan mac dinh (SELF) cho tai khoan benh nhan ===
@@ -181,9 +187,17 @@ public class DataSeeder implements CommandLineRunner {
         createMedicine("Smecta", "Gói", "4500", 5000, "Điều trị tiêu chảy cấp (Pha vào nửa ly nước)");
         createMedicine("Natri Clorid 0.9%", "Chai", "15000", 2000, "Nước muối sinh lý, rửa mắt mũi hoặc vết thương");
 
-        System.out.println("[DataSeeder] Hoàn tất! Đã tạo 8 chuyên khoa và 24 bác sĩ mẫu.");
+        // === 7. Tao 6 Loai Xet Nghiem Co Dinh (Lab Tests) ===
+        createLabTest("Xét nghiệm máu toàn bộ (CBC)", "150000", "Đếm và phân loại các tế bào máu: Hồng cầu, Bạch cầu, Tiểu cầu, Hemoglobin, Hematocrit.", "HEMATOLOGY");
+        createLabTest("Sinh hóa máu (Glucose, Ure, Creatinin)", "200000", "Đánh giá chức năng gan thận, đường huyết lúc đói, chỉ số mỡ máu cơ bản.", "HEMATOLOGY");
+        createLabTest("Xét nghiệm nước tiểu toàn bộ", "80000", "Phân tích thành phần nước tiểu: pH, protein, glucose, hồng cầu, bạch cầu, vi khuẩn.", "HEMATOLOGY");
+        createLabTest("Siêu âm ổ bụng tổng quát", "250000", "Khảo sát hình ảnh gan, mật, tụy, lách, thận và bàng quang bằng sóng siêu âm.", "ULTRASOUND");
+        createLabTest("Điện tâm đồ (ECG)", "100000", "Ghi nhận hoạt động điện tim, phát hiện rối loạn nhịp, thiếu máu cơ tim.", "ULTRASOUND");
+        createLabTest("Chụp X-Quang ngực thẳng", "150000", "Chụp hình ảnh phổi, tim, xương sườn để phát hiện viêm phổi, tràn dịch, u bướu.", "IMAGING");
+
+        System.out.println("[DataSeeder] Hoàn tất! Đã tạo 8 chuyên khoa, 24 bác sĩ, 6 loại xét nghiệm mẫu.");
         System.out.println("[DataSeeder] Đăng nhập bằng số điện thoại, mật khẩu: 123456");
-        System.out.println("  - 0901000001 (Bệnh nhân) / 0901000002 (Bác sĩ)");
+        System.out.println("  - 0901000001 (Bệnh nhân) / 0901000002 (Bác sĩ) / 0901000003 (Kỹ thuật viên)");
     }
 
     private Role createRole(RoleName name) {
@@ -253,5 +267,16 @@ public class DataSeeder implements CommandLineRunner {
         medicine.setCreatedBy("SYSTEM");
         medicine.setCreatedAt(LocalDateTime.now());
         medicineRepository.save(medicine);
+    }
+
+    private void createLabTest(String name, String price, String description, String roomType) {
+        LabTest labTest = new LabTest();
+        labTest.setName(name);
+        labTest.setPrice(new BigDecimal(price));
+        labTest.setDescription(description);
+        labTest.setRoomType(roomType);
+        labTest.setCreatedBy("SYSTEM");
+        labTest.setCreatedAt(LocalDateTime.now());
+        labTestRepository.save(labTest);
     }
 }

@@ -1,0 +1,243 @@
+/* =========================================================================
+   TECHNICIAN MODULE - PREMIUM LAB MANAGEMENT STYLES
+   Sử dụng biến --hospital-* từ index.css (Design System thống nhất)
+   ========================================================================= */
+
+/* === General Containers === */
+.tech-dashboard {
+    width: 100%;
+}
+
+/* === Stats Cards (Phòng xét nghiệm) === */
+.tech-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.room-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: var(--hospital-radius-lg);
+    padding: 28px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--hospital-shadow);
+    transition: var(--hospital-transition);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.room-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    border-radius: var(--hospital-radius-lg) 0 0 var(--hospital-radius-lg);
+    opacity: 0;
+    transition: var(--hospital-transition);
+}
+
+.room-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hospital-shadow-hover);
+}
+
+.room-card:hover::before {
+    opacity: 1;
+}
+
+.room-card.hematology::before { background: #e53935; }
+.room-card.ultrasound::before { background: #1e88e5; }
+.room-card.imaging::before { background: #7c4dff; }
+
+.room-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--hospital-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.room-icon.hematology { background: rgba(229, 57, 53, 0.1); color: #e53935; }
+.room-icon.ultrasound { background: rgba(30, 136, 229, 0.1); color: #1e88e5; }
+.room-icon.imaging { background: rgba(124, 77, 255, 0.1); color: #7c4dff; }
+
+.room-info h5 {
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--hospital-text-dark);
+    font-size: 1.05rem;
+}
+
+.room-info p {
+    font-size: 0.85rem;
+    color: var(--hospital-text-muted);
+    margin-bottom: 0;
+}
+
+.room-badge {
+    margin-left: auto;
+    background: var(--hospital-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.3rem;
+    min-width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.room-badge.empty {
+    background: var(--hospital-bg-light);
+    color: var(--hospital-text-muted);
+}
+
+/* === Pending Details Table (Phòng XN) === */
+.pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.pending-item {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: var(--hospital-radius-lg);
+    padding: 20px 24px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--hospital-shadow);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: var(--hospital-transition);
+}
+
+.pending-item:hover {
+    box-shadow: var(--hospital-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.pending-item-info {
+    flex: 1;
+}
+
+.pending-item-info h6 {
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--hospital-text-dark);
+}
+
+.pending-item-info .meta {
+    font-size: 0.85rem;
+    color: var(--hospital-text-muted);
+}
+
+.pending-item-info .meta span + span::before {
+    content: '•';
+    margin: 0 8px;
+    color: var(--hospital-text-muted);
+}
+
+/* === Fill Result Form === */
+.result-form-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: var(--hospital-radius-lg);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: var(--hospital-shadow);
+    overflow: hidden;
+}
+
+.result-form-header {
+    background: linear-gradient(135deg, var(--hospital-primary) 0%, var(--hospital-primary-dark) 100%);
+    color: #fff;
+    padding: 20px 28px;
+}
+
+.result-form-header h5 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.result-form-header p {
+    margin: 6px 0 0;
+    font-size: 0.88rem;
+    opacity: 0.9;
+}
+
+.result-form-body {
+    padding: 28px;
+}
+
+.patient-info-box {
+    background: var(--hospital-bg-light);
+    border-radius: var(--hospital-radius-md);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.patient-info-box .info-item {
+    font-size: 0.9rem;
+}
+
+.patient-info-box .info-label {
+    font-weight: 600;
+    color: var(--hospital-text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.patient-info-box .info-value {
+    color: var(--hospital-text-dark);
+    font-weight: 500;
+}
+
+.result-textarea {
+    border: 2px solid var(--hospital-bg-light);
+    border-radius: var(--hospital-radius-md);
+    padding: 16px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    transition: var(--hospital-transition);
+    resize: vertical;
+    min-height: 150px;
+}
+
+.result-textarea:focus {
+    border-color: var(--hospital-primary);
+    box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.1);
+    outline: none;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .tech-stats {
+        grid-template-columns: 1fr;
+    }
+    .patient-info-box {
+        grid-template-columns: 1fr;
+    }
+    .pending-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

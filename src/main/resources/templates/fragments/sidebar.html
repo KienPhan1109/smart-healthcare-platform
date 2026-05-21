@@ -61,8 +61,49 @@
             </li>
             <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
                 <a th:href="@{/admin/dashboard}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                    Thống kê Tổng quan
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/admin/staffs}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-person-badge"></i></span>
+                    Quản lý Nhân sự
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/admin/medicines}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-capsule"></i></span>
+                    Danh mục Thuốc
+                </a>
+            </li>
+
+            <!-- TECHNICIAN Menu -->
+            <li sec:authorize="hasAuthority('ROLE_TECHNICIAN')">
+                <div class="sidebar-section-title">Kỹ thuật viên</div>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_TECHNICIAN')">
+                <a th:href="@{/technician/dashboard}" class="sidebar-nav-link">
                     <span class="sidebar-nav-icon"><i class="bi bi-grid-1x2"></i></span>
                     Tổng quan
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_TECHNICIAN')">
+                <a th:href="@{/technician/room/HEMATOLOGY}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-droplet-half"></i></span>
+                    Phòng Huyết học
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_TECHNICIAN')">
+                <a th:href="@{/technician/room/ULTRASOUND}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-activity"></i></span>
+                    Phòng Siêu âm & ECG
+                </a>
+            </li>
+            <li class="sidebar-nav-item" sec:authorize="hasAuthority('ROLE_TECHNICIAN')">
+                <a th:href="@{/technician/room/IMAGING}" class="sidebar-nav-link">
+                    <span class="sidebar-nav-icon"><i class="bi bi-file-earmark-image"></i></span>
+                    Phòng Chẩn đoán hình ảnh
                 </a>
             </li>
         </ul>
@@ -79,6 +120,7 @@
                         <span sec:authorize="hasAuthority('ROLE_PATIENT')">Bệnh nhân</span>
                         <span sec:authorize="hasAuthority('ROLE_DOCTOR')">Bác sĩ</span>
                         <span sec:authorize="hasAuthority('ROLE_ADMIN')">Quản trị viên</span>
+                        <span sec:authorize="hasAuthority('ROLE_TECHNICIAN')">Kỹ thuật viên</span>
                     </div>
                 </div>
                 <!-- Đăng xuất được chuyển xuống dưới cùng của Sidebar -->

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title th:text="${roomName}">Phòng Xét Nghiệm</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <link rel="stylesheet" th:href="@{/css/technician.css}">
+        <div class="container-fluid py-4">
+            <div class="tech-dashboard">
+
+                <div class="d-flex align-items-center justify-content-between mb-4 bg-white p-3 rounded shadow-sm border-start border-5 border-primary">
+                    <h2 class="mb-0 fw-bold d-flex align-items-center gap-2" style="color: var(--hospital-primary-dark);">
+                        <i class="bi bi-door-open text-primary"></i>
+                        <span th:text="${roomName}">Phòng Xét Nghiệm</span>
+                    </h2>
+                    <span class="badge bg-danger rounded-pill px-3 py-2 fs-6 shadow-sm d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill"></i> <span th:text="${pendingDetails.size()} + ' ca chờ'">0 ca chờ</span>
+                    </span>
+                </div>
+
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <!-- Nếu không có bệnh nhân chờ -->
+                <div th:if="${pendingDetails.isEmpty()}" class="d-flex flex-column align-items-center justify-content-center p-5 bg-white rounded shadow-sm text-center" style="min-height: 400px;">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-4 mb-4">
+                        <i class="bi bi-check2-all text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h4 class="fw-bold text-success mb-2">Đã Hoàn Thành Trống Ca</h4>
+                    <p class="text-muted fs-5 mb-0">Hiện không có bệnh nhân nào đang chờ tại phòng này.</p>
+                </div>
+
+                <!-- Danh sách bệnh nhân chờ -->
+                <div th:if="${!pendingDetails.isEmpty()}" class="row g-4">
+                    <div th:each="detail : ${pendingDetails}" class="col-12 col-xl-6">
+                        <div class="card h-100 border-0 shadow-sm hover-elevate transition-all">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-3 border-bottom pb-3">
+                                    <div>
+                                        <h5 class="fw-bold text-primary mb-1 d-flex align-items-center gap-2">
+                                            <i class="bi bi-clipboard2-pulse"></i> <span th:text="${detail.labTest.name}">Tên xét nghiệm</span>
+                                        </h5>
+                                        <span class="badge bg-info bg-opacity-10 text-info border border-info rounded-pill px-2">Đang chờ thực hiện</span>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="text-muted small">Thời gian chỉ định</div>
+                                        <div class="fw-bold" th:text="${#temporals.format(detail.createdAt, 'HH:mm - dd/MM/yyyy')}">Thời gian</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-4 bg-light p-3 rounded mx-0">
+                                    <div class="col-6 mb-2">
+                                        <div class="text-muted small">Mã lịch hẹn</div>
+                                        <div class="fw-bold text-dark fs-5">#<span th:text="${detail.labOrder.appointment.id}">Mã LH</span></div>
+                                    </div>
+                                    <div class="col-6 mb-2">
+                                        <div class="text-muted small">Bác sĩ chỉ định</div>
+                                        <div class="fw-bold text-dark"><i class="bi bi-person-badge text-muted me-1"></i><span th:text="${detail.labOrder.doctor.user.fullName}">Tên Bác sĩ</span></div>
+                                    </div>
+                                    <div class="col-12 mt-2 pt-2 border-top">
+                                        <div class="text-muted small">Bệnh nhân</div>
+                                        <div class="fw-bold text-dark fs-5"><i class="bi bi-person-fill text-primary me-1"></i><span th:text="${detail.labOrder.appointment.patient.fullName}">Tên bệnh nhân</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid">
+                                    <a th:href="@{/technician/fill-result/{id}(id=${detail.id})}" class="btn btn-primary fw-bold py-2 shadow-sm d-flex justify-content-center align-items-center gap-2" style="background: linear-gradient(135deg, var(--hospital-primary), var(--hospital-primary-dark)); border: none; transition: transform 0.2s;">
+                                        <i class="bi bi-pencil-square"></i> Nhập Kết Quả Xét Nghiệm
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

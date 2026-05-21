@@ -25,6 +25,13 @@
                     <p th:text="${waitingCount}">0</p>
                 </div>
             </div>
+            <div class="stat-card" style="border-left: 4px solid #e53935;">
+                <div class="stat-icon" style="background: rgba(229, 57, 53, 0.1); color: #e53935;"><i class="bi bi-exclamation-circle"></i></div>
+                <div class="stat-info">
+                    <h3>Tái khám ưu tiên</h3>
+                    <p th:text="${reexamCount}">0</p>
+                </div>
+            </div>
             <div class="stat-card">
                 <div class="stat-icon success"><i class="bi bi-check-circle"></i></div>
                 <div class="stat-info">
@@ -62,12 +69,14 @@
                             <td>
                                 <span class="badge bg-warning text-dark" th:if="${appt.status.name() == 'CONFIRMED'}">Đang chờ khám</span>
                                 <span class="badge bg-info" th:if="${appt.status.name() == 'EXAMINING'}">Đang khám</span>
+                                <span class="badge bg-danger" th:if="${appt.status.name() == 'READY_FOR_REEXAM'}">Tái khám ưu tiên (Có KQ XN)</span>
+                                <span class="badge bg-primary" th:if="${appt.status.name() == 'WAITING_FOR_LAB'}">Đang đi xét nghiệm</span>
                                 <span class="badge bg-success" th:if="${appt.status.name() == 'COMPLETED'}">Hoàn tất</span>
                                 <span class="badge bg-secondary" th:if="${appt.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}">Chờ thanh toán thuốc</span>
                             </td>
                             <td>
-                                <!-- Nút Khám (hiện khi đang chờ hoặc đang khám) -->
-                                <a th:if="${appt.status.name() == 'CONFIRMED' || appt.status.name() == 'EXAMINING'}"
+                                <!-- Nút Khám (hiện khi đang chờ hoặc đang khám hoặc tái khám ưu tiên) -->
+                                <a th:if="${appt.status.name() == 'CONFIRMED' || appt.status.name() == 'EXAMINING' || appt.status.name() == 'READY_FOR_REEXAM'}"
                                    th:href="@{/doctor/appointments/{id}/examine(id=${appt.id})}" 
                                    class="btn btn-sm btn-success fw-bold btn-action-sm">
                                     <i class="bi bi-stethoscope me-1"></i> Khám bệnh

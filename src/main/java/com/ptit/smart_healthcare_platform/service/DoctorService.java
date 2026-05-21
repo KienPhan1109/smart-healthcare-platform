@@ -29,6 +29,9 @@ public class DoctorService {
     private final PrescriptionDetailRepository prescriptionDetailRepository;
     private final MedicineRepository medicineRepository;
     private final PaymentRepository paymentRepository;
+    private final LabTestRepository labTestRepository;
+    private final LabOrderRepository labOrderRepository;
+    private final LabOrderDetailRepository labOrderDetailRepository;
 
     @Transactional(readOnly = true)
     public Doctor getDoctorProfile(Long userId) {
@@ -57,6 +60,11 @@ public class DoctorService {
             appt.setStatus(AppointmentStatus.EXAMINING);
             appt.setUpdatedAt(LocalDateTime.now());
             appointmentRepository.save(appt);
+        } else if (appt.getStatus() == AppointmentStatus.READY_FOR_REEXAM) {
+            // Tái khám ưu tiên: chuyển lại sang EXAMINING
+            appt.setStatus(AppointmentStatus.EXAMINING);
+            appt.setUpdatedAt(LocalDateTime.now());
+            appointmentRepository.save(appt);
         }
     }
 
@@ -73,16 +81,21 @@ public class DoctorService {
             throw new IllegalStateException("Trạng thái lịch hẹn không hợp lệ để hoàn tất khám (cần ở trạng thái Đang khám)");
         }
 
-        // 1. Tạo MedicalRecord
-        MedicalRecord record = new MedicalRecord();
-        record.setAppointment(appt);
-        record.setPatient(appt.getPatient());
-        record.setDoctor(appt.getDoctor());
+        // 1. Tạo MedicalRecord (nếu chưa có - trường hợp tái khám có thể đã có record sơ bộ)
+        MedicalRecord record = medicalRecordRepository.findByAppointmentId(appointmentId).orElse(null);
+        if (record == null) {
+            record = new MedicalRecord();
+            record.setAppointment(appt);
+            record.setPatient(appt.getPatient());
+            record.setDoctor(appt.getDoctor());
+            record.setSymptoms(appt.getSymptoms() != null ? appt.getSymptoms() : "");
+            record.setCreatedBy(actor);
+            record.setCreatedAt(LocalDateTime.now());
+        }
         record.setDiagnosis(form.getDiagnosis());
-        record.setSymptoms(appt.getSymptoms() != null ? appt.getSymptoms() : "");
         record.setNotes(form.getNote());
-        record.setCreatedBy(actor);
-        record.setCreatedAt(LocalDateTime.now());
+        record.setUpdatedBy(actor);
+        record.setUpdatedAt(LocalDateTime.now());
         record = medicalRecordRepository.save(record);
 
         // 2. Nếu có kê đơn thuốc, tạo Prescription và chi tiết
@@ -152,5 +165,82 @@ public class DoctorService {
         appt.setUpdatedAt(LocalDateTime.now());
         appt.setUpdatedBy(actor);
         appointmentRepository.save(appt);
+    }
+
+    /**
+     * Bác sĩ chỉ định xét nghiệm cận lâm sàng cho lịch hẹn.
+     * Tạo LabOrder, LabOrderDetail, Payment (LAB_FEE) và chuyển trạng thái sang WAITING_FOR_LAB.
+     */
+    @Transactional
+    public void submitLabOrder(Long appointmentId, Long doctorId, List<Long> labTestIds, String actor) {
+        Appointment appt = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy lịch hẹn"));
+
+        if (!appt.getDoctor().getId().equals(doctorId)) {
+            throw new SecurityException("Bạn không có quyền thao tác trên lịch hẹn này");
+        }
+
+        if (appt.getStatus() != AppointmentStatus.EXAMINING) {
+            throw new IllegalStateException("Trạng thái lịch hẹn không hợp lệ để chỉ định xét nghiệm");
+        }
+
+        if (labTestIds == null || labTestIds.isEmpty()) {
+            throw new IllegalArgumentException("Vui lòng chọn ít nhất một loại xét nghiệm");
+        }
+
+        // Tạo LabOrder
+        LabOrder labOrder = new LabOrder();
+        labOrder.setAppointment(appt);
+        labOrder.setDoctor(appt.getDoctor());
+        labOrder.setStatus("PENDING");
+        labOrder.setCreatedBy(actor);
+        labOrder.setCreatedAt(LocalDateTime.now());
+        labOrder = labOrderRepository.save(labOrder);
+
+        BigDecimal totalLabFee = BigDecimal.ZERO;
+
+        for (Long labTestId : labTestIds) {
+            LabTest labTest = labTestRepository.findById(labTestId)
+                    .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy loại xét nghiệm ID: " + labTestId));
+
+            LabOrderDetail detail = new LabOrderDetail();
+            detail.setLabOrder(labOrder);
+            detail.setLabTest(labTest);
+            detail.setPriceAtOrder(labTest.getPrice());
+            detail.setCreatedBy(actor);
+            detail.setCreatedAt(LocalDateTime.now());
+            labOrderDetailRepository.save(detail);
+
+            totalLabFee = totalLabFee.add(labTest.getPrice());
+        }
+
+        // Cập nhật tổng phí xét nghiệm
+        labOrder.setTotalAmount(totalLabFee);
+        labOrderRepository.save(labOrder);
+
+        // Tạo Payment cho phí xét nghiệm (LAB_FEE)
+        Payment labPayment = new Payment();
+        labPayment.setPatient(appt.getPatient());
+        labPayment.setAppointment(appt);
+        labPayment.setType(PaymentType.LAB_FEE);
+        labPayment.setAmount(totalLabFee);
+        labPayment.setStatus(PaymentStatus.PENDING);
+        labPayment.setCreatedBy(actor);
+        labPayment.setCreatedAt(LocalDateTime.now());
+        paymentRepository.save(labPayment);
+
+        // Chuyển trạng thái lịch hẹn sang WAITING_FOR_LAB
+        appt.setStatus(AppointmentStatus.WAITING_FOR_LAB);
+        appt.setUpdatedAt(LocalDateTime.now());
+        appt.setUpdatedBy(actor);
+        appointmentRepository.save(appt);
+    }
+
+    /**
+     * Lấy LabOrder của một lịch hẹn (nếu có).
+     */
+    @Transactional(readOnly = true)
+    public LabOrder getLabOrderByAppointmentId(Long appointmentId) {
+        return labOrderRepository.findByAppointmentIdAndIsDeletedFalse(appointmentId).orElse(null);
     }
 }

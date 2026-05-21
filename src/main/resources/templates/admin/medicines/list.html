@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Danh mục Thuốc</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container-fluid py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);"><i class="bi bi-capsule text-primary me-2"></i> Quản Lý Danh Mục Thuốc</h2>
+                <a th:href="@{/admin/medicines/create}" class="btn-premium px-4 shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i> Thêm Thuốc Mới
+                </a>
+            </div>
+
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i><span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.85rem;">Mã Thuốc</th>
+                                    <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.85rem;">Tên Thuốc</th>
+                                    <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.85rem;">Đơn Vị Tính</th>
+                                    <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.85rem;">Đơn Giá (VNĐ)</th>
+                                    <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.85rem;">Tồn Kho</th>
+                                    <th class="px-4 py-3 text-uppercase text-secondary" style="font-size: 0.85rem;">Trạng Thái</th>
+                                    <th class="px-4 py-3 text-uppercase text-secondary text-center" style="font-size: 0.85rem;">Hành Động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="medicine : ${medicines}" class="border-bottom hover-elevate transition-all">
+                                    <td class="px-4 fw-bold text-muted">#<span th:text="${medicine.id}"></span></td>
+                                    <td class="px-4 fw-bold text-dark" th:text="${medicine.name}">Panadol</td>
+                                    <td class="px-4" th:text="${medicine.unit}">Viên</td>
+                                    <td class="px-4 fw-bold text-danger" th:text="${#numbers.formatDecimal(medicine.price, 0, 'COMMA', 0, 'POINT')}">50,000</td>
+                                    <td class="px-4">
+                                        <span class="badge rounded-pill" th:classappend="${medicine.stockQuantity > 50 ? 'bg-success' : (medicine.stockQuantity > 0 ? 'bg-warning text-dark' : 'bg-danger')}"
+                                              th:text="${medicine.stockQuantity}">100</span>
+                                    </td>
+                                    <td class="px-4">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2" th:if="${medicine.status.name() == 'SELLING'}">Đang bán</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary rounded-pill px-3 py-2" th:if="${medicine.status.name() == 'STOPPED'}">Ngừng bán</span>
+                                    </td>
+                                    <td class="px-4 text-center">
+                                        <a th:href="@{/admin/medicines/{id}/edit(id=${medicine.id})}" class="btn btn-sm btn-outline-primary rounded-circle" title="Chỉnh sửa"><i class="bi bi-pencil"></i></a>
+                                        <form th:action="@{/admin/medicines/{id}/delete(id=${medicine.id})}" method="post" class="d-inline" th:if="${medicine.status.name() == 'SELLING'}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle ms-1" title="Ngừng bán" onclick="return confirm('Bạn có chắc chắn muốn ngừng bán loại thuốc này?');"><i class="bi bi-slash-circle"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr th:if="${medicines.isEmpty()}">
+                                    <td colspan="7" class="text-center py-5 text-muted">Chưa có thuốc nào trong hệ thống.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

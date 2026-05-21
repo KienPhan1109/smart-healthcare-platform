@@ -226,3 +226,53 @@ CREATE TABLE payments (
     CONSTRAINT fk_payment_patient FOREIGN KEY (patient_id) REFERENCES patients(id),
     CONSTRAINT fk_payment_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id)
 );
+
+-- ========================================================
+-- PHẦN BỔ SUNG: PHÂN HỆ CẬN LÂM SÀNG (LABORATORY MODULE)
+-- ========================================================
+
+-- 17. Bảng Danh Mục Loại Xét Nghiệm (Lab_Tests) - Dữ liệu cố định (Set cứng)
+CREATE TABLE lab_tests (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL UNIQUE,
+    price DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    description TEXT,
+    room_type VARCHAR(50) NOT NULL,
+    created_by VARCHAR(50),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(50),
+    updated_at TIMESTAMP NULL
+);
+
+-- 18. Bảng Phiếu Chỉ Định Xét Nghiệm (Lab_Orders)
+CREATE TABLE lab_orders (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    appointment_id BIGINT NOT NULL,
+    doctor_id BIGINT NOT NULL,
+    total_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP NULL,
+    created_by VARCHAR(50),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(50),
+    updated_at TIMESTAMP NULL,
+    CONSTRAINT fk_laborder_appointment FOREIGN KEY (appointment_id) REFERENCES appointments(id),
+    CONSTRAINT fk_laborder_doctor FOREIGN KEY (doctor_id) REFERENCES doctors(id)
+);
+
+-- 19. Bảng Chi Tiết Phiếu Chỉ Định & Kết Quả Xét Nghiệm (Lab_Order_Details)
+CREATE TABLE lab_order_details (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    lab_order_id BIGINT NOT NULL,
+    lab_test_id BIGINT NOT NULL,
+    price_at_order DECIMAL(12,2) NOT NULL DEFAULT 0.00,
+    result TEXT,
+    completed_at TIMESTAMP NULL,
+    created_by VARCHAR(50),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_by VARCHAR(50),
+    updated_at TIMESTAMP NULL,
+    CONSTRAINT fk_detail_laborder FOREIGN KEY (lab_order_id) REFERENCES lab_orders(id),
+    CONSTRAINT fk_detail_labtest FOREIGN KEY (lab_test_id) REFERENCES lab_tests(id)
+);

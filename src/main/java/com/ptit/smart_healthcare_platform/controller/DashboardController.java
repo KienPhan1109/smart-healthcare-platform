@@ -11,8 +11,4 @@ public class DashboardController {
         return "patient/dashboard";
     }
 
-    @GetMapping("/admin/dashboard")
-    public String adminDashboard() {
-        return "admin/dashboard";
-    }
 }

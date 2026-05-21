@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/main}">
+<head>
+    <title>Thêm Nhân Sự Mới</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container py-4" style="max-width: 900px;">
+            <div class="d-flex align-items-center mb-4 gap-3">
+                <a th:href="@{/admin/staffs}" class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <h2 class="mb-0 fw-bold" style="color: var(--hospital-primary-dark);">Thêm Nhân Sự Mới</h2>
+            </div>
+
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-5">
+                    <form th:action="@{/admin/staffs/create}" method="post" th:object="${dto}">
+                        
+                        <h5 class="fw-bold text-primary mb-4 border-bottom pb-2"><i class="bi bi-person-vcard me-2"></i> Thông Tin Cơ Bản</h5>
+                        
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Họ và Tên <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{fullName}" class="form-control" th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" placeholder="Nhập họ và tên đầy đủ">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Số Điện Thoại <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{phoneNumber}" class="form-control" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid' : ''" placeholder="Dùng để đăng nhập">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Email</label>
+                                <input type="email" th:field="*{email}" class="form-control" placeholder="Nhập địa chỉ email (không bắt buộc)">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Mật khẩu khởi tạo <span class="text-danger">*</span></label>
+                                <input type="password" th:field="*{password}" class="form-control" th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" placeholder="Nhập mật khẩu cho nhân viên">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                            </div>
+                        </div>
+
+                        <h5 class="fw-bold text-primary mb-4 border-bottom pb-2"><i class="bi bi-briefcase me-2"></i> Vị Trí & Vai Trò</h5>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-12">
+                                <label class="form-label fw-bold">Chức vụ (Role) <span class="text-danger">*</span></label>
+                                <select th:field="*{roleName}" class="form-select" id="roleSelect" th:classappend="${#fields.hasErrors('roleName')} ? 'is-invalid' : ''">
+                                    <option value="" disabled selected>-- Chọn chức vụ --</option>
+                                    <option value="ROLE_DOCTOR">Bác sĩ</option>
+                                    <option value="ROLE_TECHNICIAN">Kỹ thuật viên</option>
+                                    <option value="ROLE_COORDINATOR">Điều phối viên (Lễ tân)</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('roleName')}" th:errors="*{roleName}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Chuyên môn Bác sĩ (Chỉ hiển thị khi chọn ROLE_DOCTOR) -->
+                        <div id="doctorFields" style="display: none;" class="bg-light p-4 rounded border mt-3 mb-4">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-heart-pulse text-danger me-2"></i> Thông Tin Chuyên Môn (Dành cho Bác sĩ)</h6>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Chuyên khoa</label>
+                                    <select th:field="*{specialtyId}" class="form-select" id="specialtySelect">
+                                        <option value="">-- Chọn chuyên khoa --</option>
+                                        <option th:each="spec : ${specialties}" th:value="${spec.id}" th:text="${spec.name}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Phí Khám (VNĐ)</label>
+                                    <input type="number" th:field="*{examFee}" class="form-control" id="examFeeInput" placeholder="Ví dụ: 150000">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Học hàm / Học vị</label>
+                                    <input type="text" th:field="*{academicRank}" class="form-control" placeholder="Ví dụ: ThS.BS, PGS.TS">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Năm kinh nghiệm</label>
+                                    <input type="number" th:field="*{experienceYears}" class="form-control" placeholder="Ví dụ: 5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3 pt-4 border-top">
+                            <a th:href="@{/admin/staffs}" class="btn btn-outline-secondary fw-bold px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn-premium px-5 shadow-sm"><i class="bi bi-save me-2"></i> Lưu Nhân Sự</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div layout:fragment="scripts">
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var roleSelect = document.getElementById("roleSelect");
+                var doctorFields = document.getElementById("doctorFields");
+                
+                function toggleDoctorFields() {
+                    if (roleSelect.value === "ROLE_DOCTOR") {
+                        doctorFields.style.display = "block";
+                    } else {
+                        doctorFields.style.display = "none";
+                    }
+                }
+                
+                // Init
+                toggleDoctorFields();
+                
+                // On change
+                roleSelect.addEventListener("change", toggleDoctorFields);
+            });
+        </script>
+    </div>
+</body>
+</html>

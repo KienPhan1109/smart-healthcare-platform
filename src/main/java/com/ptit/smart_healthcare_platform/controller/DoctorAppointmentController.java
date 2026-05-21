@@ -3,9 +3,11 @@ package com.ptit.smart_healthcare_platform.controller;
 import com.ptit.smart_healthcare_platform.model.dto.doctor.ExaminationFormDto;
 import com.ptit.smart_healthcare_platform.model.entity.Appointment;
 import com.ptit.smart_healthcare_platform.model.entity.Doctor;
+import com.ptit.smart_healthcare_platform.model.entity.LabOrder;
 import com.ptit.smart_healthcare_platform.model.entity.User;
 import com.ptit.smart_healthcare_platform.model.enums.MedicineStatus;
 import com.ptit.smart_healthcare_platform.repository.AppointmentRepository;
+import com.ptit.smart_healthcare_platform.repository.LabTestRepository;
 import com.ptit.smart_healthcare_platform.repository.MedicineRepository;
 import com.ptit.smart_healthcare_platform.repository.UserRepository;
 import com.ptit.smart_healthcare_platform.service.DoctorService;
@@ -30,6 +32,7 @@ public class DoctorAppointmentController {
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
     private final MedicineRepository medicineRepository;
+    private final LabTestRepository labTestRepository;
 
     private Doctor getCurrentDoctor(Authentication authentication) {
         User user = userRepository.findByPhoneNumber(authentication.getName())
@@ -48,11 +51,15 @@ public class DoctorAppointmentController {
         long completedCount = todayAppointments.stream()
                 .filter(a -> a.getStatus() == AppointmentStatus.COMPLETED || a.getStatus() == AppointmentStatus.WAITING_FOR_DRUG_PAYMENT)
                 .count();
+        long reexamCount = todayAppointments.stream()
+                .filter(a -> a.getStatus() == AppointmentStatus.READY_FOR_REEXAM)
+                .count();
 
         model.addAttribute("doctor", doctor);
         model.addAttribute("appointments", todayAppointments);
         model.addAttribute("waitingCount", waitingCount);
         model.addAttribute("completedCount", completedCount);
+        model.addAttribute("reexamCount", reexamCount);
         return "doctor/dashboard";
     }
 
@@ -74,6 +81,11 @@ public class DoctorAppointmentController {
 
             model.addAttribute("appointment", appt);
             model.addAttribute("medicines", medicineRepository.findAllByStatus(MedicineStatus.SELLING));
+            model.addAttribute("labTests", labTestRepository.findAllByOrderByNameAsc());
+            
+            // Nạp kết quả xét nghiệm nếu có (cho tái khám)
+            LabOrder labOrder = doctorService.getLabOrderByAppointmentId(id);
+            model.addAttribute("labOrder", labOrder);
             
             if (!model.containsAttribute("examinationForm")) {
                 model.addAttribute("examinationForm", new ExaminationFormDto());
@@ -110,6 +122,26 @@ public class DoctorAppointmentController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Đã xảy ra lỗi hệ thống: " + (e.getMessage() != null ? e.getMessage() : "Dữ liệu không hợp lệ"));
             redirectAttributes.addFlashAttribute("examinationForm", form);
+            return "redirect:/doctor/appointments/" + id + "/examine";
+        }
+    }
+
+    @PostMapping("/appointments/{id}/lab-order")
+    public String submitLabOrder(@PathVariable Long id,
+                                 @RequestParam(required = false) List<Long> labTestIds,
+                                 Authentication authentication,
+                                 RedirectAttributes redirectAttributes) {
+        try {
+            if (labTestIds == null || labTestIds.isEmpty()) {
+                redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng chọn ít nhất một xét nghiệm cận lâm sàng.");
+                return "redirect:/doctor/appointments/" + id + "/examine";
+            }
+            Doctor doctor = getCurrentDoctor(authentication);
+            doctorService.submitLabOrder(id, doctor.getId(), labTestIds, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Chỉ định xét nghiệm thành công. Bệnh nhân sẽ được chuyển sang thanh toán phí cận lâm sàng.");
+            return "redirect:/doctor/dashboard";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
             return "redirect:/doctor/appointments/" + id + "/examine";
         }
     }

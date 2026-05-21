@@ -38,6 +38,9 @@
                             <a class="nav-link" th:classappend="${currentStatus == 'UNPAID'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='UNPAID')}">Chờ thanh toán</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" th:classappend="${currentStatus == 'IN_PROGRESS'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='IN_PROGRESS')}">Đang thực hiện</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" th:classappend="${currentStatus == 'COMPLETED'} ? 'active' : ''" th:href="@{/patient/appointments/history(status='COMPLETED')}">Hoàn thành</a>
                         </li>
                         <li class="nav-item">
@@ -84,6 +87,8 @@
                                           <span th:if="${appt.status.name() == 'PENDING'}" class="status-badge status-waiting-payment">Chờ thanh toán phí khám</span>
                                           <span th:if="${appt.status.name() == 'CONFIRMED'}" class="status-badge status-waiting-approval">Sắp tới / Chờ khám</span>
                                           <span th:if="${appt.status.name() == 'EXAMINING'}" class="badge bg-info px-2 py-1 rounded-pill">Đang khám bệnh</span>
+                                          <span th:if="${appt.status.name() == 'WAITING_FOR_LAB'}" class="badge bg-primary px-2 py-1 rounded-pill">Đang đi xét nghiệm</span>
+                                          <span th:if="${appt.status.name() == 'READY_FOR_REEXAM'}" class="badge bg-danger px-2 py-1 rounded-pill">Chờ tái khám ưu tiên</span>
                                           <span th:if="${appt.status.name() == 'WAITING_FOR_DRUG_PAYMENT'}" class="badge bg-warning text-dark px-2 py-1 rounded-pill">Chờ thanh toán đơn thuốc</span>
                                           <span th:if="${appt.status.name() == 'COMPLETED'}" class="status-badge status-completed">Thành công</span>
                                       </th:block>

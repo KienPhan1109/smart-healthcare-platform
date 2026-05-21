@@ -55,6 +55,7 @@ public class SecurityConfig {
                 .requestMatchers("/patient/**").hasAuthority("ROLE_PATIENT")
                 .requestMatchers("/doctor/**").hasAuthority("ROLE_DOCTOR")
                 .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/technician/**").hasAuthority("ROLE_TECHNICIAN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form

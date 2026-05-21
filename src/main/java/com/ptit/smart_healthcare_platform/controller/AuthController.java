@@ -73,6 +73,7 @@ public class AuthController {
                 switch (role) {
                     case "ROLE_ADMIN": return "redirect:/admin/dashboard";
                     case "ROLE_DOCTOR": return "redirect:/doctor/dashboard";
+                    case "ROLE_TECHNICIAN": return "redirect:/technician/dashboard";
                     case "ROLE_PATIENT": return "redirect:/patient/dashboard";
                 }
             }

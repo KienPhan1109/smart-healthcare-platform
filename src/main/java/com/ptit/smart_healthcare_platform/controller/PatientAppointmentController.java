@@ -13,6 +13,7 @@ import com.ptit.smart_healthcare_platform.repository.DoctorRepository;
 import com.ptit.smart_healthcare_platform.repository.SpecialtyRepository;
 import com.ptit.smart_healthcare_platform.repository.UserRepository;
 import com.ptit.smart_healthcare_platform.service.AppointmentService;
+import com.ptit.smart_healthcare_platform.service.DoctorService;
 import com.ptit.smart_healthcare_platform.service.PatientProfileService;
 import com.ptit.smart_healthcare_platform.service.PaymentSimulationService;
 import jakarta.validation.Valid;
@@ -46,6 +47,7 @@ public class PatientAppointmentController {
     private final PaymentSimulationService paymentSimulationService;
     private final UserRepository userRepository;
     private final MedicalRecordRepository medicalRecordRepository;
+    private final DoctorService doctorService;
 
     private static final int MAX_BOOKING_DAYS_AHEAD = 7;
     private static final DateTimeFormatter DATE_DISPLAY_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy (EEEE)");
@@ -325,6 +327,18 @@ public class PatientAppointmentController {
             }
             model.addAttribute("drugPayment", drugPayment);
 
+            // Phí xét nghiệm cận lâm sàng (nếu có)
+            Payment labPayment = null;
+            try {
+                labPayment = paymentSimulationService.getLabFeePayment(id, user.getId());
+            } catch (Exception e) {
+                // Bỏ qua nếu chưa có hóa đơn xét nghiệm
+            }
+            model.addAttribute("labPayment", labPayment);
+
+            // Phiếu chỉ định & kết quả xét nghiệm (nếu có)
+            model.addAttribute("labOrder", doctorService.getLabOrderByAppointmentId(id));
+
             return "patient/appointments/detail";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", getFriendlyErrorMessage(e));
@@ -340,5 +354,41 @@ public class PatientAppointmentController {
             return "Dữ liệu bị trùng lặp hoặc vi phạm ràng buộc hệ thống. Vui lòng thử lại hoặc liên hệ hỗ trợ.";
         }
         return msg;
+    }
+
+    // =============================================
+    // THANH TOÁN PHÍ XÉT NGHIỆM CẬN LÂM SÀNG
+    // =============================================
+
+    @GetMapping("/pay-lab/{id}")
+    public String showLabPaymentPage(@PathVariable Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
+        try {
+            User user = getLoggedInUser(authentication);
+            Payment payment = paymentSimulationService.getLabFeePayment(id, user.getId());
+            Appointment appointment = payment.getAppointment();
+
+            model.addAttribute("payment", payment);
+            model.addAttribute("appointment", appointment);
+            model.addAttribute("labOrder", doctorService.getLabOrderByAppointmentId(id));
+
+            return "patient/appointments/pay-lab";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/patient/appointments/detail/" + id;
+        }
+    }
+
+    @PostMapping("/pay-lab/{id}/simulate")
+    public String simulateLabPayment(@PathVariable Long id, @RequestParam String method, Authentication authentication, RedirectAttributes redirectAttributes) {
+        try {
+            User user = getLoggedInUser(authentication);
+            paymentSimulationService.processSimulatedLabPayment(id, method, user.getId(), user.getPhoneNumber());
+
+            redirectAttributes.addFlashAttribute("successMessage", "Thanh toán phí xét nghiệm thành công! Vui lòng di chuyển tới phòng cận lâm sàng để thực hiện xét nghiệm.");
+            return "redirect:/patient/appointments/detail/" + id;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/patient/appointments/pay-lab/" + id;
+        }
     }
 }
